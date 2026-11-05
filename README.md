@@ -4,7 +4,7 @@
 
 将文字转语音、音色克隆、形象库和视频对口型接到同一套界面与任务队列中。
 
-**当前数字人集成位于 `feat/voxforma-digital-human` 分支，[PR #1](https://github.com/wentaoqqq/zhilian-VoxForma/pull/1) 尚未合并。默认 `main` 和首页默认 ZIP 仍是原版 VoiceStudio；请使用下方指定分支命令。**
+请使用本仓库默认 `main` 分支的源码，按下方指南部署。原版 VoiceStudio 安装包不包含本 Fork 的数字人功能。
 
 ## 这个 Fork 增加了什么
 
@@ -31,7 +31,7 @@
 先准备 Linux/WSL 与 NVIDIA 驱动，再在 **Ubuntu/Linux 终端**安装 Git、[uv](https://docs.astral.sh/uv/)、Linux 版 **Node.js 22.x（至少 22.12）** 和 **Bun 1.4.2**。下面的命令全部在 Ubuntu/Linux 中执行，不要复用 Windows Python 或 `node_modules`。
 
 ```bash
-git clone --branch feat/voxforma-digital-human https://github.com/wentaoqqq/zhilian-VoxForma.git
+git clone https://github.com/wentaoqqq/zhilian-VoxForma.git
 cd zhilian-VoxForma
 uv sync --locked
 bun install --frozen-lockfile

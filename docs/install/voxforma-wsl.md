@@ -2,7 +2,7 @@
 
 目标是从源码启动浏览器工作台，再在页面中安装数字人模型。**这不是 Windows 安装包，也不是自动安装整台电脑的脚本。**
 
-当前数字人代码在 `feat/voxforma-digital-human` 分支，尚未合并进默认 `main`。直接下载仓库首页默认分支，得到的仍是原版 VoiceStudio；必须按下面的分支命令获取代码。
+本指南对应本仓库默认 `main` 分支的 VoxForma 源码，包含数字人集成。原版 VoiceStudio 安装包不包含这些新增功能；请使用本仓库，并按下面的文件检查确认源码完整。
 
 已验证的目标配置是 RTX 5080 16GB + 64GB 内存。其他配置需要单独验收，不能仅凭“安装成功”保证任意视频都能生成。
 
@@ -99,22 +99,23 @@ Node/Bun 的平台都应为 `linux`，Bun 应为 `1.4.2`。若命令来自 `/mnt
 ```bash
 mkdir -p ~/projects
 cd ~/projects
-git clone --branch feat/voxforma-digital-human https://github.com/wentaoqqq/zhilian-VoxForma.git
+git clone https://github.com/wentaoqqq/zhilian-VoxForma.git
 cd zhilian-VoxForma
 git branch --show-current
 test -f backend/integrations/avatar/launcher.py
 test -f backend/services/video_install.py
 ```
 
-分支应为 `feat/voxforma-digital-human`，后两条检查应成功。已经克隆了默认分支时，只在工作区没有自己的未保存修改时切换：
+分支应为 `main`，后两条检查应成功。已经克隆过本仓库时，只在工作区没有自己的未保存修改时更新：
 
 ```bash
 git status --short
 git fetch origin
-git switch --track origin/feat/voxforma-digital-human
+git switch main
+git pull --ff-only origin main
 ```
 
-不要用 `git reset --hard` 或覆盖用户修改来完成切换。已经存在本地集成分支时执行 `git switch feat/voxforma-digital-human`。
+不要用 `git reset --hard` 或覆盖用户修改来完成更新。正在使用旧集成分支的用户，也应先保留本地修改，再切换到 `main`。
 
 ## 4. 准备 VoiceStudio 环境并构建页面
 
@@ -246,12 +247,12 @@ New-NetFirewallRule -Name VoxForma-LAN-3900 -DisplayName 'VoxForma LAN 3900' -Di
 
 | 现象 | 先检查 |
 | --- | --- |
-| 没有数字人菜单或 `launcher.py` | 是否误用了默认 `main` / 原版安装包 |
+| 没有数字人菜单或 `launcher.py` | 是否用了原版仓库/安装包，或尚未更新本仓库旧代码 |
 | `node: command not found` | 是否在 Ubuntu 装了 Node.js，而不只是 Windows/Bun |
 | `fcntl` 导入失败 | 是否错误地在原生 Windows Python 中启动 |
 | 页面 404 / 空白，但 health 为 200 | 前端构建是否成功，`frontend/dist/index.html` 是否存在 |
 | 安装按钮 401/403 | 是否是真实本机请求；远程是否设置 server mode 并使用管理员 key |
-| Student 已装好，引导仍不能继续 | 是否拿到了最新集成分支，是否仍使用旧前端缓存 |
+| Student 已装好，引导仍不能继续 | 是否拿到了最新 `main` 并重新构建，是否仍使用旧前端缓存 |
 | 配音无法回调 / 连接 3901 被拒绝 | 是否运行了最新端口修复，`AVATAR_VOICE_URL` 是否被旧配置覆盖 |
 | 模型下载慢 | Hugging Face 端点、代理、实际分块进度；不能只看预分配文件大小 |
 | Python/CUDA 包下载慢 | PyPI/PyTorch 下载源；Hugging Face 镜像不控制这部分下载 |
