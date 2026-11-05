@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 import { dubSourceLanguage } from './source-language';
 import {
   startTranslationRun,
@@ -1104,7 +1105,7 @@ export async function uploadDub(file: File) {
   if (controller || cancelling || dubSession.state.recovery) return;
   recordActionBreadcrumb('dub:upload');
   clearDubEditHistory();
-  const jobId = crypto.randomUUID();
+  const jobId = randomUUID();
   const inputType =
     file.type.startsWith('audio/') || /\.(wav|mp3|m4a|flac|ogg|aac)$/i.test(file.name)
       ? 'audio'
@@ -1166,7 +1167,7 @@ export async function ingestDubUrl(value: string, cookieFile?: File, fetchSubs =
   recordActionBreadcrumb('dub:ingest-url');
   clearDubEditHistory();
   const url = value.trim();
-  const jobId = crypto.randomUUID();
+  const jobId = randomUUID();
   dubSession.setState((current) => ({
     ...initial,
     target: current.target,

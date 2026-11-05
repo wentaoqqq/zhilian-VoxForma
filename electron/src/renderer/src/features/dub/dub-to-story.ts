@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 /**
  * Carrying a finished dub into the Stories editor.
  *
@@ -82,7 +83,7 @@ export function loadDubIntoStories(
     unknownSpeakerLabel: options.unknownSpeakerLabel,
   });
   if (tracks.length === 0) return false;
-  const newLineId = options.newLineId ?? (() => crypto.randomUUID());
+  const newLineId = options.newLineId ?? (() => randomUUID());
   storiesImportEpoch.current += 1;
   editLongform('stories', {
     // Clearing the script the same way "Clear script" does, so a pending import

@@ -117,6 +117,7 @@ export interface EngineFamilyState {
 }
 
 export interface EnginesResponse {
+  video?: EngineFamilyState;
   tts: EngineFamilyState;
   asr: EngineFamilyState;
   llm: EngineFamilyState;

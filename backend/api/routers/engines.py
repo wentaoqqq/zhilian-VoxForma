@@ -29,7 +29,7 @@ from pydantic import BaseModel, Field
 from api.dependencies import require_admin, require_admin_action, require_desktop, is_loopback
 from core import prefs
 from core.engine_licenses import LICENSE_GATED_ENGINES
-from services import tts_backend, asr_backend, llm_backend, translation_engines
+from services import tts_backend, asr_backend, llm_backend, translation_engines, video_backend
 from services.audio_dsp import list_effect_presets
 from api.schemas import EffectPresetsResponse
 from api.public_engine_metadata import public_backends, public_unavailability
@@ -38,6 +38,7 @@ router = APIRouter()
 logger = logging.getLogger("omnivoice.engines_api")
 
 _FAMILIES = {
+    "video": (video_backend, "video_backend"),
     "tts": (tts_backend, "tts_backend"),
     "asr": (asr_backend, "asr_backend"),
     "llm": (llm_backend, "llm_backend"),
@@ -143,7 +144,40 @@ def list_all_engines(request: Request):
         "tts": _request_install_capability(_family_payload("tts", tts_backend), request),
         "asr": _family_payload("asr", asr_backend),
         "llm": _family_payload("llm", llm_backend),
+        "video": video_backend.family_payload(),
     }
+
+
+@router.get("/engines/video")
+def list_video_backends():
+    return video_backend.family_payload()
+
+
+class VideoInstallRequest(BaseModel):
+    component: str = "student"
+
+
+@router.get("/engines/video/install/status", dependencies=[Depends(require_admin)])
+def video_install_status():
+    from services.video_install import status
+    return status()
+
+
+@router.post("/engines/video/install", dependencies=[Depends(require_admin)])
+def video_install_start(body: VideoInstallRequest):
+    from services.video_install import start_install
+    if body.component not in ("student", "rife"):
+        raise HTTPException(422, "Unknown video component")
+    try:
+        return start_install(body.component)
+    except ValueError as exc:
+        raise HTTPException(409, str(exc))
+
+
+@router.post("/engines/video/install/cancel", dependencies=[Depends(require_admin)])
+def video_install_cancel():
+    from services.video_install import cancel_install
+    return cancel_install()
 
 
 @router.get("/engines/tts")
@@ -697,6 +731,9 @@ def _resolve_engine_class(engine_id: str):
     dependencies=[Depends(require_admin_action)],
 )
 def engine_health(engine_id: str):
+    if engine_id == "tbdub-student":
+        entry = video_backend.list_backends()[0]
+        return {"engine": engine_id, "status": "ready" if entry["available"] else "unavailable", **entry}
     """Spawn-and-ping a SubprocessBackend; ``is_available()`` for the rest.
 
     Returns:

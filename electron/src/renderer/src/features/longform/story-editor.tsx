@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 import { StoryStems } from './story-stems';
 import { previewStoryLine } from './story-preview';
 import { storyVoicesReady } from './story-inputs';
@@ -113,7 +114,7 @@ export function StoryEditor({
         ...draft.lines,
         ...result.tracks.map((line) => ({
           ...line,
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           profileId: null,
         })),
       ],
@@ -160,7 +161,7 @@ export function StoryEditor({
   };
   const add = (text = '') =>
     onChange({
-      lines: [...draft.lines, { id: crypto.randomUUID(), text, profileId: null }],
+      lines: [...draft.lines, { id: randomUUID(), text, profileId: null }],
     });
   const loadSample = () =>
     onChange({
@@ -172,7 +173,7 @@ export function StoryEditor({
         profileId: profiles.length ? profiles[index % profiles.length].id : null,
       })),
       lines: SAMPLE_STORY_LINES.map((line) => ({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         character: line.character,
         text: line.text,
         profileId: null,
@@ -226,7 +227,7 @@ export function StoryEditor({
                   lines: [
                     ...draft.lines,
                     ...parts.map((text) => ({
-                      id: crypto.randomUUID(),
+                      id: randomUUID(),
                       text,
                       profileId: null,
                     })),

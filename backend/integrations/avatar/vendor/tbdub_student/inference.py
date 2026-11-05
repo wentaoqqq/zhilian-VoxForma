@@ -1,0 +1,602 @@
+# Modified for the VoiceStudio digital-human integration: streaming memory handling and/or conservative face recovery.
+"""Command-line inference for TBDub.
+
+The script keeps only the public single-video inference path. It supports both
+full-frame input (MediaPipe crop + paste-back) and already cropped 512x512 input.
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import sys
+from runtime_config import configure_runtime
+import pickle
+import subprocess
+import tempfile
+from dataclasses import dataclass
+from pathlib import Path
+
+import imageio.v2 as imageio
+import numpy as np
+import torch
+from PIL import Image
+from face_recovery import recovery_enabled, output_passthrough, VERSION as FACE_RECOVERY_VERSION
+
+from diffsynth.core import ModelConfig
+from diffsynth.pipelines.tbdub import TBDubPipeline
+from preprocessing import HEIGHT, WIDTH, frames_bgr_to_pil_from_video
+from video_utils import (
+    blend_crop_video_with_ref,
+    color_correction_lab,
+    color_correction_lab_frame,
+    blend_crop_frame_with_ref,
+    paste_frame_back,
+    concat_pil_videos_horizontally,
+    get_audio_length,
+    get_total_length,
+    make_pingpong_indices,
+    paste_video_back,
+    save_video_with_audio,
+)
+
+
+REPO_ROOT = Path(__file__).resolve().parent
+
+
+def _stream_write_frames(ffmpeg_proc, frames):
+    for frame in frames:
+        arr = np.asarray(frame.convert("RGB"), dtype=np.uint8)
+        ffmpeg_proc.stdin.write(arr.tobytes())
+
+
+def _start_video_encoder(path: Path, width: int, height: int, fps: int = 25):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo",
+        "-pix_fmt", "rgb24", "-s", f"{width}x{height}", "-r", str(fps),
+        "-i", "-", "-an", "-c:v", "libx264", "-crf", "10",
+        "-preset", "medium", "-pix_fmt", "yuv420p",
+        "-x264-params", "colorprim=bt709:transfer=bt709:colormatrix=bt709",
+        str(path),
+    ]
+    return subprocess.Popen(cmd, stdin=subprocess.PIPE)
+
+
+def _finish_video_encoder(proc):
+    if proc.stdin is not None:
+        proc.stdin.close()
+    rc = proc.wait()
+    if rc:
+        raise RuntimeError(f"ffmpeg video encoder failed with exit code {rc}")
+
+
+def _mux_audio(video_path: Path, final_path: Path, audio_path: str):
+    tmp = final_path.with_suffix(".partial.mp4")
+    subprocess.run([
+        "ffmpeg", "-y", "-loglevel", "error", "-i", str(video_path),
+        "-i", str(audio_path), "-map", "0:v:0", "-map", "1:a:0?",
+        "-c:v", "copy", "-c:a", "aac", "-shortest", str(tmp),
+    ], check=True)
+    tmp.replace(final_path)
+
+
+def _postprocess_frame(generated_frame, reference_frame, raw_frame, bbox):
+    corrected = color_correction_lab_frame(generated_frame, reference_frame)
+    blended = blend_crop_frame_with_ref(corrected, reference_frame, replace_border_latents_width=1)
+    return paste_frame_back(blended, raw_frame, bbox)
+DEFAULT_CHECKPOINT_DIR = REPO_ROOT / "checkpoints"
+DEFAULT_DIT_CHECKPOINTS = [
+    str(DEFAULT_CHECKPOINT_DIR / "tbdub_teacher.safetensors"),
+]
+CLIP_NUM_FRAMES = 77
+MOTION_NUM_FRAMES = 5
+MOTION_LATENT_NUM_FRAMES = 2
+PREPROCESS_REVISION = "full_range_sparse_mp01021_v2"
+if recovery_enabled():
+    PREPROCESS_REVISION += ':' + FACE_RECOVERY_VERSION
+
+
+VRAM_CONFIG = {
+    "offload_dtype": torch.bfloat16,
+    "offload_device": "cuda",
+    "onload_dtype": torch.bfloat16,
+    "onload_device": "cuda",
+    "preparing_dtype": torch.bfloat16,
+    "preparing_device": "cuda",
+    "computation_dtype": torch.bfloat16,
+    "computation_device": "cuda",
+}
+
+
+@dataclass
+class PreprocessedSample:
+    raw_video: list[Image.Image]
+    reference_video: list[Image.Image]
+    bboxes: list[list[int]]
+    audio_path: str
+    passthrough_frames: list[int] | None = None
+
+
+def require_paths(paths: list[str | Path]) -> None:
+    missing = [str(path) for path in paths if not Path(path).exists()]
+    if missing:
+        formatted = "\n  - ".join(missing)
+        raise FileNotFoundError(f"Required files are missing:\n  - {formatted}")
+
+
+def preprocess_inputs(video_path: str, audio_path: str, args: argparse.Namespace) -> PreprocessedSample:
+    from preprocessing_mediapipe import preprocess_video_with_mediapipe
+
+    raw_video, reference_video, bboxes, case_flag, report = preprocess_video_with_mediapipe(
+        video_path, model_path=args.mediapipe_model,
+        report_path=args.preprocess_report,
+        return_report=True,
+    )
+    print(
+        f"[TBDub] preprocessing complete: frames={len(reference_video)}, "
+        f"crop_mode={case_flag}, first_bbox={bboxes[0]}"
+    )
+    return PreprocessedSample(raw_video, reference_video, bboxes, audio_path,
+                              report.get('recovery',{}).get('passthrough_frames',[]))
+
+
+def load_cropped_inputs(video_path: str, audio_path: str) -> PreprocessedSample:
+    frames = frames_bgr_to_pil_from_video(video_path)
+    reference_video = [frame.resize((WIDTH, HEIGHT), Image.Resampling.BILINEAR) for frame in frames]
+    bboxes = [[0, 0, WIDTH, HEIGHT] for _ in reference_video]
+    print(f"[TBDub] using cropped input: {len(reference_video)} frames at {WIDTH}x{HEIGHT}")
+    return PreprocessedSample(reference_video, reference_video, bboxes, audio_path)
+
+
+def save_preprocess_preview(
+    frames: list[Image.Image],
+    output_path: Path,
+    audio_path: str,
+    start_frame: int,
+) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = output_path.with_name(f"{output_path.stem}.video-only.mp4")
+    arrays = [np.asarray(frame.convert("RGB")) for frame in frames]
+    imageio.mimsave(
+        temp_path,
+        arrays,
+        fps=25,
+        codec="libx264",
+        macro_block_size=None,
+        ffmpeg_params=["-crf", "10", "-preset", "medium", "-pix_fmt", "yuv420p"],
+    )
+    command = [
+        "ffmpeg", "-y", "-loglevel", "error", "-i", str(temp_path),
+        "-ss", str(start_frame / 25.0), "-i", audio_path,
+        "-map", "0:v:0", "-map", "1:a:0?", "-c:v", "copy", "-c:a", "aac",
+        "-shortest", str(output_path),
+    ]
+    subprocess.run(command, check=True)
+    temp_path.unlink(missing_ok=True)
+
+
+def validate_sample(sample: PreprocessedSample) -> None:
+    if not sample.reference_video:
+        raise ValueError("The input video contains no readable frames.")
+    if len(sample.raw_video) != len(sample.reference_video):
+        raise ValueError("Raw and reference video lengths do not match.")
+    if len(sample.bboxes) != len(sample.reference_video):
+        raise ValueError("Bounding-box and reference video lengths do not match.")
+    if any(len(bbox) != 4 for bbox in sample.bboxes):
+        raise ValueError("Every bounding box must contain [x1, y1, x2, y2].")
+
+
+def build_pipeline(args: argparse.Namespace) -> tuple[TBDubPipeline, torch.Tensor]:
+    checkpoint_paths = [
+        *args.dit_checkpoint,
+        args.vae_checkpoint,
+        args.prompt_embedding,
+        args.hubert_checkpoint,
+    ]
+    require_paths(checkpoint_paths)
+
+    runtime_vram_config = dict(VRAM_CONFIG)
+    for key in ("offload_device", "onload_device", "preparing_device", "computation_device"):
+        runtime_vram_config[key] = args.device
+    if getattr(args, "cpu_offload", False):
+        runtime_vram_config["offload_device"] = "cpu"
+
+    pipeline = TBDubPipeline.from_pretrained(
+        torch_dtype=torch.bfloat16,
+        device=args.device,
+        model_configs=[
+            ModelConfig(path=args.dit_checkpoint, **runtime_vram_config),
+            ModelConfig(path=args.vae_checkpoint, **runtime_vram_config),
+        ],
+        args=args,
+        hubert_ckpt_path=args.hubert_checkpoint,
+    )
+    pipeline.hubert_processor.to(dtype=torch.float32)
+    prompt_embedding = torch.load(args.prompt_embedding, map_location=args.device, weights_only=True)
+    return pipeline, prompt_embedding
+
+
+def run_inference(
+    pipeline: TBDubPipeline,
+    prompt_embedding: torch.Tensor,
+    sample: PreprocessedSample,
+    sample_name: str,
+    args: argparse.Namespace,
+) -> Path:
+    validate_sample(sample)
+    start_frame = args.start_frame
+    if start_frame < 0 or start_frame >= len(sample.reference_video):
+        raise ValueError(
+            f"--start-frame must be in [0, {len(sample.reference_video) - 1}], got {start_frame}."
+        )
+    source_raw_video = sample.raw_video[start_frame:]
+    source_reference_video = sample.reference_video[start_frame:]
+    source_bboxes = sample.bboxes[start_frame:]
+    source_video_length = min(
+        len(source_raw_video), len(source_reference_video), len(source_bboxes)
+    )
+    if source_video_length == 0:
+        raise ValueError("No usable video frames remain after --start-frame.")
+
+    is_student = args.inference_mode == "student"
+    first_clip_preroll = is_student and args.student_first_clip_padding
+    stride = CLIP_NUM_FRAMES - MOTION_NUM_FRAMES
+    total_length = get_total_length(
+        sample.audio_path,
+        clip_num_frames=CLIP_NUM_FRAMES,
+        motion_num_frames=MOTION_NUM_FRAMES,
+    )
+    audio_length = get_audio_length(sample.audio_path)
+    real_length = min(audio_length, total_length)
+    if real_length <= 0:
+        raise ValueError(f"The driving audio has no usable output frames: {audio_length}.")
+
+    if first_clip_preroll:
+        num_clips = max(1, (real_length + stride - 1) // stride)
+        required_video_length = num_clips * stride
+    else:
+        num_clips = 1 + max(0, total_length - CLIP_NUM_FRAMES) // stride
+        required_video_length = total_length
+
+    indices = make_pingpong_indices(source_video_length, required_video_length)
+    reference_video = [source_reference_video[index] for index in indices]
+    raw_video = [source_raw_video[index] for index in indices]
+    bboxes = [source_bboxes[index] for index in indices]
+    passthrough = output_passthrough(indices, start_frame, sample.passthrough_frames)
+    model_reference_video = (
+        [reference_video[0]] * MOTION_NUM_FRAMES + reference_video
+        if first_clip_preroll
+        else reference_video
+    )
+
+    num_steps = args.num_student_steps if is_student else args.num_inference_steps
+    sigma_shift = args.sigma_shift
+    if sigma_shift is None:
+        sigma_shift = 1.0 if is_student else 5.0
+
+    print(
+        f"[TBDub] mode={args.inference_mode}, source_frames={source_video_length}, "
+        f"output_frames={real_length}, total_length={total_length}, clips={num_clips}, "
+        f"steps={num_steps}, sigma_shift={sigma_shift}, "
+        f"motion_from_latents={args.motion_from_latents}"
+    )
+
+    motion_video = model_reference_video[:MOTION_NUM_FRAMES] if first_clip_preroll else None
+    motion_latents = None
+    hubert_features = None
+    latent_segments = []
+    clip_start = 0
+
+    for clip_index in range(num_clips):
+        audio_start = clip_start - MOTION_NUM_FRAMES if first_clip_preroll else clip_start
+        clip_seed = args.seed + clip_index if is_student else args.seed
+        print(
+            f"[TBDub] clip {clip_index + 1}/{num_clips}, "
+            f"start_frame={clip_start}, audio_start={audio_start}, seed={clip_seed}"
+        )
+        reference_clip = model_reference_video[
+            clip_start : clip_start + CLIP_NUM_FRAMES
+        ]
+        generated_clip, outputs = pipeline(
+            ref_video=reference_clip,
+            start_idx=audio_start,
+            audio_npy_path=None,
+            audio_wav_path=sample.audio_path,
+            hubert_feat=hubert_features,
+            per_chunk_audio=args.per_chunk_audio,
+            prompt="",
+            prompt_emb=prompt_embedding,
+            motion_video=motion_video,
+            motion_latents=motion_latents,
+            height=HEIGHT,
+            width=WIDTH,
+            num_frames=CLIP_NUM_FRAMES,
+            motion_latents_num_frames=MOTION_LATENT_NUM_FRAMES,
+            ref_cfg_scale=args.ref_cfg_scale,
+            audio_cfg_scale=args.audio_cfg_scale,
+            num_inference_steps=num_steps,
+            sigma_shift=sigma_shift,
+            seed=clip_seed,
+            use_dynamic_cfg=not is_student,
+            cfg_merge=not is_student,
+            replace_border_latents=True,
+            replace_border_latents_width=1,
+            replace_border_each_step=not is_student,
+            decode_output=not args.motion_from_latents,
+        )
+        if hubert_features is None:
+            hubert_features = outputs.get("hubert_feat")
+        output_latents = outputs["latents"]
+
+        if args.motion_from_latents:
+            motion_video = None
+            motion_latents = output_latents[:, :, -MOTION_LATENT_NUM_FRAMES:].clone()
+        else:
+            generated_clip = color_correction_lab(generated_clip, reference_clip)
+            motion_video = generated_clip[-MOTION_NUM_FRAMES:]
+
+        if clip_index == 0:
+            latent_segments.append(output_latents)
+        else:
+            latent_segments.append(output_latents[:, :, MOTION_LATENT_NUM_FRAMES:])
+        clip_start += stride
+
+    # Keep latent tensors on disk between Student generation and VAE decoding.
+    # This removes the duration-proportional torch.cat allocation.
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    latent_spool = output_dir / f"{sample_name}.latents.pt"
+    cpu_latents = [segment.detach().to("cpu") for segment in latent_segments]
+    output_latents = torch.cat(cpu_latents, dim=2)
+    torch.save(output_latents, latent_spool)
+    del cpu_latents, latent_segments, output_latents
+    output_latents = torch.load(latent_spool, map_location="cpu", weights_only=True)
+    pipeline.load_models_to_device(["vae"])
+    output_dir = Path(args.output_dir)
+    output_name = f"{sample_name}_tbdub"
+    video_only = output_dir / f"{output_name}.video-only.mp4"
+    final_path = output_dir / f"{output_name}.mp4"
+    encoder = _start_video_encoder(video_only, WIDTH if args.cropped_input else raw_video[0].width,
+                                   HEIGHT if args.cropped_input else raw_video[0].height)
+    written = 0
+    try:
+        if args.stream_vae:
+            decoded_iter = pipeline.vae.decode_iter(
+                output_latents, device=pipeline.device, tiled=False,
+                tile_size=(32, 32), tile_stride=(16, 16),
+            )
+            for decoded_chunk in decoded_iter:
+                decoded_frames = pipeline.vae_output_to_video(decoded_chunk)
+                for frame in decoded_frames:
+                    if first_clip_preroll and written < MOTION_NUM_FRAMES:
+                        written += 1
+                        continue
+                    if written - (MOTION_NUM_FRAMES if first_clip_preroll else 0) >= real_length:
+                        break
+                    idx = written - (MOTION_NUM_FRAMES if first_clip_preroll else 0)
+                    if passthrough[idx]:
+                        final_frame = raw_video[idx]
+                    elif args.cropped_input:
+                        final_frame = color_correction_lab_frame(frame, reference_video[idx])
+                    else:
+                        final_frame = _postprocess_frame(frame, reference_video[idx], raw_video[idx], bboxes[idx])
+                    _stream_write_frames(encoder, [final_frame])
+                    written += 1
+                if written - (MOTION_NUM_FRAMES if first_clip_preroll else 0) >= real_length:
+                    break
+        else:
+            decoded = pipeline.vae.decode(output_latents, device=pipeline.device, tiled=False,
+                                          tile_size=(32, 32), tile_stride=(16, 16))
+            frames = pipeline.vae_output_to_video(decoded)
+            for frame in frames:
+                if first_clip_preroll and written < MOTION_NUM_FRAMES:
+                    written += 1
+                    continue
+                idx = written - (MOTION_NUM_FRAMES if first_clip_preroll else 0)
+                if idx >= real_length:
+                    break
+                final_frame = raw_video[idx] if passthrough[idx] else (frame if args.cropped_input else _postprocess_frame(
+                    frame, reference_video[idx], raw_video[idx], bboxes[idx]))
+                _stream_write_frames(encoder, [final_frame])
+                written += 1
+    finally:
+        _finish_video_encoder(encoder)
+    expected = real_length
+    actual = written - (MOTION_NUM_FRAMES if first_clip_preroll else 0)
+    if actual != expected:
+        raise RuntimeError(f"streaming output frame count mismatch: expected {expected}, wrote {actual}")
+    _mux_audio(video_only, final_path, sample.audio_path)
+    video_only.unlink(missing_ok=True)
+    latent_spool.unlink(missing_ok=True)
+    print(f"[TBDub] output saved to {final_path} (streaming frames={actual})")
+    return final_path
+
+
+def parse_args(argv=None) -> argparse.Namespace:
+    argv = sys.argv[1:] if argv is None else list(argv)
+    parser = argparse.ArgumentParser(description="Generate a lip-synchronized video with TBDub.", allow_abbrev=False)
+    parser.add_argument(
+        "--video", "--video_path", dest="video", required=True,
+        help="Path to the source video or source image.",
+    )
+    parser.add_argument("--audio", "--audio_path", dest="audio", help="Path to the driving audio.")
+    parser.add_argument(
+        "--output-dir", "--output_dir", dest="output_dir", default="results",
+        help="Directory for generated videos.",
+    )
+    parser.add_argument(
+        "--sample-name", "--sample_name", dest="sample_name",
+        help="Optional output stem; defaults to the input video stem.",
+    )
+    parser.add_argument(
+        "--start-frame", "--video_start_idx", dest="start_frame", type=int, default=0,
+        help="First source-video frame to use.",
+    )
+    parser.add_argument("--checkpoint-dir", default=os.environ.get("TBDUB_CHECKPOINT_DIR", str(DEFAULT_CHECKPOINT_DIR)),
+                        help="Root directory for all models and config.json.")
+    parser.add_argument("--config", help="TBDub manifest; defaults to checkpoint-dir/config.json.")
+    parser.add_argument("--device", default="cuda:0", help="Torch device used for inference.")
+    parser.add_argument(
+        "--cpu-offload", action=argparse.BooleanOptionalAction, default=False,
+        help="Reduce GPU memory by moving inactive model weights to CPU. Disabled by default for faster inference.",
+    )
+    parser.add_argument(
+        "--stream-vae", action=argparse.BooleanOptionalAction, default=False,
+        help="Decode the VAE in temporal chunks and move each chunk to CPU immediately.",
+    )
+
+    parser.add_argument(
+        "--dit-checkpoint", "--ckpt_path",
+        dest="dit_checkpoint",
+        nargs="+",
+        default=None,
+        help="DiT checkpoints applied left to right. Defaults to the standalone Teacher or Student checkpoint for the selected mode.",
+    )
+    parser.add_argument("--vae-checkpoint", default=str(DEFAULT_CHECKPOINT_DIR / "Wan2.2_VAE.safetensors"))
+    parser.add_argument("--prompt-embedding", default=str(DEFAULT_CHECKPOINT_DIR / "null_prompt_emb.pt"))
+    parser.add_argument("--hubert-checkpoint", default=str(DEFAULT_CHECKPOINT_DIR / "hubert-large-ll60k"))
+    parser.add_argument("--mediapipe-model", default=str(DEFAULT_CHECKPOINT_DIR / "face_landmarker.task"))
+    parser.add_argument("--preprocess-report", help="Optional JSON report for MediaPipe detection and crop diagnostics.")
+
+    parser.add_argument("--ref-cfg-scale", "--ref_cfg_scale", dest="ref_cfg_scale", type=float, default=2.0)
+    parser.add_argument("--audio-cfg-scale", "--audio_cfg_scale", dest="audio_cfg_scale", type=float, default=6.0)
+    parser.add_argument(
+        "--audio-feat-window-size", "--audio_feat_window_size",
+        dest="audio_feat_window_size", type=int, default=0,
+    )
+    parser.add_argument(
+        "--inference-mode", "--inference_mode",
+        dest="inference_mode", choices=("teacher", "student"), default="teacher",
+        help="Sampling mode. Student mode uses a distilled single-branch denoising path.",
+    )
+    parser.add_argument(
+        "--num-inference-steps", "--num_inference_steps",
+        dest="num_inference_steps", type=int, default=30,
+    )
+    parser.add_argument(
+        "--num-student-steps", "--num_student_steps",
+        dest="num_student_steps", type=int, default=2,
+    )
+    parser.add_argument(
+        "--sigma-shift", "--sigma_shift", dest="sigma_shift", type=float,
+        help="FlowMatch sigma shift; defaults to 5.0 for Teacher and 1.0 for Student.",
+    )
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--per-chunk-audio", "--per_chunk_audio", dest="per_chunk_audio", action="store_true")
+    parser.add_argument(
+        "--cropped-input", "--cropped_input", dest="cropped_input", action="store_true",
+        help="Skip face preprocessing and paste-back for an already aligned face video.",
+    )
+    parser.add_argument(
+        "--motion-from-latents", "--motion_from_latents",
+        dest="motion_from_latents", action=argparse.BooleanOptionalAction, default=False,
+    )
+    parser.add_argument(
+        "--student-first-clip-padding", "--student_first_clip_padding",
+        dest="student_first_clip_padding", action="store_true", default=True,
+        help="Prepend five copies of the first frame in Student mode (default).",
+    )
+    parser.add_argument(
+        "--no-student-first-clip-padding", "--no_student_first_clip_padding",
+        dest="student_first_clip_padding", action="store_false",
+        help="Disable the Student first-clip pre-roll.",
+    )
+    parser.add_argument("--save-comparison", action="store_true", help="Also save side-by-side debug videos.")
+    parser.add_argument(
+        "--preprocess-only", "--preprocess_only", dest="preprocess_only", action="store_true",
+        help="Save the aligned crop without loading TBDub.",
+    )
+    parser.add_argument(
+        "--preprocess-cache", "--preprocess_cache_path", dest="preprocess_cache",
+        help="Optional pickle cache for crop frames and bounding boxes.",
+    )
+    args = parser.parse_args(argv)
+    return configure_runtime(parser, args, argv)
+
+
+def main() -> None:
+    args = parse_args()
+    if args.num_inference_steps <= 0:
+        raise ValueError("--num-inference-steps must be greater than zero.")
+    if args.num_student_steps <= 0:
+        raise ValueError("--num-student-steps must be greater than zero.")
+    if args.sigma_shift is not None and args.sigma_shift <= 0:
+        raise ValueError("--sigma-shift must be greater than zero.")
+
+    args.video = str(Path(args.video).expanduser().resolve())
+    if args.audio:
+        args.audio = str(Path(args.audio).expanduser().resolve())
+    require_paths([args.video])
+    if not args.preprocess_only and not args.audio:
+        raise ValueError("--audio is required unless --preprocess-only is used.")
+
+    audio_path = args.audio or args.video
+    require_paths([audio_path])
+    sample_name = args.sample_name or Path(args.video).stem
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    if recovery_enabled() and not args.preprocess_report:
+        args.preprocess_report = str(output_dir / f'{sample_name}_face_report.json')
+
+    cache_path = Path(args.preprocess_cache) if args.preprocess_cache else None
+    if cache_path and cache_path.exists() and not args.cropped_input:
+        with cache_path.open("rb") as file:
+            cached = pickle.load(file)
+        if (
+            not isinstance(cached, dict)
+            or cached.get("preprocess_backend") != "mediapipe"
+            or cached.get("preprocess_backend_revision") != PREPROCESS_REVISION
+        ):
+            raise ValueError("Unrecognized or outdated preprocessing cache; delete it and run again to regenerate it.")
+        sample = PreprocessedSample(
+            raw_video=cached["raw_video"],
+            reference_video=cached["reference_video"],
+            bboxes=cached["bboxes"],
+            audio_path=audio_path,
+            passthrough_frames=cached.get('passthrough_frames',[]),
+        )
+    else:
+        sample = (
+            load_cropped_inputs(args.video, audio_path)
+            if args.cropped_input
+            else preprocess_inputs(args.video, audio_path, args)
+        )
+        if cache_path and not args.cropped_input:
+            cache_path.parent.mkdir(parents=True, exist_ok=True)
+            with cache_path.open("wb") as file:
+                pickle.dump(
+                    {
+                        "preprocess_backend": "mediapipe",
+                        "preprocess_backend_revision": PREPROCESS_REVISION,
+                        "raw_video": sample.raw_video,
+                        "reference_video": sample.reference_video,
+                        "bboxes": sample.bboxes,
+                        "passthrough_frames": sample.passthrough_frames,
+                    },
+                    file,
+                )
+
+    validate_sample(sample)
+    if args.start_frame < 0 or args.start_frame >= len(sample.reference_video):
+        raise ValueError(
+            f"--start-frame must be in [0, {len(sample.reference_video) - 1}], got {args.start_frame}."
+        )
+
+    if args.preprocess_only:
+        preview_path = output_dir / f"{sample_name}_crop.mp4"
+        save_preprocess_preview(
+            sample.reference_video[args.start_frame:],
+            preview_path,
+            audio_path,
+            args.start_frame,
+        )
+        print(f"[TBDub] crop preview saved to {preview_path}")
+        return
+
+    pipeline, prompt_embedding = build_pipeline(args)
+    run_inference(pipeline, prompt_embedding, sample, sample_name, args)
+
+
+if __name__ == "__main__":
+    main()

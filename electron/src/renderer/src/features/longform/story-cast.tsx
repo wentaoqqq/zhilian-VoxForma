@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 import { useTranslation } from 'react-i18next';
 import { FingerprintIcon, PlusIcon, TrashIcon, UsersIcon } from 'lucide-react';
 import { ChipPopover, ChoiceList } from './story-chips';
@@ -98,7 +99,7 @@ export function StoryCast({ draft, profiles, disabled, onChange }: Props) {
             cast: [
               ...draft.cast,
               {
-                id: crypto.randomUUID(),
+                id: randomUUID(),
                 name: t('stories.character'),
                 profileId: null,
               },

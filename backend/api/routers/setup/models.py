@@ -532,6 +532,8 @@ def list_models():
             "license_info": _model_license_info(key),
             "license_acceptance": _model_licence_acceptance(key),
         })
+    from services.video_backend import model_rows
+    out.extend(model_rows())
     response = {
         "target": "local",
         "models": out,

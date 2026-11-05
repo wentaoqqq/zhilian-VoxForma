@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UploadIcon, XIcon } from 'lucide-react';
@@ -71,7 +72,7 @@ export function WorkflowInputs({ step, onChange }: { step: WorkflowStep; onChang
           throw new Error('limit');
         const media = [];
         for (const file of files) {
-          const id = crypto.randomUUID();
+          const id = randomUUID();
           await saveWorkflowMedia(id, file);
           uploaded.push(id);
           media.push({ id, name: file.name, type: file.type, size: file.size });

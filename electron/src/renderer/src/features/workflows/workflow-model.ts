@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 export const WORKFLOW_STORAGE_KEY = 'voicestudio.workflows.v1';
 
 export type StepKind =
@@ -89,7 +90,7 @@ export function duplicateWorkflowName(name: string, documents: WorkflowDocument[
 }
 
 export function makeStep(kind: StepKind, position: { x: number; y: number }): WorkflowStep {
-  return { id: crypto.randomUUID(), kind, position, title: '', text: '', phone: '' };
+  return { id: randomUUID(), kind, position, title: '', text: '', phone: '' };
 }
 
 export function makeWorkflow(name: string, autoNamed = false): WorkflowDocument {
@@ -97,14 +98,14 @@ export function makeWorkflow(name: string, autoNamed = false): WorkflowDocument 
   const agent = makeStep('speak', { x: 315, y: 80 });
   const end = makeStep('end', { x: 590, y: 80 });
   return {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     name,
     autoNamed,
     updatedAt: Date.now(),
     steps: [start, agent, end],
     connections: [
-      { id: crypto.randomUUID(), source: start.id, target: agent.id },
-      { id: crypto.randomUUID(), source: agent.id, target: end.id },
+      { id: randomUUID(), source: start.id, target: agent.id },
+      { id: randomUUID(), source: agent.id, target: end.id },
     ],
   };
 }
@@ -374,7 +375,7 @@ export function connectWorkflowSteps(
     updatedAt: Date.now(),
     connections: [
       ...document.connections,
-      { id: crypto.randomUUID(), source, target, sourceHandle },
+      { id: randomUUID(), source, target, sourceHandle },
     ],
   };
 }
@@ -404,7 +405,7 @@ export function makeSpeechWorkflow(
     ...document,
     steps,
     connections: steps.slice(1).map((step, index) => ({
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       source: steps[index].id,
       target: step.id,
     })),
@@ -419,12 +420,12 @@ export function makeProcessingWorkflow(name: string, kinds: StepKind[]): Workflo
     provider: 'argos' as const,
   }));
   return {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     name,
     updatedAt: Date.now(),
     steps,
     connections: steps.slice(1).map((step, index) => ({
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       source: steps[index].id,
       target: step.id,
     })),

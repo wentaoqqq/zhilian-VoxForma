@@ -15,6 +15,7 @@ import uuid
 import threading
 import time
 import asyncio
+import gpu_client
 import logging
 from typing import Optional, List
 
@@ -248,6 +249,7 @@ def _batch_voice(voice_id: str | None) -> dict:
     return resolved
 
 
+@gpu_client.async_job
 async def _run_batch_pipeline(job_id: str, job: dict):
     """Full batch dub pipeline: extract → transcribe → translate → generate → mix → export."""
     # The queue-wide voice is resolved once and its reference re-read for every

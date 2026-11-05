@@ -62,6 +62,19 @@ export function SetupGate({ children }: { children: ReactNode }) {
     refetchInterval: needed && step === 1 ? 4000 : false,
     retry: 2,
   });
+  const avatarDeployment = useQuery({
+    queryKey: ['avatar-deployment'],
+    queryFn: ({ signal }) => apiJson<{ preconfigured: boolean }>('/api/avatar/capabilities', { signal }),
+    enabled: __WEB_DEPLOYMENT__,
+    retry: false,
+  });
+  useEffect(() => {
+    if (__WEB_DEPLOYMENT__ && avatarDeployment.data?.preconfigured && status.data?.models_ready) {
+      rememberSetupCompleted();
+      setSetupInProgress(false);
+      setNeeded(false);
+    }
+  }, [avatarDeployment.data, status.data]);
   const preflight = useQuery({
     queryKey: ['setup-preflight'],
     queryFn: ({ signal }) => apiJson<PreflightReport>('/setup/preflight', { signal }),
