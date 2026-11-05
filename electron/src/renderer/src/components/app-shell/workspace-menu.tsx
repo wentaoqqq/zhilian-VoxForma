@@ -1,9 +1,11 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { DigitalHumanIcon } from '@/components/icons/digital-human-icon';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/popover';
 import { Link, useRouterState } from '@tanstack/react-router';
 import {
   AudioLinesIcon,
   FingerprintIcon,
+  ContactRoundIcon,
   BookOpenIcon,
   FolderIcon,
   WrenchIcon,
@@ -25,6 +27,8 @@ import './workspace-menu.css';
 
 type Destination = readonly [
   to:
+    | '/avatar'
+    | '/avatar/characters'
     | '/clone'
     | '/stories'
     | '/audiobook'
@@ -59,6 +63,10 @@ const dubDestinations: Destination[] = [
   ['/dub', 'dubWorkspace.title', FilmIcon],
   ['/batch', 'nav.batch_dub', LayersIcon],
 ];
+const avatarDestinations: Destination[] = [
+  ['/avatar', 'avatar.generateVideo', DigitalHumanIcon],
+  ['/avatar/characters', 'characters.library', ContactRoundIcon],
+];
 const laterDestinations: Destination[] = [
   ['/transcriptions', 'nav.transcribe', MicIcon],
   ['/workflows', 'workflows.title', WorkflowIcon],
@@ -73,6 +81,8 @@ const iconClass =
   'workspace-nav-icon size-4 shrink-0 text-muted-foreground transition-[color,filter] duration-150';
 
 const iconMotion: Record<Destination[0], string> = {
+  '/avatar': 'pulse',
+  '/avatar/characters': 'lift',
   '/clone': 'pulse',
   '/design': 'tilt',
   '/personas': 'nudge',
@@ -120,6 +130,7 @@ function NavigationLink({
               ? 'gap-2 px-2'
               : 'gap-2.5 px-2.5',
       )}
+      activeOptions={to === '/avatar' ? {exact:true} : undefined}
       activeProps={{
         className:
           'bg-sidebar-accent/80 text-sidebar-foreground shadow-sm ring-1 ring-inset ring-sidebar-border/60',
@@ -363,6 +374,13 @@ export function WorkspaceNavigation({ compact = false }: { compact?: boolean }) 
         label="nav.dub"
         icon={FilmIcon}
         children={dubDestinations}
+        compact={compact}
+        pathname={pathname}
+      />
+      <NavigationGroup
+        label="avatar.title"
+        icon={DigitalHumanIcon}
+        children={avatarDestinations}
         compact={compact}
         pathname={pathname}
       />

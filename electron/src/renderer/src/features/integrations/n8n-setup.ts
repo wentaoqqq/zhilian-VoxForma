@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 import template from './n8n-workflow.json';
 import { backendEndpoint } from './mcp-setup';
 
@@ -7,7 +8,7 @@ export function n8nSetup(slug: string, baseUrl: string) {
   const url = backendEndpoint(baseUrl, '/v1/audio/speech');
   if (!url) return null;
   const workflow = {
-    id: crypto.randomUUID().replaceAll('-', '').slice(0, 20),
+    id: randomUUID().replaceAll('-', '').slice(0, 20),
     ...structuredClone(template),
   };
   const request = workflow.nodes.find((node) => node.type === 'n8n-nodes-base.httpRequest')!;

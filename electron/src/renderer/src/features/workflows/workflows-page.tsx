@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
@@ -160,7 +161,7 @@ function WorkflowCanvas({
   const duplicateWorkflow = () => {
     const copy: WorkflowDocument = {
       ...structuredClone(document),
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       name: duplicateWorkflowName(document.name, library.documents),
       autoNamed: false,
       updatedAt: Date.now(),

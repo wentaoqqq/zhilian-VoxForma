@@ -1,0 +1,503 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "key": "nav.voice",
+      "source_en": "Voice",
+      "zh-CN": "语音生成",
+      "zh-TW": "語音產生"
+    },
+    {
+      "key": "nav.clone_short",
+      "source_en": "Clone",
+      "zh-CN": "文字转语音",
+      "zh-TW": "文字轉語音"
+    },
+    {
+      "key": "nav.clone",
+      "source_en": "Voice cloning",
+      "zh-CN": "文字转语音",
+      "zh-TW": "文字轉語音"
+    },
+    {
+      "key": "nav.design",
+      "source_en": "Voice design",
+      "zh-CN": "音色设计",
+      "zh-TW": "音色設計"
+    },
+    {
+      "key": "nav.persona",
+      "source_en": "Profiles",
+      "zh-CN": "音色库",
+      "zh-TW": "音色庫"
+    },
+    {
+      "key": "nav.saved",
+      "source_en": "Saved",
+      "zh-CN": "音色库",
+      "zh-TW": "音色庫"
+    },
+    {
+      "key": "nav.gallery",
+      "source_en": "Gallery",
+      "zh-CN": "音色广场",
+      "zh-TW": "音色廣場"
+    },
+    {
+      "key": "nav.stories",
+      "source_en": "Stories",
+      "zh-CN": "多角色配音",
+      "zh-TW": "多角色配音"
+    },
+    {
+      "key": "nav.dub",
+      "source_en": "Dubbing",
+      "zh-CN": "视频译配",
+      "zh-TW": "影片譯配"
+    },
+    {
+      "key": "nav.batch_dub",
+      "source_en": "Batch Dubbing",
+      "zh-CN": "批量视频译配",
+      "zh-TW": "批次影片譯配"
+    },
+    {
+      "key": "nav.transcribe",
+      "source_en": "Transcribe",
+      "zh-CN": "语音转文字",
+      "zh-TW": "語音轉文字"
+    },
+    {
+      "key": "clone.title",
+      "source_en": "Voice cloning",
+      "zh-CN": "文字转语音",
+      "zh-TW": "文字轉語音"
+    },
+    {
+      "key": "clone.characters_one",
+      "source_en": "{{count}} character",
+      "zh-CN": "{{count}} 个字符",
+      "zh-TW": "{{count}} 個字元"
+    },
+    {
+      "key": "clone.characters_other",
+      "source_en": "{{count}} characters",
+      "zh-CN": "{{count}} 个字符",
+      "zh-TW": "{{count}} 個字元"
+    },
+    {
+      "key": "clone.voice_kicker",
+      "source_en": "Voice",
+      "zh-CN": "音色",
+      "zh-TW": "音色"
+    },
+    {
+      "key": "clone.voice_source",
+      "source_en": "Voice Source",
+      "zh-CN": "音色来源",
+      "zh-TW": "音色來源"
+    },
+    {
+      "key": "clone.prompt_placeholder",
+      "source_en": "What should this voice say?",
+      "zh-CN": "输入需要朗读的文字…",
+      "zh-TW": "輸入需要朗讀的文字…"
+    },
+    {
+      "key": "clone.text_label",
+      "source_en": "Script",
+      "zh-CN": "朗读文本",
+      "zh-TW": "朗讀文字"
+    },
+    {
+      "key": "clone.profile_name",
+      "source_en": "Profile name",
+      "zh-CN": "音色名称",
+      "zh-TW": "音色名稱"
+    },
+    {
+      "key": "clone.using_profile",
+      "source_en": "Using voice: {{name}}",
+      "zh-CN": "当前音色：{{name}}",
+      "zh-TW": "目前音色：{{name}}"
+    },
+    {
+      "key": "clone.define_voice",
+      "source_en": "Define voice",
+      "zh-CN": "设置音色",
+      "zh-TW": "設定音色"
+    },
+    {
+      "key": "clone.save_design_as_profile",
+      "source_en": "Save design as profile",
+      "zh-CN": "将设计保存到音色库",
+      "zh-TW": "將設計儲存到音色庫"
+    },
+    {
+      "key": "clone.define_from_audio",
+      "source_en": "From audio",
+      "zh-CN": "参考录音",
+      "zh-TW": "參考錄音"
+    },
+    {
+      "key": "clone.define_by_design",
+      "source_en": "By design",
+      "zh-CN": "设计音色",
+      "zh-TW": "設計音色"
+    },
+    {
+      "key": "clone.saved_profile",
+      "source_en": "Voice profile saved.",
+      "zh-CN": "音色已保存。",
+      "zh-TW": "音色已儲存。"
+    },
+    {
+      "key": "clone.profile_name_required",
+      "source_en": "Give the voice a name.",
+      "zh-CN": "请为音色命名。",
+      "zh-TW": "請為音色命名。"
+    },
+    {
+      "key": "clone.save_failed",
+      "source_en": "Could not save the voice profile: {{message}}",
+      "zh-CN": "无法保存音色：{{message}}",
+      "zh-TW": "無法儲存音色：{{message}}"
+    },
+    {
+      "key": "clone.no_profiles",
+      "source_en": "No saved voices yet. Upload or record a reference, then save it as a profile.",
+      "zh-CN": "音色库中还没有音色。上传或录制参考录音后，可保存为音色。",
+      "zh-TW": "音色庫中尚無音色。上傳或錄製參考錄音後，可儲存為音色。"
+    },
+    {
+      "key": "clone.delete_profile_failed",
+      "source_en": "Could not delete the voice: {{message}}",
+      "zh-CN": "无法删除音色：{{message}}",
+      "zh-TW": "無法刪除音色：{{message}}"
+    },
+    {
+      "key": "clone.delete_profile",
+      "source_en": "Delete voice",
+      "zh-CN": "删除音色",
+      "zh-TW": "刪除音色"
+    },
+    {
+      "key": "clone.preview_voice",
+      "source_en": "Preview voice",
+      "zh-CN": "试听音色",
+      "zh-TW": "試聽音色"
+    },
+    {
+      "key": "clone.profile_deleted",
+      "source_en": "Voice deleted.",
+      "zh-CN": "音色已删除。",
+      "zh-TW": "音色已刪除。"
+    },
+    {
+      "key": "clone.reference_audio",
+      "source_en": "Reference recording",
+      "zh-CN": "音色参考录音",
+      "zh-TW": "音色參考錄音"
+    },
+    {
+      "key": "clone.save_as_profile",
+      "source_en": "Save as voice profile",
+      "zh-CN": "保存到音色库",
+      "zh-TW": "儲存到音色庫"
+    },
+    {
+      "key": "clone.saved_profiles",
+      "source_en": "Saved voices",
+      "zh-CN": "音色库",
+      "zh-TW": "音色庫"
+    },
+    {
+      "key": "clone.select_profile",
+      "source_en": "Use voice",
+      "zh-CN": "使用此音色",
+      "zh-TW": "使用此音色"
+    },
+    {
+      "key": "clone.synthesize",
+      "source_en": "Synthesize audio",
+      "zh-CN": "生成语音",
+      "zh-TW": "產生語音"
+    },
+    {
+      "key": "clone.output_title",
+      "source_en": "Latest take",
+      "zh-CN": "最新生成的音频",
+      "zh-TW": "最新產生的音訊"
+    },
+    {
+      "key": "clone.history_title",
+      "source_en": "Recent takes",
+      "zh-CN": "语音生成记录",
+      "zh-TW": "語音產生記錄"
+    },
+    {
+      "key": "clone.history_empty",
+      "source_en": "No takes yet.",
+      "zh-CN": "还没有语音生成记录。",
+      "zh-TW": "尚無語音產生記錄。"
+    },
+    {
+      "key": "clone.history_delete_failed",
+      "source_en": "Could not delete the take: {{message}}",
+      "zh-CN": "无法删除音频记录：{{message}}",
+      "zh-TW": "無法刪除音訊記錄：{{message}}"
+    },
+    {
+      "key": "clone.history_star_failed",
+      "source_en": "Could not update the take: {{message}}",
+      "zh-CN": "无法更新音频收藏：{{message}}",
+      "zh-TW": "無法更新音訊收藏：{{message}}"
+    },
+    {
+      "key": "clone.history_clear_confirm",
+      "source_en": "Delete every take from history? Audio files are removed too.",
+      "zh-CN": "删除全部语音生成记录？对应的音频文件也会被删除。",
+      "zh-TW": "刪除全部語音產生記錄？對應的音訊檔案也會被刪除。"
+    },
+    {
+      "key": "clone.history_delete",
+      "source_en": "Delete take",
+      "zh-CN": "删除音频记录",
+      "zh-TW": "刪除音訊記錄"
+    },
+    {
+      "key": "clone.history_star",
+      "source_en": "Star",
+      "zh-CN": "收藏音频",
+      "zh-TW": "收藏音訊"
+    },
+    {
+      "key": "clone.history_unstar",
+      "source_en": "Unstar",
+      "zh-CN": "取消收藏",
+      "zh-TW": "取消收藏"
+    },
+    {
+      "key": "clone.history_reuse",
+      "source_en": "Reuse script",
+      "zh-CN": "复用朗读文本",
+      "zh-TW": "重用朗讀文字"
+    },
+    {
+      "key": "clone.output_meta",
+      "source_en": "{{duration}}s · rendered in {{gen}}s",
+      "zh-CN": "音频 {{duration}} 秒 · 生成耗时 {{gen}} 秒",
+      "zh-TW": "音訊 {{duration}} 秒 · 產生耗時 {{gen}} 秒"
+    },
+    {
+      "key": "cloneFlow.choose_voice",
+      "source_en": "Choose a voice",
+      "zh-CN": "选择音色",
+      "zh-TW": "選擇音色"
+    },
+    {
+      "key": "cloneFlow.change_voice",
+      "source_en": "Change voice",
+      "zh-CN": "更换音色",
+      "zh-TW": "更換音色"
+    },
+    {
+      "key": "paneActions.edit",
+      "source_en": "Edit voice profile",
+      "zh-CN": "编辑音色",
+      "zh-TW": "編輯音色"
+    },
+    {
+      "key": "cloneFlow.voice_sample",
+      "source_en": "Voice sample",
+      "zh-CN": "音色参考录音",
+      "zh-TW": "音色參考錄音"
+    },
+    {
+      "key": "cloneFlow.choose_hint",
+      "source_en": "Pick a saved voice, or add a new one from a short clip.",
+      "zh-CN": "从音色库选择音色，或用参考录音添加新音色。",
+      "zh-TW": "從音色庫選擇音色，或使用參考錄音新增音色。"
+    },
+    {
+      "key": "designWorkspace.title",
+      "source_en": "Design",
+      "zh-CN": "音色设计",
+      "zh-TW": "音色設計"
+    },
+    {
+      "key": "designWorkspace.takes_show",
+      "source_en": "Show recent takes",
+      "zh-CN": "显示语音生成记录",
+      "zh-TW": "顯示語音產生記錄"
+    },
+    {
+      "key": "stories.title",
+      "source_en": "Stories Editor",
+      "zh-CN": "多角色配音",
+      "zh-TW": "多角色配音"
+    },
+    {
+      "key": "stories.subtitle",
+      "source_en": "Multi-track audiobook with per-character voices",
+      "zh-CN": "编写台词、分配角色音色，生成多角色音频。",
+      "zh-TW": "撰寫台詞、指派角色音色，產生多角色音訊。"
+    },
+    {
+      "key": "stories.cast",
+      "source_en": "Cast",
+      "zh-CN": "角色与音色",
+      "zh-TW": "角色與音色"
+    },
+    {
+      "key": "stories.voiceLabel",
+      "source_en": "Voice",
+      "zh-CN": "音色",
+      "zh-TW": "音色"
+    },
+    {
+      "key": "stories.lineVoice",
+      "source_en": "Line voice",
+      "zh-CN": "本行音色",
+      "zh-TW": "本行音色"
+    },
+    {
+      "key": "stories.voiceChip",
+      "source_en": "Voice: {{name}}",
+      "zh-CN": "音色：{{name}}",
+      "zh-TW": "音色：{{name}}"
+    },
+    {
+      "key": "stories.scriptSubtitle",
+      "source_en": "Write line by line and give every character its own voice.",
+      "zh-CN": "逐行编写台词，并为每个角色分配音色。",
+      "zh-TW": "逐行撰寫台詞，並為每個角色指派音色。"
+    },
+    {
+      "key": "stories.noProfiles",
+      "source_en": "No voice profiles installed yet — clone or design a voice first.",
+      "zh-CN": "音色库中还没有音色，请先保存参考音色或设计音色。",
+      "zh-TW": "音色庫中尚無音色，請先儲存參考音色或設計音色。"
+    },
+    {
+      "key": "stories.emptyText",
+      "source_en": "Start your story by adding dialogue and narration lines. Assign each character a voice in the Cast.",
+      "zh-CN": "添加对白和旁白，并在“角色与音色”中为每个角色选择音色。",
+      "zh-TW": "新增對白和旁白，並在「角色與音色」中為每個角色選擇音色。"
+    },
+    {
+      "key": "audiobook.title",
+      "source_en": "Audiobook",
+      "zh-CN": "有声书生成",
+      "zh-TW": "有聲書產生"
+    },
+    {
+      "key": "audiobook.tab_voices",
+      "source_en": "Voices",
+      "zh-CN": "角色音色",
+      "zh-TW": "角色音色"
+    },
+    {
+      "key": "audiobook.default_voice",
+      "source_en": "Default voice",
+      "zh-CN": "默认音色",
+      "zh-TW": "預設音色"
+    },
+    {
+      "key": "audiobook.insert_voice",
+      "source_en": "Voice",
+      "zh-CN": "音色",
+      "zh-TW": "音色"
+    },
+    {
+      "key": "dubWorkspace.title",
+      "source_en": "Dubbing",
+      "zh-CN": "视频翻译配音",
+      "zh-TW": "影片翻譯配音"
+    },
+    {
+      "key": "dubWorkspace.createStory",
+      "source_en": "Create Story",
+      "zh-CN": "创建多角色配音",
+      "zh-TW": "建立多角色配音"
+    },
+    {
+      "key": "dubWorkspace.createStoryConfirm",
+      "source_en": "This replaces the current Stories script and cast with the speakers and lines from this dub. Your dub is not changed.",
+      "zh-CN": "使用本视频中的说话人和台词，替换当前多角色配音的脚本和角色。视频译配任务本身不变。",
+      "zh-TW": "使用本影片中的說話者和台詞，取代目前多角色配音的腳本和角色。影片譯配任務本身不變。"
+    },
+    {
+      "key": "dubWorkspace.storyBusy",
+      "source_en": "Finish or stop the Stories or Audiobook render first.",
+      "zh-CN": "请先完成或停止多角色配音或有声书生成任务。",
+      "zh-TW": "請先完成或停止多角色配音或有聲書產生任務。"
+    },
+    {
+      "key": "dub.clone_profiles",
+      "source_en": "Clone profiles",
+      "zh-CN": "已保存的参考音色",
+      "zh-TW": "已儲存的參考音色"
+    },
+    {
+      "key": "dub.casting_voices",
+      "source_en": "Voices",
+      "zh-CN": "音色库",
+      "zh-TW": "音色庫"
+    },
+    {
+      "key": "dub.set_voice",
+      "source_en": "Set voice…",
+      "zh-CN": "选择音色…",
+      "zh-TW": "選擇音色…"
+    },
+    {
+      "key": "batch.title",
+      "source_en": "Batch dubbing",
+      "zh-CN": "批量视频译配",
+      "zh-TW": "批次影片譯配"
+    },
+    {
+      "key": "batch.clone_profiles",
+      "source_en": "Clone profiles",
+      "zh-CN": "已保存的参考音色",
+      "zh-TW": "已儲存的參考音色"
+    },
+    {
+      "key": "batch.empty_hint",
+      "source_en": "Add videos to start a batch dub.",
+      "zh-CN": "添加视频，批量翻译并生成目标语言配音。",
+      "zh-TW": "新增影片，批次翻譯並產生目標語言配音。"
+    },
+    {
+      "key": "gallery.clone_profile",
+      "source_en": "Clone profile",
+      "zh-CN": "参考音色",
+      "zh-TW": "參考音色"
+    },
+    {
+      "key": "avatar.title",
+      "source_en": "Avatar",
+      "zh-CN": "数字人口播",
+      "zh-TW": "數位人口播"
+    },
+    {
+      "key": "avatar.voice",
+      "source_en": "Voice",
+      "zh-CN": "音色",
+      "zh-TW": "音色"
+    },
+    {
+      "key": "avatar.reference",
+      "source_en": "Voice sample",
+      "zh-CN": "音色参考录音",
+      "zh-TW": "音色參考錄音"
+    },
+    {
+      "key": "avatar.generateVideo",
+      "source_en": "Generate video",
+      "zh-CN": "生成口播视频",
+      "zh-TW": "產生口播影片"
+    }
+  ]
+}

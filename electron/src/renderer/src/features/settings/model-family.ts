@@ -1,4 +1,5 @@
 import {
+  VideoIcon,
   AudioLinesIcon,
   BrainCircuitIcon,
   KeyboardIcon,
@@ -9,6 +10,7 @@ import {
 } from 'lucide-react';
 
 export const modelFamilies = [
+  'video',
   'tts',
   'asr',
   'dictation',
@@ -20,6 +22,7 @@ export const modelFamilies = [
 export type ModelFamily = (typeof modelFamilies)[number];
 
 export const familyIcons: Record<ModelFamily, LucideIcon> = {
+  video: VideoIcon,
   tts: AudioLinesIcon,
   asr: MicIcon,
   dictation: KeyboardIcon,

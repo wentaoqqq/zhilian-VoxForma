@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { withProductTerminology } from './product-terminology';
 import en from './locales/en.json';
 import { matchLocale } from './locale-match';
 import { onStorageKey } from '@/lib/storage-events';
@@ -66,7 +67,7 @@ async function loadLocale(locale: AppLocale): Promise<void> {
   if (!load) return;
   const promise = load()
     .then((module) => {
-      i18next.addResourceBundle(locale, 'translation', module.default, true, true);
+      i18next.addResourceBundle(locale, 'translation', withProductTerminology(locale, module.default), true, true);
     })
     .finally(() => loading.delete(locale));
   loading.set(locale, promise);

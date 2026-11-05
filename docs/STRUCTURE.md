@@ -7,7 +7,7 @@ Every folder has a single job. Every file at the root earns its place.
 ```
 VoiceStudio/
 │
-├── README.md ⟵ user-facing overview (translations: docs/readme/README_*.md)
+├── README.md ⟵ VoxForma overview; upstream archive: README.upstream.md (translations: docs/readme/)
 ├── CHANGELOG.md                 ⟵ release history; Electron releases use the tagged section
 ├── CLAUDE.md / AGENTS.md        ⟵ matching copies of the agent operating rules
 ├── LICENSE / LICENSE-NOTICE.md / SPONSORS.md   ⟵ legal terms, required notices, supporters
@@ -36,7 +36,7 @@ VoiceStudio/
 │   │   └── setup/               setup-wizard endpoints and model acquisition
 │   ├── core/                    shared infrastructure: configuration, persistence, job/event plumbing,
 │   │                            auth and CSRF, safe paths, analytics consent, version and diagnostics
-│   ├── services/                116 modules of business logic spanning speech, dubbing, DSP, GPU dispatch,
+│   ├── services/                119 modules of business logic spanning speech, dubbing, DSP, GPU dispatch,
 │   │                            engine selection and loaded-model ownership
 │   ├── engines/                 per-engine adapters: audiocpp, confucius4, cosyvoice_gguf,
 │   │                            cosyvoice_subprocess, dots_tts, indextts, moss_tts_nano_subprocess,

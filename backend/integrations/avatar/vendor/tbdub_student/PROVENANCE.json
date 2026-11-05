@@ -1,0 +1,25 @@
+{
+  "source_repository": "https://github.com/TaoLiveAIGC/TBDub",
+  "source_revision": "19e18e4ba8e2a19e6716cb38110ee2de1dae9bb3",
+  "modified_upstream_files": [
+    "inference.py",
+    "preprocessing_mediapipe.py",
+    "video_utils.py",
+    "diffsynth/models/wan_video_vae.py",
+    "diffsynth/core/loader/file.py"
+  ],
+  "local_helpers": [
+    "face_recovery.py",
+    "face_recovery_control.py",
+    "face_recovery.json",
+    "webui/prepare_video.py",
+    "webui/unified_jobs.py",
+    "webui/app.py",
+    "webui/safe_paths.py",
+    "webui/interpolate_25_to_30.py"
+  ],
+  "rife_source": "https://github.com/hzwer/Practical-RIFE",
+  "rife_version": "4.25",
+  "scope": "Inference source only; no weights, personal data, environments or results.",
+  "license": "Apache-2.0; separately licensed components retain their notices."
+}

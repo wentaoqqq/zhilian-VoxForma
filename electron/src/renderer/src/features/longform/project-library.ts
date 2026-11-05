@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 import {
   createIndexedDbLongformStore,
   type LongformDurableStore,
@@ -59,7 +60,7 @@ export function createProjectLibrary(store: LongformDurableStore) {
         if (id && !projects.some((project) => project.id === id))
           throw new Error('Project no longer exists');
         const project: LongformProject = {
-          id: id || crypto.randomUUID(),
+          id: id || randomUUID(),
           name: name.trim(),
           mode,
           updatedAt: Date.now(),

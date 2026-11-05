@@ -62,6 +62,17 @@ export function SetupGate({ children }: { children: ReactNode }) {
     refetchInterval: needed && step === 1 ? 4000 : false,
     retry: 2,
   });
+  const avatarDeployment = useQuery({
+    queryKey: ['avatar-deployment'],
+    queryFn: ({ signal }) => apiJson<{ preconfigured: boolean }>('/api/avatar/capabilities', { signal }),
+    enabled: __WEB_DEPLOYMENT__,
+    refetchInterval: needed && step === 1 ? 4000 : false,
+    retry: false,
+  });
+  // Video + uploaded audio is usable without a TTS model. Only satisfy the
+  // model step; a cached engine must never skip privacy/account choices.
+  const avatarReady = __WEB_DEPLOYMENT__ && avatarDeployment.data?.preconfigured === true;
+  const modelsReady = status.data?.models_ready || avatarReady;
   const preflight = useQuery({
     queryKey: ['setup-preflight'],
     queryFn: ({ signal }) => apiJson<PreflightReport>('/setup/preflight', { signal }),
@@ -98,7 +109,7 @@ export function SetupGate({ children }: { children: ReactNode }) {
     (step === 0
       ? preflight.data?.ok
       : step === 1
-        ? status.data?.models_ready
+        ? modelsReady
         : step === 2
           ? !consentRequired && !accountChoiceRequired
           : true);
@@ -206,7 +217,7 @@ export function SetupGate({ children }: { children: ReactNode }) {
                       </ModelStoreShownContext.Provider>
                     </div>
                   )}
-                  {Boolean(status.data?.missing?.length) && (
+                  {!avatarReady && Boolean(status.data?.missing?.length) && (
                     <p role="status" className="text-sm text-muted-foreground">
                       {t('setup.still_needed')}{' '}
                       {status.data?.missing?.map((model) => model.label).join(', ')}

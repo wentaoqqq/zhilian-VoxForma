@@ -113,7 +113,7 @@ export function PerformanceSettings() {
           <PerformanceProfile variant="settings" />
           <p className="mt-2 text-xs text-muted-foreground">{t('performanceProfile.hint')}</p>
         </div>
-        {modelFamilies.map((family) => {
+        {modelFamilies.filter((family) => family !== 'video').map((family) => {
           const Icon = familyIcons[family];
           return (
             <SettingsRow

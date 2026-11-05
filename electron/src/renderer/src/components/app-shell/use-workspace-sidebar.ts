@@ -3,6 +3,7 @@ import { useRouterState } from '@tanstack/react-router';
 import { setWorkspace, useWorkspace } from '@/lib/store/workspace';
 
 const SECONDARY_ROUTES = new Set([
+  '/avatar',
   '/stories',
   '/audiobook',
   '/tools',

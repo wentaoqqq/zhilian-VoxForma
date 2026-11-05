@@ -1,12 +1,14 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-const mock = vi.hoisted(() => ({ ready: true, preflight: { ok: false }, accountRequired: false }));
+const mock = vi.hoisted(() => ({ ready: true, videoReady: false, preflight: { ok: false }, accountRequired: false }));
 vi.mock('@/lib/api/client', () => ({
   apiJson: (path: string) =>
     Promise.resolve(
       path.endsWith('/setup/preflight')
         ? mock.preflight
+        : path.endsWith('/api/avatar/capabilities')
+          ? { preconfigured: mock.videoReady }
         : {
             models_ready: mock.ready,
             missing: mock.ready ? [] : [{ label: 'Required voice model' }],
@@ -57,6 +59,7 @@ beforeEach(() => localStorage.clear());
 afterEach(() => {
   cleanup();
   mock.ready = true;
+  mock.videoReady = false;
   mock.preflight = { ok: false };
   mock.accountRequired = false;
 });
@@ -188,4 +191,37 @@ it('lets a long footer label wrap instead of clipping the Next button', async ()
     const button = screen.getByRole('button', { name });
     expect(button).toHaveClass('whitespace-normal', 'h-auto');
   }
+});
+
+it.skipIf(!__WEB_DEPLOYMENT__)('lets an installed Student satisfy only the model step without TTS', async () => {
+  mock.ready = false;
+  mock.preflight = { ok: true };
+  const client = mount();
+  await waitFor(() => expect(screen.getByRole('button', { name: 'setup.continue_ok' })).toBeEnabled());
+  fireEvent.click(screen.getByRole('button', { name: 'setup.continue_ok' }));
+  await screen.findByText('Model packs');
+  expect(screen.getByRole('button', { name: 'setup.continue_ok' })).toBeDisabled();
+  client.setQueryData(['avatar-deployment'], { preconfigured: true });
+  await waitFor(() => expect(screen.getByRole('button', { name: 'setup.continue_ok' })).toBeEnabled());
+  expect(screen.queryByText(/Required voice model/)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'setup.continue_ok' }));
+  await screen.findByRole('button', { name: 'Choose privacy' });
+  expect(screen.getByRole('button', { name: 'setup.continue_ok' })).toBeDisabled();
+  expect(screen.queryByText('Studio')).not.toBeInTheDocument();
+});
+
+it.skipIf(!__WEB_DEPLOYMENT__)('does not skip first-run choices when both engines are already installed', async () => {
+  mock.ready = true;
+  mock.videoReady = true;
+  mock.preflight = { ok: true };
+  mount();
+  await screen.findByText('Preflight');
+  expect(screen.queryByText('Studio')).not.toBeInTheDocument();
+  await waitFor(() => expect(screen.getByRole('button', { name: 'setup.continue_ok' })).toBeEnabled());
+  fireEvent.click(screen.getByRole('button', { name: 'setup.continue_ok' }));
+  await screen.findByText('Model packs');
+  await waitFor(() => expect(screen.getByRole('button', { name: 'setup.continue_ok' })).toBeEnabled());
+  fireEvent.click(screen.getByRole('button', { name: 'setup.continue_ok' }));
+  await screen.findByRole('button', { name: 'Choose privacy' });
+  expect(screen.queryByText('Studio')).not.toBeInTheDocument();
 });

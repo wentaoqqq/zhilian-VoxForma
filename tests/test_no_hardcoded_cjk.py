@@ -40,6 +40,12 @@ _ALLOWED_PREFIXES = (
     "docs/readme/",  # translated READMEs and their native language-switcher links
 )
 _ALLOWED_FILES = {
+    "docs/install/voxforma-wsl.md",  # Chinese customer installation guide, not runtime UI copy.
+    "README.upstream.md",  # Archived upstream README retains its native language-switcher names.
+    "backend/integrations/avatar/avatar_server.py",  # Persisted reference-audio directory name; not UI copy.
+    "backend/integrations/avatar/vendor/tbdub_student/webui/app.py",  # Frozen legacy worker error/response text retained with the imported integration.
+    "backend/integrations/avatar/vendor/tbdub_student/webui/unified_jobs.py",  # Existing persisted worker status messages; native renderer copy uses locale catalogs.
+    "backend/integrations/avatar/vendor/tbdub_student/webui/index.html",  # Archived compatibility worker UI, separate from the maintained Electron renderer.
     "mobile/contract/tts/zipvoice-lexicon.txt",  # Pinned multilingual pronunciation data, not UI copy.
     "electron/src/main/blank-window-guard.ts",  # Matches localized window text.
     "README.md",  # Presents translated project copy.

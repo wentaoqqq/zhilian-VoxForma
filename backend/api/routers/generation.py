@@ -1940,7 +1940,20 @@ async def generate_speech(
             status_code=422,
             detail=f"{engine_id} does not support emotion controls. Choose IndexTTS2.",
         )
+    # The avatar queue may supply an independently uploaded emotion clip.
+    # Request-local context is set only after the private endpoint validates
+    # the GPU lease and the job-owned file; normal /generate is unchanged.
+    try:
+        from avatar_conditioning import emotion_audio as _avatar_emotion_audio
+    except ImportError:
+        _avatar_emotion = None
+    else:
+        _avatar_emotion = _avatar_emotion_audio.get()
+    if _avatar_emotion and (engine_id != 'indextts2' or emotion_text or emotion_vector is not None):
+        raise HTTPException(status_code=422, detail='Emotion recording requires IndexTTS2 and no text/vector emotion.')
     emotion_kwargs = {}
+    if _avatar_emotion:
+        emotion_kwargs.update(emo_audio=_avatar_emotion[0],emo_alpha=_avatar_emotion[1])
     if emotion_vector is not None:
         emotion_kwargs["emo_vector"] = emotion_vector
     elif emotion_text:

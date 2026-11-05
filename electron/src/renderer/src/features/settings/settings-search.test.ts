@@ -8,6 +8,7 @@ import {
   pinnedPages,
   sectionMatches,
 } from './settings-search';
+import { modelFamilies } from './model-family';
 
 const t = (key: string) =>
   String(
@@ -37,5 +38,6 @@ it('finds model families by name from anywhere in Settings', () => {
   expect(keysMatch(t, pinnedPages.models, normalizeSettingsQuery('dictation'))).toBe(true);
   expect(matchingFamilies(t, normalizeSettingsQuery('dictation'), false)).toEqual(['dictation']);
   expect(matchingFamilies(t, '', false)).toEqual([]);
-  expect(matchingFamilies(t, '', true)).toHaveLength(6);
+  expect(matchingFamilies(t, '', true)).toEqual(modelFamilies);
+  expect(matchingFamilies(t, normalizeSettingsQuery('digital human'), false)).toEqual(['video']);
 });

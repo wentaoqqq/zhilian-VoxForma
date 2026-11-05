@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_readme_installs_skills_from_the_canonical_repository() -> None:
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    readme = (ROOT / "README.upstream.md").read_text(encoding="utf-8")
 
     assert "npx skills add debpalash/VoiceStudio" in readme
     assert "npx skills add debpalash/omnivoice-studio" not in readme

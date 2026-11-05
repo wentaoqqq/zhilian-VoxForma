@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 import { Store } from '@tanstack/store';
 import type {
   RepairAgentEvent,
@@ -24,14 +25,14 @@ export function conversationHistory(): AgentChatMessage[] {
     .map(({ role, content }) => ({ role, content: content.slice(-4000) }));
 }
 export function beginAgentTurn(content: string): string {
-  const id = crypto.randomUUID();
+  const id = randomUUID();
   agentConversation.setState((state) => ({
     ...state,
     draft: '',
     activeId: id,
     messages: [
       ...state.messages.slice(-38),
-      { id: crypto.randomUUID(), role: 'user', content },
+      { id: randomUUID(), role: 'user', content },
       { id, role: 'assistant', content: '', status: 'running' },
     ],
   }));
@@ -67,7 +68,7 @@ export function restoreAgentTurn(state: RepairAgentState) {
     return;
   }
   if (agentConversation.state.activeId || (!state.output && state.status !== 'running')) return;
-  const id = crypto.randomUUID();
+  const id = randomUUID();
   agentConversation.setState((current) => ({
     ...current,
     activeId: id,

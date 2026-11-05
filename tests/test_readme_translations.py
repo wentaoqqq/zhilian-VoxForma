@@ -22,7 +22,7 @@ _EXPECTED = {
 
 def test_translations_are_present_and_the_root_readme_links_to_them():
     assert _EXPECTED <= {p.name for p in _TRANSLATIONS}, "English plus 19 translations must be available"
-    root = (_ROOT / "README.md").read_text(encoding="utf-8")
+    root = (_ROOT / "README.upstream.md").read_text(encoding="utf-8")
     for path in _TRANSLATIONS:
         assert f'href="docs/readme/{path.name}"' in root
     assert not list(_ROOT.glob("README_*.md")), "translations belong in docs/readme/, not the repo root"
@@ -32,7 +32,7 @@ def test_translations_are_present_and_the_root_readme_links_to_them():
 def test_every_translation_links_to_english_and_every_other_translation(path):
     """The language switcher must stay complete when a translation is added."""
     text = path.read_text(encoding="utf-8")
-    expected = {"../../README.md"} | {p.name for p in _TRANSLATIONS if p != path}
+    expected = {"../../README.upstream.md"} | {p.name for p in _TRANSLATIONS if p != path}
     missing = sorted(t for t in expected if f'href="{t}"' not in text)
     assert not missing, f"{path.name} language switcher is missing: {missing}"
 
@@ -51,7 +51,7 @@ def test_every_relative_link_in_a_translation_resolves(path):
 @pytest.mark.parametrize("path", _TRANSLATIONS, ids=lambda p: p.name)
 def test_translations_preserve_install_commands(path):
     """Translated shell comments are allowed; commands, flags and URLs stay intact."""
-    source = _FENCE.findall((_ROOT / "README.md").read_text(encoding="utf-8"))
+    source = _FENCE.findall((_ROOT / "README.upstream.md").read_text(encoding="utf-8"))
     translated = _FENCE.findall(path.read_text(encoding="utf-8"))
     assert len(translated) == len(source), f"{path.name} omits a command or copyable example"
     for (source_kind, original), (kind, localized) in zip(source, translated):
@@ -64,7 +64,7 @@ def test_translations_preserve_install_commands(path):
 
 @pytest.mark.parametrize("path", _TRANSLATIONS, ids=lambda p: p.name)
 def test_translations_cover_every_readme_section(path):
-    source = _FENCE.sub("", (_ROOT / "README.md").read_text(encoding="utf-8"))
+    source = _FENCE.sub("", (_ROOT / "README.upstream.md").read_text(encoding="utf-8"))
     translated = _FENCE.sub("", path.read_text(encoding="utf-8"))
     def levels(text):
         return re.findall(r"^(#{1,6})[ \t]+[^\s#]", text, re.MULTILINE)
@@ -73,7 +73,7 @@ def test_translations_cover_every_readme_section(path):
 
 @pytest.mark.parametrize("path", _TRANSLATIONS, ids=lambda p: p.name)
 def test_translations_preserve_inline_commands(path):
-    source = _FENCE.sub("", (_ROOT / "README.md").read_text(encoding="utf-8"))
+    source = _FENCE.sub("", (_ROOT / "README.upstream.md").read_text(encoding="utf-8"))
     translated = _FENCE.sub("", path.read_text(encoding="utf-8"))
     def inline(text):
         return Counter(re.findall(r"`([^`]+)`", text))
@@ -96,7 +96,7 @@ def test_translations_preserve_documentation_links(path):
                 result[relative + separator + anchor] += 1
         return result
 
-    assert links(path) == links(_ROOT / "README.md"), f"{path.name} omits or changes a documentation link"
+    assert links(path) == links(_ROOT / "README.upstream.md"), f"{path.name} omits or changes a documentation link"
 
 
 @pytest.mark.parametrize("path", _TRANSLATIONS, ids=lambda p: p.name)

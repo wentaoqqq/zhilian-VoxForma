@@ -41,11 +41,11 @@ try {
         await page.locator('[data-slot="account-corner"] button .lucide-bell').count(),
         1,
       );
-      // Voice, Stories and Dubbing are flyout group buttons; the other five are direct links.
+      // Voice, Stories, Dubbing and Digital human are flyout group buttons.
       const compactNav = compactMain.getByRole("navigation", {
         name: "Workspaces",
       });
-      assert.equal(await compactNav.getByRole("button").count(), 3);
+      assert.equal(await compactNav.getByRole("button").count(), 4);
       assert.equal(await compactNav.getByRole("link").count(), 5);
       assert.equal(
         await page.locator(".brand-sidebar:not([data-slot=compact-main-sidebar])")

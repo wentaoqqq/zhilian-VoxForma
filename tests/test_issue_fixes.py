@@ -30,7 +30,7 @@ OLD_DISCORD = "discord.gg/aRRdVj3de7"
 NEW_DISCORD = "discord.gg/bzQavDfVV9"
 
 _LINK_FILES = [
-    "README.md",
+    "README.upstream.md",
     ".github/CONTRIBUTING.md",
     "electron/src/shared/pages/EnterprisePage.jsx",
     "electron/src/shared/components/LogsFooter.jsx",

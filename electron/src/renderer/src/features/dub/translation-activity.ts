@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 import { Store } from '@tanstack/store';
 
 export interface TranslationRun {
@@ -23,7 +24,7 @@ export const translationActivity = new Store<{
 export function startTranslationRun(
   run: Omit<TranslationRun, 'id' | 'status' | 'startedAt' | 'logs'>,
 ): string {
-  const id = crypto.randomUUID();
+  const id = randomUUID();
   translationActivity.setState((state) => ({
     ...state,
     tab: state.runs.length ? state.tab : 'logs',

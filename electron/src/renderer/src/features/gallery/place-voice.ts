@@ -1,3 +1,4 @@
+import { randomUUID } from '@/lib/random-uuid';
 import { editLongform, longformSession, type Mode } from '@/features/longform/longform-session';
 /** Add a gallery voice without replacing the user's script or existing cast. */
 export function placeLongformVoice(profile: { id: string; name: string }, target: Mode): void {
@@ -9,6 +10,6 @@ export function placeLongformVoice(profile: { id: string; name: string }, target
   }
   if (draft.cast.some((member) => member.profileId === profile.id)) return;
   editLongform(target, {
-    cast: [...draft.cast, { id: crypto.randomUUID(), name: profile.name, profileId: profile.id }],
+    cast: [...draft.cast, { id: randomUUID(), name: profile.name, profileId: profile.id }],
   });
 }

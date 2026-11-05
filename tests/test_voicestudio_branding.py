@@ -45,9 +45,13 @@ def test_visible_brand_surfaces_say_voicestudio() -> None:
         assert "OmniVoice may" not in text, path
         assert "OmniVoice Gallery" not in text, path
 
-    readme = (ROOT / "README.md").read_text()
+    readme = (ROOT / "README.upstream.md").read_text()
     assert "**VoiceStudio** (default, powered by k2-fsa/OmniVoice)" in readme
     assert "**OmniVoice** (default)" not in readme
+    fork_readme = (ROOT / "README.md").read_text()
+    assert "VoxForma" in fork_readme
+    assert "https://github.com/debpalash/VoiceStudio" in fork_readme
+    assert "README.upstream.md" in fork_readme
 
 
 def test_brand_mark_is_shared_and_fills_the_icon() -> None:
@@ -69,7 +73,7 @@ def test_brand_mark_is_shared_and_fills_the_icon() -> None:
     # mark uses the full tile and keeps only a narrow 2-unit outer margin.
     assert 'x="2" y="2" width="60" height="60"' in logo
     assert "<circle" not in logo
-    assert 'src="docs/logo.png"' in (ROOT / "README.md").read_text()
+    assert 'src="docs/logo.png"' in (ROOT / "README.upstream.md").read_text()
 
 
 def test_waveform_stroke_is_never_filled() -> None:
