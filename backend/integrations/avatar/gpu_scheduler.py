@@ -3,13 +3,13 @@ from __future__ import annotations
 import collections, fcntl, json, os, secrets, socketserver, struct, threading, time, urllib.request, urllib.error
 from pathlib import Path
 
-from avatar_paths import socket_path, gpu_lock, data_dir
+from avatar_paths import socket_path, gpu_lock, data_dir, voice_url
 SOCKET=socket_path()
 LOCK=gpu_lock()
-STATE=Path(os.environ.get('AVATAR_GPU_STATE',str(data_dir()/'avatar-runtime/gpu-state.json')))
+STATE=Path(os.environ.get('AVATAR_GPU_STATE',str(data_dir()/'avatar-runtime'/'gpu-state.json')))
 LOCK.parent.mkdir(parents=True,exist_ok=True)
 STATE.parent.mkdir(parents=True,exist_ok=True)
-VOICE=os.environ.get('AVATAR_VOICE_URL','http://127.0.0.1:3901')
+VOICE=voice_url()
 
 def start_id(pid):
     try:return Path('/proc/sys/kernel/random/boot_id').read_text().strip()+':'+Path(f'/proc/{pid}/stat').read_text().rsplit(')',1)[1].split()[19]

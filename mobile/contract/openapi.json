@@ -5043,6 +5043,17 @@
     "title": "ValidationError",
     "type": "object"
    },
+   "VideoInstallRequest": {
+    "properties": {
+     "component": {
+      "default": "student",
+      "title": "Component",
+      "type": "string"
+     }
+    },
+    "title": "VideoInstallRequest",
+    "type": "object"
+   },
    "WebSocketTicketRequest": {
     "properties": {
      "path": {
@@ -13662,6 +13673,90 @@
     "summary": "List Tts Backends"
    }
   },
+  "/engines/video": {
+   "get": {
+    "operationId": "list_video_backends_engines_video_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "List Video Backends"
+   }
+  },
+  "/engines/video/install": {
+   "post": {
+    "operationId": "video_install_start_engines_video_install_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/VideoInstallRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Video Install Start"
+   }
+  },
+  "/engines/video/install/cancel": {
+   "post": {
+    "operationId": "video_install_cancel_engines_video_install_cancel_post",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Video Install Cancel"
+   }
+  },
+  "/engines/video/install/status": {
+   "get": {
+    "operationId": "video_install_status_engines_video_install_status_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Video Install Status"
+   }
+  },
   "/engines/{engine_id}/disk-usage": {
    "get": {
     "description": "Measure owned engine bytes only when a catalogue row is opened.",
@@ -13702,7 +13797,6 @@
   },
   "/engines/{engine_id}/health": {
    "get": {
-    "description": "Spawn-and-ping a SubprocessBackend; ``is_available()`` for the rest.\n\nReturns:\n    { id, ok, message, latency_ms }\n\n    Never raises through to a 500: backend diagnostics stay in the local\n    log and the response carries a fixed failure message, so the UI can\n    render a per-row failure without exposing private data. Unknown engine\n    ids return 404.",
     "operationId": "engine_health_engines__engine_id__health_get",
     "parameters": [
      {

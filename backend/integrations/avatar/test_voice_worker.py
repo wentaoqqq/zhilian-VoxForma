@@ -9,6 +9,7 @@ import threading
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from unittest.mock import patch
+from urllib.parse import urlsplit
 
 import avatar_paths
 
@@ -16,7 +17,7 @@ import avatar_paths
 class VoiceWorkerTests(unittest.TestCase):
     def test_legacy_service_port_is_the_default(self):
         with patch.dict(os.environ, {}, clear=True):
-            self.assertEqual(avatar_paths.voice_url(), 'http://127.0.0.1:3901')
+            self.assertEqual(urlsplit(avatar_paths.voice_url()).port, 3901)
 
     def test_worker_uses_configured_port_and_keeps_lease_header(self):
         received = {}
@@ -43,7 +44,7 @@ class VoiceWorkerTests(unittest.TestCase):
             env = dict(os.environ, AVATAR_VOICE_URL=f'http://127.0.0.1:{server.server_port}/',
                        AVATAR_GPU_DELEGATE='test-delegated-lease')
             result = subprocess.run([sys.executable, str(Path(__file__).with_name('voice_worker.py')),
-                                     '--request', str(request)], env=env, capture_output=True, text=True, timeout=15)
+                                     '--request', str(request)], env=env, capture_output=True, text=True,errors='replace', timeout=15)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(received['path'], '/api/avatar/internal/speech')
             self.assertEqual(received['lease'], 'test-delegated-lease')

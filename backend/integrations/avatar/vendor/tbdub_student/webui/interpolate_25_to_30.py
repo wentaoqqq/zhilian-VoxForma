@@ -35,7 +35,7 @@ def probe(path: Path) -> dict:
             "-show_entries", "stream=width,height,avg_frame_rate,nb_frames,duration",
             "-of", "json", str(path),
         ],
-        text=True,
+        text=True,errors='replace',
     )
     streams = json.loads(raw).get("streams", [])
     if not streams:

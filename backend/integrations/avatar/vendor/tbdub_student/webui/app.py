@@ -23,7 +23,8 @@ PYTHON = Path(os.environ.get("OMNIVOICE_TBDUB_PYTHON", str(ROOT/".venv/bin/pytho
 from avatar_paths import assets_dir, smi_path
 ASSETS = assets_dir()
 OUT_ROOT = ROOT / "results" / "webui"
-HOST = os.environ.get("TBDUB_WEB_HOST", "0.0.0.0")
+from safe_paths import safe_child
+HOST = os.environ.get("TBDUB_WEB_HOST", "127.0.0.1")
 PORT = int(os.environ.get("TBDUB_WEB_PORT", "8765"))
 MANAGER = JobManager(ROOT, ASSETS, PYTHON)
 JOBS = MANAGER.jobs
@@ -45,7 +46,7 @@ MEDIA_TYPES = {
 
 
 def resolve_media(relative: str) -> Path:
-    file = (ASSETS / relative).resolve()
+    file = safe_child(ASSETS, relative)
     if not relative or ASSETS.resolve() not in file.parents:
         raise ValueError("素材路径无效")
     if file.suffix.lower() not in MEDIA_TYPES or not file.is_file():
@@ -78,7 +79,7 @@ def compatible_preview(source: Path) -> Path:
         else:
             command += ["-vn", "-c:a", "libmp3lame", "-b:a", "96k"]
         command.append(str(temp))
-        result = subprocess.run(command, capture_output=True, text=True, timeout=90)
+        result = subprocess.run(command, capture_output=True, text=True,errors='replace', timeout=90)
         if result.returncode:
             print(f"[preview] {source}: {result.stderr[-1500:]}", flush=True)
             raise RuntimeError("无法转换此素材的兼容预览")
@@ -107,6 +108,7 @@ def completed_job(job_id: str) -> dict:
     """Keep finished result links usable after a UI service update/restart."""
     if not re.fullmatch(r"student_\d{8}_\d{6}_[0-9a-f]{6}", job_id):
         return {}
+    job_id = os.path.basename(job_id)
     folder = OUT_ROOT / job_id
     output = folder / f"{job_id}_tbdub.mp4"
     try:
@@ -141,6 +143,15 @@ class Handler(BaseHTTPRequestHandler):
 
     def send_media(self, file: Path, disposition: str = "inline") -> None:
         """Stream one byte range so browser players can seek without loading the clip."""
+        for root in (ASSETS, OUT_ROOT, PREVIEW_CACHE):
+            try:
+                file = safe_child(root, file)
+                break
+            except (ValueError, TypeError, OSError):
+                continue
+        else:
+            self.send_json(404, {"error": "Media path is outside the allowed directory"})
+            return
         try:
             stream = file.open("rb")
         except OSError:
@@ -234,7 +245,7 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 result = subprocess.run(
                     [smi_path(), "--query-gpu=memory.used,memory.free,memory.total", "--format=csv,noheader,nounits"],
-                    check=True, capture_output=True, text=True, timeout=3,
+                    check=True, capture_output=True, text=True,errors='replace', timeout=3,
                 )
                 used, free, total = (int(x.strip()) for x in result.stdout.splitlines()[0].split(","))
                 self.send_json(200, {"used_mib": used, "free_mib": free, "total_mib": total,
@@ -381,7 +392,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json(413, {"error": "文件为空或超过 2GiB 上传上限。"}); return
 
         raw_name = unquote(query.get("name", [""])[0]).replace("\\", "/").split("/")[-1].strip()
-        filename = Path(raw_name).name[:180]
+        filename = os.path.basename(raw_name)[:180]
         suffix = Path(filename).suffix.lower()
         if not filename or suffix not in UPLOAD_EXTENSIONS[kind]:
             self.send_json(400, {"error": "文件类型不支持。视频支持 mp4/mov/mkv；音频支持 wav/mp3/m4a/flac/ogg/opus/aac/webm。"}); return

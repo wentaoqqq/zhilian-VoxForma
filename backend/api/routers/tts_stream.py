@@ -338,13 +338,11 @@ async def ws_tts(websocket: WebSocket):
 
             # Per-request lease on the engine, released on every exit path below.
             lease = ExitStack()
-            gpu_owner=None
-            gpu_context=None
+            gpu_handle=None
             try:
-                import gpu_client
+                from services import avatar_gpu
                 import uuid
-                gpu_owner=await gpu_client.acquire_async('voicestudio:ws:'+uuid.uuid4().hex[:8])
-                gpu_context=gpu_client.current_lease.set(gpu_owner)
+                gpu_handle=await avatar_gpu.acquire('voicestudio:ws:'+uuid.uuid4().hex[:8])
                 # Resolve engine
                 engine_id = data.get("engine")
                 # #1224: leave a breadcrumb when memory is already tight before
@@ -530,11 +528,7 @@ async def ws_tts(websocket: WebSocket):
                     break
             finally:
                 lease.close()
-                if gpu_owner is not None:
-                    try:
-                        await asyncio.to_thread(gpu_client.rpc,'release',token=gpu_owner['token'],timeout=150)
-                    finally:
-                        gpu_client.current_lease.reset(gpu_context)
+                await avatar_gpu.release(gpu_handle)
 
     except WebSocketDisconnect:
         pass

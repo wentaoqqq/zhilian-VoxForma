@@ -2,6 +2,7 @@
 import hashlib
 import json
 import os
+import sys
 from pathlib import Path
 import tempfile
 import threading
@@ -12,6 +13,7 @@ from unittest.mock import patch
 from services import video_install as vi, video_backend as vb
 
 
+@unittest.skipIf(sys.platform != 'linux', 'The Student installer supports Linux/WSL only')
 class InstallTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

@@ -21,7 +21,7 @@ def delegate_env():
     return {'AVATAR_GPU_DELEGATE':lease['token']} if lease else {}
 
 def check_gpu_for_video():
-    result=subprocess.run([smi_path(),'--query-gpu=memory.free,memory.used','--format=csv,noheader,nounits'],capture_output=True,text=True,check=True,timeout=8)
+    result=subprocess.run([smi_path(),'--query-gpu=memory.free,memory.used','--format=csv,noheader,nounits'],capture_output=True,text=True,errors='replace',check=True,timeout=8)
     free,used=map(lambda x:int(x.strip()),result.stdout.splitlines()[0].split(','))
     minimum=int(os.environ.get('AVATAR_STUDENT_MIN_FREE_MIB','13000'))
     print(json.dumps({'gpu_before_video':{'free_mib':free,'used_mib':used,'minimum_free_mib':minimum}}),flush=True)

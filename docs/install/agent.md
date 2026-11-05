@@ -1,7 +1,7 @@
 # Install with a coding agent
 
 Instructions for a coding agent (Claude Code, Codex, Cursor, …) asked to install
-VoiceStudio. The short prompt in the [README](../../README.md#get-started)
+VoiceStudio. The short prompt in the [README](../../README.upstream.md#get-started)
 points here. Complete the setup, not just a plan.
 
 ## Rules

@@ -5,7 +5,8 @@
     "inference.py",
     "preprocessing_mediapipe.py",
     "video_utils.py",
-    "diffsynth/models/wan_video_vae.py"
+    "diffsynth/models/wan_video_vae.py",
+    "diffsynth/core/loader/file.py"
   ],
   "local_helpers": [
     "face_recovery.py",
@@ -14,6 +15,7 @@
     "webui/prepare_video.py",
     "webui/unified_jobs.py",
     "webui/app.py",
+    "webui/safe_paths.py",
     "webui/interpolate_25_to_30.py"
   ],
   "rife_source": "https://github.com/hzwer/Practical-RIFE",

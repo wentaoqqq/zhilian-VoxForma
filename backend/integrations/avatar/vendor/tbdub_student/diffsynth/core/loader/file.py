@@ -68,7 +68,7 @@ def convert_state_dict_keys_to_single_str(state_dict, with_shape=True):
 def hash_state_dict_keys(state_dict, with_shape=True):
     keys_str = convert_state_dict_keys_to_single_str(state_dict, with_shape=with_shape)
     keys_str = keys_str.encode(encoding="UTF-8")
-    return hashlib.md5(keys_str).hexdigest()
+    return hashlib.md5(keys_str, usedforsecurity=False).hexdigest()
 
 
 def load_keys_dict(file_path):
@@ -127,4 +127,4 @@ def hash_model_file(path, with_shape=True):
     keys_dict = load_keys_dict(path)
     keys_str = convert_keys_dict_to_single_str(keys_dict, with_shape=with_shape)
     keys_str = keys_str.encode(encoding="UTF-8")
-    return hashlib.md5(keys_str).hexdigest()
+    return hashlib.md5(keys_str, usedforsecurity=False).hexdigest()

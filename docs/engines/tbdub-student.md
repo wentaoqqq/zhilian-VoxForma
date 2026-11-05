@@ -79,6 +79,11 @@ The web backend must use the integration launcher or the existing
 does not enable the shared TTS/video GPU admission layer. This change does not
 claim a newly built desktop installer or configure Windows port forwarding;
 WSL/driver installation and host network access remain initial host setup.
+See the [security review](tbdub-security-review.md) for the internal queue,
+filesystem boundaries and contextual findings from the first static scan.
+The ordinary VoiceStudio backend leaves avatar GPU hooks disabled. The
+integration entrypoint enables them explicitly, so standalone imports and
+non-avatar deployments do not require the Unix-socket scheduler.
 
 ## Model behavior and maintenance
 

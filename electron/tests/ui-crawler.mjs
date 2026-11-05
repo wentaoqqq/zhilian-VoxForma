@@ -401,9 +401,10 @@ async function fillForm(page) {
       .catch(() => {});
   }
   const files = page.locator('main input[type="file"]');
-  for (let index = 0; index < (await files.count()); index += 1) {
-    const input = files.nth(index);
-    const accept = (await input.getAttribute('accept')) ?? '';
+  // Snapshot the locators: an upload can replace the form's file inputs.
+  // A live nth(index) may then wait for an input that no longer exists.
+  for (const input of await files.all()) {
+    const accept = (await input.getAttribute('accept', { timeout: 1_000 }).catch(() => null)) ?? '';
     await input.setInputFiles(fixtureFor(accept), { timeout: 1_000 }).catch(() => {});
   }
 }

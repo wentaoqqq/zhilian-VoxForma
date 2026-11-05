@@ -151,7 +151,7 @@ class JobManager:
                         rc=self.command(jid,[self.tts/'.venv/bin/python',self.tts/'tts_worker.py','--request',req],self.tts,log,3600,status)
                     log.write(f'TTS_EXIT={rc}\nTTS_SECONDS={time.monotonic()-t0:.3f}\n')
                     if rc or not audio.is_file(): raise RuntimeError(f'配音生成失败，退出码 {rc}')
-                    check=subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','json',str(audio)],capture_output=True,text=True,timeout=15,check=True)
+                    check=subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','json',str(audio)],capture_output=True,text=True,errors='replace',timeout=15,check=True)
                     duration=float(json.loads(check.stdout)['format']['duration'])
                     if duration<=0: raise RuntimeError('配音为空。')
                     self.save(jid,audio_output=str(audio),audio_duration=duration,stage='tts_releasing')

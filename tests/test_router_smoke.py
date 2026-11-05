@@ -144,11 +144,13 @@ def test_engines_list_smoke(client):
     r = client.get("/engines")
     assert r.status_code == 200
     body = r.json()
-    assert set(body) == {"tts", "asr", "llm"}
-    for family in ("tts", "asr", "llm"):
+    assert set(body) == {"tts", "asr", "llm", "video"}
+    for family in ("tts", "asr", "llm", "video"):
         assert "active" in body[family]
         assert "backends" in body[family]
         assert isinstance(body[family]["backends"], list)
+    assert body['video']['active'] == 'tbdub-student'
+    assert body['video']['backends'][0]['native_fps'] == 25
 
 
 def test_engines_tts_lists_all_backends(client):

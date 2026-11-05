@@ -38,6 +38,7 @@ ALLOWED_SOURCES = [
     ("raw.githubusercontent.com", "/debpalash/VoiceStudio/"),
     ("github.com", "/debpalash/VoiceStudio/"),
     ("bun.sh", "/"),
+    ("bun.com", "/install"),
     ("astral.sh", "/"),
     ("sh.rustup.rs", "/"),
 ]

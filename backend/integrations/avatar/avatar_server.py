@@ -8,8 +8,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request, FastAPI
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from backend.main import app
 from api.dependencies import require_consumer, require_admin
+from core.path_security import contained_path, UnsafePath
 from services import model_manager as mm
 import gpu_client
+from services import avatar_gpu
+avatar_gpu.enable(gpu_client)
 
 from services import video_backend
 ROOT=video_backend.root()
@@ -63,7 +66,9 @@ class Admission:
             lease.value=await gpu_client.acquire_async(lease.owner,lease.kind)
             token=gpu_client.current_lease.set(lease.value)
         except Exception as exc:
-            return await JSONResponse({'detail':str(exc)},status_code=503)(scope,receive,send)
+            import logging
+            logging.getLogger(__name__).exception('GPU admission failed')
+            return await JSONResponse({'detail':'GPU scheduler unavailable; check server logs.'},status_code=503)(scope,receive,send)
         try:return await self.app(scope,receive,send)
         finally:
             try:await asyncio.to_thread(gpu_client.rpc,'release',token=lease.value['token'],timeout=150)
@@ -102,7 +107,7 @@ async def _release_models(request):
             return JSONResponse({'released':False,'error':'Models could not be completely unloaded','remaining':snapshot.get('models',[])},status_code=409)
         import subprocess
         def memory_free():
-            r=subprocess.run([smi_path(),'--query-gpu=memory.free','--format=csv,noheader,nounits'],capture_output=True,text=True,check=True,timeout=8)
+            r=subprocess.run([smi_path(),'--query-gpu=memory.free','--format=csv,noheader,nounits'],capture_output=True,text=True,errors='replace',check=True,timeout=8)
             return int(r.stdout.splitlines()[0].strip())
         free=await asyncio.to_thread(memory_free)
         if free<int(os.environ.get('AVATAR_STUDENT_MIN_FREE_MIB','13000')):
@@ -114,21 +119,31 @@ def inside(p,root):
     try:return Path(p).resolve().is_relative_to(root.resolve())
     except (ValueError,OSError):return False
 
+def speech_reference(value):
+    if not value:
+        return None
+    for root in (ASSETS, ROOT/'results/webui', data_dir()/'voices'):
+        try:
+            return contained_path(root, value)
+        except (UnsafePath, TypeError, OSError):
+            continue
+    raise HTTPException(400, 'Invalid speech reference')
+
 @router.post('/internal/speech')
 async def internal_speech(request:Request):
-    lease=internal_lease(request);body=await request.json();reqpath=Path(body.get('request',''))
+    lease=internal_lease(request);body=await request.json()
+    try: reqpath=contained_path(ROOT/'results/webui', body.get('request',''))
+    except (UnsafePath, TypeError, OSError): raise HTTPException(400,'Invalid speech request file')
     if not inside(reqpath,ROOT/'results/webui') or reqpath.name!='tts-request.json' or not reqpath.is_file():raise HTTPException(400,'Invalid speech request file')
-    params=json.loads(reqpath.read_text());output=Path(params['output'])
-    if output.parent.resolve()!=reqpath.parent.resolve() or output.name!='speech.wav':raise HTTPException(400,'Invalid audio output')
-    reference=Path(params['reference']) if params.get('reference') else None
-    if reference and not any(inside(reference,r) for r in (ASSETS,ROOT/'results/webui',data_dir()/'voices')):raise HTTPException(400,'Invalid voice reference')
+    params=json.loads(reqpath.read_text());output=reqpath.parent/'speech.wav'
+    if Path(params['output']).resolve()!=output.resolve():raise HTTPException(400,'Invalid audio output')
+    reference=speech_reference(params.get('reference'))
     engine=params.get('engine','indextts2')
     from services.tts_backend import get_backend_class
     try:get_backend_class(engine)
     except ValueError:raise HTTPException(422,'Unknown VoiceStudio TTS engine')
-    emotion=params.get('emotion')
+    emotion=speech_reference(params.get('emotion'))
     if emotion and engine!='indextts2':raise HTTPException(422,'Emotion audio requires IndexTTS')
-    if emotion and not any(inside(emotion,r) for r in (ASSETS,ROOT/'results/webui',data_dir()/'voices')):raise HTTPException(400,'Invalid emotion reference')
     token=gpu_client.current_lease.set(lease)
     try:
         if params.get('native_form') is not None:

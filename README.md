@@ -53,6 +53,7 @@ Student 需要约 **15.27 GB** 模型下载及独立运行环境；至少预留 
 
 - [Fork 维护说明](docs/fork-maintenance.md)
 - [原版 VoiceStudio README](README.upstream.md)
+- [原版功能目录](docs/feature-catalog.md)
 - [TBDub 官方项目](https://github.com/TaoLiveAIGC/TBDub)
 
 不要使用原版桌面自动更新覆盖本 Fork。未来如发布桌面包，需要采用本仓库自己的发布与更新地址。
@@ -68,3 +69,5 @@ Student 需要约 **15.27 GB** 模型下载及独立运行环境；至少预留 
 VoxForma 基于 **VoiceStudio**，应用代码继续遵守 [GNU AGPL-3.0](LICENSE)，并保留[原许可声明](LICENSE-NOTICE.md)。TBDub 源码与权重、RIFE 及其他第三方组件保留各自的 LICENSE / NOTICE 和模型条款；应用许可证不替代模型许可证。
 
 感谢 VoiceStudio、TBDub、DiffSynth-Studio、X-Dub、RIFE 及各语音模型的作者和贡献者。
+
+原版的翻译文档、团队和赞助者名单保留在 [上游说明](README.upstream.md)。如向上游提交贡献，请阅读其 [贡献许可说明](README.upstream.md#contribution-licensing)。

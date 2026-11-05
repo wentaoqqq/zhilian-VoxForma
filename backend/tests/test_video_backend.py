@@ -2,7 +2,7 @@ import importlib.util,os,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 
-HERE=Path(__file__).resolve().parent
+HERE=Path(__file__).resolve().parents[1]/'services'
 spec=importlib.util.spec_from_file_location('managed_video_backend',HERE/'video_backend.py');mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
 
 @unittest.skipUnless(os.name == 'posix', 'Requires sparse Linux filesystem fixtures')

@@ -66,7 +66,7 @@ class CharacterLibrary:
 
     def list(self, *, deleted=False, query=''):
         with self.connect() as db:
-            rows=db.execute('SELECT c.*,v.video,v.metadata FROM characters c JOIN versions v ON v.id=c.revision WHERE '+('c.deleted IS NOT NULL' if deleted else 'c.deleted IS NULL')+' ORDER BY c.updated DESC,c.id').fetchall()
+            rows=db.execute('SELECT c.*,v.video,v.metadata FROM characters c JOIN versions v ON v.id=c.revision WHERE (c.deleted IS NOT NULL)=? ORDER BY c.updated DESC,c.id', (bool(deleted),)).fetchall()
         needle=query.strip().casefold();result=[]
         for r in rows:
             row=dict(r);row['metadata']=json.loads(row['metadata'])
@@ -76,7 +76,7 @@ class CharacterLibrary:
     def probe(self, relative, revision, filename=None):
         source=self.source(relative)
         try:
-            p=subprocess.run(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=width,height,avg_frame_rate,duration:format=duration','-of','json',str(source)],capture_output=True,text=True,check=True,timeout=25)
+            p=subprocess.run(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=width,height,avg_frame_rate,duration:format=duration','-of','json',str(source)],capture_output=True,text=True,errors='replace',check=True,timeout=25)
             info=json.loads(p.stdout);stream=info['streams'][0]
             duration=float(info.get('format',{}).get('duration') or stream.get('duration') or 0)
             rate=stream.get('avg_frame_rate','0/1').split('/');fps=float(rate[0])/float(rate[1]) if len(rate)==2 and float(rate[1]) else 0

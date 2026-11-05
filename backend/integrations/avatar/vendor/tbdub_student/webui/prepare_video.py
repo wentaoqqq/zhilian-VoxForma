@@ -26,7 +26,7 @@ def probe(path: Path, stream: str) -> dict:
             "-show_entries", "stream=avg_frame_rate,duration:format=duration",
             "-of", "json", str(path),
         ],
-        check=True, capture_output=True, text=True,
+        check=True, capture_output=True, text=True,errors='replace',
     )
     info = json.loads(result.stdout)
     if not info.get("streams"):

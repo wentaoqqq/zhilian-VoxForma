@@ -4,7 +4,7 @@
 
 | Need | Guide |
 | --- | --- |
-| Install and troubleshoot | [Platform downloads](../README.md#platforms) · [Troubleshooting](install/troubleshooting.md) · [Upgrade from Tauri](electron-migration.md) |
+| Install and troubleshoot | [Platform downloads](../README.upstream.md#platforms) · [Troubleshooting](install/troubleshooting.md) · [Upgrade from Tauri](electron-migration.md) |
 | Phone apps | [iOS and Android](mobile.md) |
 | Models and hardware | [Engine guides](engines/README.md) · [Model downloads](downloading-models.md) |
 | Speech and cloning | [Voice design](voice-design.md) · [Expressive speech](expressive-speech.md) · [Audio quality](audio-quality.md) |

@@ -23,7 +23,7 @@ fresh installation with an empty model cache, then real native 25 fps and RIFE
 streaming and download/media ranges. Applying a patch cleanly is insufficient.
 
 For a TBDub upgrade, compare the new upstream against the pinned source in
-PROVENANCE.json, port the fork's four upstream-file changes and local helpers,
+PROVENANCE.json, port its listed upstream-file changes and local helpers,
 update dependency/model pins and increment the install recipe. Verify hashes
 against the actual source releases. Build a new versioned installation beside
 the old one; never replace an active engine's files in place.
