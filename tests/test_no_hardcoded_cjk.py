@@ -40,6 +40,7 @@ _ALLOWED_PREFIXES = (
     "docs/readme/",  # translated READMEs and their native language-switcher links
 )
 _ALLOWED_FILES = {
+    "docs/install/voxforma-wsl.md",  # Chinese customer installation guide, not runtime UI copy.
     "README.upstream.md",  # Archived upstream README retains its native language-switcher names.
     "backend/integrations/avatar/avatar_server.py",  # Persisted reference-audio directory name; not UI copy.
     "backend/integrations/avatar/vendor/tbdub_student/webui/app.py",  # Frozen legacy worker error/response text retained with the imported integration.

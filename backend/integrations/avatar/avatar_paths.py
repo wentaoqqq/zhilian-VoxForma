@@ -21,3 +21,6 @@ def gpu_lock():
 def smi_path():
     import shutil
     return shutil.which('nvidia-smi') or '/usr/lib/wsl/lib/nvidia-smi'
+
+def voice_url():
+    return os.environ.get('AVATAR_VOICE_URL', 'http://127.0.0.1:3901').rstrip('/')

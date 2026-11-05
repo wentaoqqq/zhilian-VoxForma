@@ -4,6 +4,8 @@
 
 将文字转语音、音色克隆、形象库和视频对口型接到同一套界面与任务队列中。
 
+**当前数字人集成位于 `feat/voxforma-digital-human` 分支，[PR #1](https://github.com/wentaoqqq/zhilian-VoxForma/pull/1) 尚未合并。默认 `main` 和首页默认 ZIP 仍是原版 VoiceStudio；请使用下方指定分支命令。**
+
 ## 这个 Fork 增加了什么
 
 - **数字人口播**：接入 TBDub Student，支持选择已保存的形象，使用上传音频或 VoiceStudio 原生 TTS 配音生成视频。
@@ -24,7 +26,9 @@
 
 ## 源码启动
 
-先安装 Git、[uv](https://docs.astral.sh/uv/) 和 [Bun](https://bun.sh/)，并准备好 Linux/WSL 与 NVIDIA 驱动。
+完整步骤见 **[客户首次安装指南](docs/install/voxforma-wsl.md)**，包括 WSL、工具安装、首次引导、管理员权限与局域网入口。
+
+先准备 Linux/WSL 与 NVIDIA 驱动，再在 **Ubuntu/Linux 终端**安装 Git、[uv](https://docs.astral.sh/uv/)、Linux 版 **Node.js 22.x（至少 22.12）** 和 **Bun 1.4.2**。下面的命令全部在 Ubuntu/Linux 中执行，不要复用 Windows Python 或 `node_modules`。
 
 ```bash
 git clone --branch feat/voxforma-digital-human https://github.com/wentaoqqq/zhilian-VoxForma.git
@@ -32,12 +36,12 @@ cd zhilian-VoxForma
 uv sync --locked
 bun install --frozen-lockfile
 bun run --cwd electron build:web
-uv run --no-sync python -m backend.integrations.avatar.launcher --host 0.0.0.0 --port 3900
+uv run --no-sync python -m backend.integrations.avatar.launcher --host 127.0.0.1 --port 3900
 ```
 
-打开 `http://服务器地址:3900/`，在 **设置 → 模型 → 数字人** 中点击安装 Student。模型只在用户点击安装时下载；现有安装可继续复用。首次准备 VoiceStudio 本身的依赖仍需一定磁盘空间和时间。
+先在运行后端的电脑打开 `http://127.0.0.1:3900/`。首次引导的模型步骤中打开“高级 → 数字人”并安装 Student，之后完成隐私/账户选项；使用上传音频时不必先安装 TTS。进入工作台后入口为 **设置 → 模型 → 数字人**。模型只在用户点击安装时下载；现有安装可继续复用。
 
-Student 需要约 **15.27 GB** 模型下载及独立运行环境；安装前至少预留 **30 GiB** 可用空间，生成视频还需要额外空间。GPU、WSL 和 Windows 端口转发属于主机配置，监听 Linux 的 `0.0.0.0` 不会自动配置 Windows 防火墙。
+Student 需要约 **15.27 GB** 模型下载及独立运行环境；至少预留 **30 GiB 用于 Student 安装**，另外计算 VoiceStudio 依赖、缓存和视频空间。局域网访问还需要管理员登录及正确的 Windows 转发/防火墙；监听 `0.0.0.0` 本身不授予模型安装权限，具体按首次安装指南配置。
 
 完整说明：[数字人部署与安装](docs/engines/tbdub-student.md)。
 
@@ -55,7 +59,7 @@ Student 需要约 **15.27 GB** 模型下载及独立运行环境；安装前至�
 
 ## 验证范围
 
-已有部署上通过了 29 项针对性后端检查、TypeScript、22 个语言目录检查和浏览器构建；独立环境中的 Student 短视频生成、范围下载和 GPU 释放也通过了检查。
+当前安装流程修复通过了 31 项针对性后端测试、612 项语言/源码/版本检查、首次引导的桌面与网页配置测试、TypeScript、22 个语言目录检查和浏览器构建。此前独立环境中的 Student 短视频生成、范围下载和 GPU 释放也通过了检查。
 
 这些记录不代表所有显卡、所有视频姿态和全新主机都已验证。本分支合并更新后只进行源码与针对性检查，不自动下载模型或启动耗时生成测试。
 

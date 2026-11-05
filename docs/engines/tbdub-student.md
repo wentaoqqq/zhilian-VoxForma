@@ -6,11 +6,15 @@ NVIDIA GPU; the tested target is RTX 5080 16 GB with 64 GB system RAM.
 
 ## Install and use
 
+For the complete first-install path, including the correct Git branch,
+Linux prerequisites, Node/Bun, onboarding and administrator access, see the
+[customer installation guide](../install/voxforma-wsl.md).
+
 Start the fork's browser backend from the source checkout after completing
 VoiceStudio's normal dependency and frontend setup:
 
 ```bash
-uv run python -m backend.integrations.avatar.launcher --host 0.0.0.0 --port 3900
+uv run --no-sync python -m backend.integrations.avatar.launcher --host 127.0.0.1 --port 3900
 ```
 
 Open Settings > Models > Digital human and click **Download and install Student**.
@@ -30,6 +34,13 @@ Installation status and logs persist across page reloads. Pause keeps partial
 downloads. Retry resumes them; an application restart marks an unfinished job
 as interrupted. A failed install does not change the previous active engine.
 Only administrator-authorized clients can install or pause installation.
+Binding all interfaces does not grant administrator access: remote mutations
+require explicit server mode and an administrator API key/session. Complete
+initial local setup first; keep upstream's loopback-only sidecar boundaries.
+
+On first use, the model step's Advanced view includes the digital-human family.
+An installed Student satisfies the model prerequisite for uploaded-audio video
+generation without requiring TTS weights. Privacy/account choices still run.
 
 After installation, create a character by uploading its video, then select it
 on the digital-human page with uploaded audio or native VoiceStudio TTS.
