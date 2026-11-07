@@ -1523,7 +1523,9 @@
     "gpu_report_engine_no_family_path": "CPU: tidak ada jalur untuk jenis GPU Anda",
     "gpu_report_engine_no_gpu": "CPU: tidak ada GPU",
     "gpu_report_engine_needs_accelerator": "Memerlukan GPU ({{needs}}) yang tidak dimiliki komputer ini",
-    "models_dir_desc": "Model yang diunduh disimpan di sini. Pilih drive dengan ruang kosong lebih besar jika drive ini penuh."
+    "models_dir_desc": "Model yang diunduh disimpan di sini. Pilih drive dengan ruang kosong lebih besar jika drive ini penuh.",
+    "llmskills_media_production_name": "AI produksi",
+    "llmskills_media_production_desc": "Buat rencana AI"
   },
   "gallery": {
     "title": "VoiceStudio Galeri",
@@ -4657,6 +4659,48 @@
       "verify": "Memverifikasi pemasangan",
       "activate": "Mengaktifkan mesin",
       "complete": "Selesai"
+    }
+  },
+  "production": {
+    "title": "Produksi video",
+    "product": "Penyajian produk",
+    "library": "Pustaka media",
+    "deliveries": "Hasil",
+    "source": "Video produk",
+    "outro": "Penutup merek",
+    "opening": "Judul pembuka",
+    "cover": "Judul sampul",
+    "publication": "Judul publikasi",
+    "brand": "Label merek",
+    "subtitles": "Subtitel",
+    "keep": "Pertahankan subtitel yang ada",
+    "none": "Tanpa subtitel baru",
+    "srt": "Impor SRT / VTT",
+    "coverTime": "Bingkai sampul (detik)",
+    "generate": "Buat empat berkas",
+    "download": "Unduh empat berkas",
+    "choose": "Pilih video",
+    "noRuns": "Belum ada tugas",
+    "edit": "Edit dan buat ulang",
+    "hint": "Tambahkan judul, subtitel berwaktu, sampul, dan penutup merek terpisah.",
+    "steps": {
+      "inspect": "Periksa sumber",
+      "render": "Render",
+      "cover": "Sampul",
+      "verify": "Verifikasi"
+    },
+    "plugin": "Aturan produk",
+    "generalPlugin": "Produk umum",
+    "roundtablePlugin": "Meja bundar elektrik",
+    "ai": {
+      "title": "AI produksi",
+      "privacy": "Mengirim nama, metadata, subtitel, dan instruksi ke penyedia yang dikonfigurasi. Audio dan video tetap lokal.",
+      "instruction": "Jelaskan fakta produk terkonfirmasi dan perubahan yang diinginkan.",
+      "plan": "Buat rencana AI",
+      "generate": "Rencanakan dan buat dengan AI",
+      "configure": "Atur penyedia dan aktifkan AI produksi.",
+      "settings": "Pengaturan AI",
+      "queued": "Dikirim ke antrean produksi."
     }
   }
 }

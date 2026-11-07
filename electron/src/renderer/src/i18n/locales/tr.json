@@ -1523,7 +1523,9 @@
     "gpu_report_engine_no_family_path": "CPU: GPU türünüz için yol yok",
     "gpu_report_engine_no_gpu": "CPU: kullanılabilir GPU yok",
     "gpu_report_engine_needs_accelerator": "Bu bilgisayarda olmayan bir GPU ({{needs}}) gerekir",
-    "models_dir_desc": "İndirilen modeller burada saklanır. Bu sürücü dolarsa daha fazla boş alanı olan bir sürücü seçin."
+    "models_dir_desc": "İndirilen modeller burada saklanır. Bu sürücü dolarsa daha fazla boş alanı olan bir sürücü seçin.",
+    "llmskills_media_production_name": "Üretim yapay zekâsı",
+    "llmskills_media_production_desc": "Yapay zekâ planı"
   },
   "gallery": {
     "title": "VoiceStudio Galeri",
@@ -4657,6 +4659,48 @@
       "verify": "Kurulum doğrulanıyor",
       "activate": "Motor etkinleştiriliyor",
       "complete": "Tamamlandı"
+    }
+  },
+  "production": {
+    "title": "Video üretimi",
+    "product": "Ürün sunumu",
+    "library": "Medya kitaplığı",
+    "deliveries": "Çıktılar",
+    "source": "Ürün videosu",
+    "outro": "Marka kapanışı",
+    "opening": "Açılış başlığı",
+    "cover": "Kapak başlığı",
+    "publication": "Yayın başlığı",
+    "brand": "Marka etiketi",
+    "subtitles": "Altyazılar",
+    "keep": "Mevcut altyazıları koru",
+    "none": "Yeni altyazı ekleme",
+    "srt": "SRT / VTT içe aktar",
+    "coverTime": "Kapak karesi (saniye)",
+    "generate": "Dört dosya oluştur",
+    "download": "Dört dosyayı indir",
+    "choose": "Video seç",
+    "noRuns": "Henüz görev yok",
+    "edit": "Düzenle ve yeniden oluştur",
+    "hint": "Ürün videosuna başlık, zamanlı altyazı, kapak ve ayrı marka kapanışı ekleyin.",
+    "steps": {
+      "inspect": "İncele",
+      "render": "İşle",
+      "cover": "Kapak",
+      "verify": "Doğrula"
+    },
+    "plugin": "Ürün kuralları",
+    "generalPlugin": "Genel ürün",
+    "roundtablePlugin": "Elektrikli yuvarlak masa",
+    "ai": {
+      "title": "Üretim yapay zekâsı",
+      "privacy": "Seçili adları, meta verileri, altyazıları ve talimatları yapılandırılmış sağlayıcıya gönderir. Ses ve video yerel kalır.",
+      "instruction": "Doğrulanmış ürün bilgilerini ve istediğiniz değişiklikleri açıklayın.",
+      "plan": "Yapay zekâ planı",
+      "generate": "Planla ve oluştur",
+      "configure": "Sağlayıcıyı yapılandırın ve üretim yapay zekâsını açın.",
+      "settings": "Yapay zekâ ayarları",
+      "queued": "Üretim kuyruğuna eklendi."
     }
   }
 }

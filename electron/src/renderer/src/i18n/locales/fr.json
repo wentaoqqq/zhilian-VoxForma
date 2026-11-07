@@ -1525,7 +1525,9 @@
     "gpu_report_engine_no_family_path": "CPU : aucun chemin pour votre type de GPU",
     "gpu_report_engine_no_gpu": "CPU : aucun GPU disponible",
     "gpu_report_engine_needs_accelerator": "Nécessite un GPU ({{needs}}) que cette machine n'a pas",
-    "models_dir_desc": "Les modèles téléchargés sont stockés ici. Choisissez un disque avec plus d'espace libre si celui-ci se remplit."
+    "models_dir_desc": "Les modèles téléchargés sont stockés ici. Choisissez un disque avec plus d'espace libre si celui-ci se remplit.",
+    "llmskills_media_production_name": "IA de production",
+    "llmskills_media_production_desc": "Créer un plan IA"
   },
   "gallery": {
     "title": "VoiceStudio Galerie",
@@ -4659,6 +4661,48 @@
       "verify": "Vérification de l’installation",
       "activate": "Activation du moteur",
       "complete": "Terminé"
+    }
+  },
+  "production": {
+    "title": "Production vidéo",
+    "product": "Présentation produit",
+    "library": "Médiathèque",
+    "deliveries": "Résultats",
+    "source": "Vidéo produit",
+    "outro": "Générique de marque",
+    "opening": "Titre initial",
+    "cover": "Titre de couverture",
+    "publication": "Titre de publication",
+    "brand": "Libellé de marque",
+    "subtitles": "Sous-titres",
+    "keep": "Conserver les sous-titres existants",
+    "none": "Aucun nouveau sous-titre",
+    "srt": "Importer SRT / VTT",
+    "coverTime": "Image de couverture (secondes)",
+    "generate": "Générer quatre fichiers",
+    "download": "Télécharger quatre fichiers",
+    "choose": "Choisir une vidéo",
+    "noRuns": "Aucune tâche",
+    "edit": "Modifier et régénérer",
+    "hint": "Ajoutez des titres, des sous-titres synchronisés, une couverture et un générique de marque séparé.",
+    "steps": {
+      "inspect": "Inspecter",
+      "render": "Rendu",
+      "cover": "Couverture",
+      "verify": "Vérifier"
+    },
+    "plugin": "Règles produit",
+    "generalPlugin": "Produit général",
+    "roundtablePlugin": "Table ronde électrique",
+    "ai": {
+      "title": "IA de production",
+      "privacy": "Envoie les noms, métadonnées, sous-titres et consignes au fournisseur configuré. Audio et vidéo restent en local.",
+      "instruction": "Décrivez les faits confirmés sur le produit et les changements souhaités.",
+      "plan": "Créer un plan IA",
+      "generate": "Planifier et générer avec IA",
+      "configure": "Configurez un fournisseur et activez l’IA de production.",
+      "settings": "Réglages IA",
+      "queued": "Ajouté à la file de production."
     }
   }
 }

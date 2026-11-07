@@ -1523,7 +1523,9 @@
     "gpu_report_engine_no_family_path": "CPU：お使いの GPU の種類に対応する経路がありません",
     "gpu_report_engine_no_gpu": "CPU：GPU がありません",
     "gpu_report_engine_needs_accelerator": "このマシンにない GPU（{{needs}}）が必要です",
-    "models_dir_desc": "ダウンロードしたモデルはここに保存されます。空き容量が足りなくなったら、より空きのあるドライブを選んでください。"
+    "models_dir_desc": "ダウンロードしたモデルはここに保存されます。空き容量が足りなくなったら、より空きのあるドライブを選んでください。",
+    "llmskills_media_production_name": "制作 AI",
+    "llmskills_media_production_desc": "AI で計画を作成"
   },
   "gallery": {
     "title": "VoiceStudio ギャラリー",
@@ -4657,6 +4659,48 @@
       "verify": "インストールを検証中",
       "activate": "エンジンを有効化中",
       "complete": "完了"
+    }
+  },
+  "production": {
+    "title": "動画制作",
+    "product": "製品動画の仕上げ",
+    "library": "素材ライブラリ",
+    "deliveries": "完成品",
+    "source": "製品動画",
+    "outro": "ブランドエンディング",
+    "opening": "冒頭タイトル",
+    "cover": "表紙タイトル",
+    "publication": "公開タイトル",
+    "brand": "ブランド表記",
+    "subtitles": "字幕",
+    "keep": "既存の字幕を保持",
+    "none": "新しい字幕を追加しない",
+    "srt": "SRT / VTT を読み込む",
+    "coverTime": "表紙のフレーム位置（秒）",
+    "generate": "4ファイルを生成",
+    "download": "4ファイルをダウンロード",
+    "choose": "動画を選択",
+    "noRuns": "タスクはありません",
+    "edit": "編集して再生成",
+    "hint": "製品動画にタイトル、時刻付き字幕、表紙、独立したブランドエンディングを追加します。",
+    "steps": {
+      "inspect": "素材確認",
+      "render": "レンダリング",
+      "cover": "表紙作成",
+      "verify": "出力確認"
+    },
+    "plugin": "製品ルール",
+    "generalPlugin": "一般製品",
+    "roundtablePlugin": "電動回転テーブル",
+    "ai": {
+      "title": "制作 AI",
+      "privacy": "選択したファイル名、メタデータ、字幕、指示のみを設定済みプロバイダーに送信します。音声と動画はローカルに残ります。",
+      "instruction": "確認済みの製品情報と変更したい内容を説明してください。",
+      "plan": "AI で計画を作成",
+      "generate": "AI で計画して生成",
+      "configure": "プロバイダーを設定し、制作 AI を有効にしてください。",
+      "settings": "AI 設定",
+      "queued": "制作キューに追加しました。"
     }
   }
 }

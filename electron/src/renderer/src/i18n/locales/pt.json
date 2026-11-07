@@ -1525,7 +1525,9 @@
     "gpu_report_engine_no_family_path": "CPU: sem caminho para o seu tipo de GPU",
     "gpu_report_engine_no_gpu": "CPU: nenhuma GPU disponível",
     "gpu_report_engine_needs_accelerator": "Precisa de uma GPU ({{needs}}) que esta máquina não tem",
-    "models_dir_desc": "Os modelos baixados ficam aqui. Escolha uma unidade com mais espaço livre se esta encher."
+    "models_dir_desc": "Os modelos baixados ficam aqui. Escolha uma unidade com mais espaço livre se esta encher.",
+    "llmskills_media_production_name": "IA de produção",
+    "llmskills_media_production_desc": "Criar plano com IA"
   },
   "gallery": {
     "title": "VoiceStudio Galeria",
@@ -4659,6 +4661,48 @@
       "verify": "A verificar instalação",
       "activate": "A ativar motor",
       "complete": "Concluído"
+    }
+  },
+  "production": {
+    "title": "Produção de vídeo",
+    "product": "Apresentação de produto",
+    "library": "Biblioteca multimédia",
+    "deliveries": "Resultados",
+    "source": "Vídeo do produto",
+    "outro": "Encerramento da marca",
+    "opening": "Título inicial",
+    "cover": "Título da capa",
+    "publication": "Título da publicação",
+    "brand": "Etiqueta da marca",
+    "subtitles": "Legendas",
+    "keep": "Manter legendas existentes",
+    "none": "Sem novas legendas",
+    "srt": "Importar SRT / VTT",
+    "coverTime": "Fotograma da capa (segundos)",
+    "generate": "Gerar quatro ficheiros",
+    "download": "Descarregar quatro ficheiros",
+    "choose": "Escolher vídeo",
+    "noRuns": "Ainda sem tarefas",
+    "edit": "Editar e gerar novamente",
+    "hint": "Adicione títulos, legendas sincronizadas, capa e um encerramento de marca separado.",
+    "steps": {
+      "inspect": "Inspecionar",
+      "render": "Renderizar",
+      "cover": "Capa",
+      "verify": "Verificar"
+    },
+    "plugin": "Regras do produto",
+    "generalPlugin": "Produto geral",
+    "roundtablePlugin": "Mesa redonda elétrica",
+    "ai": {
+      "title": "IA de produção",
+      "privacy": "Envia nomes, metadados, legendas e instruções ao fornecedor configurado. Áudio e vídeo permanecem locais.",
+      "instruction": "Descreva dados confirmados do produto e alterações desejadas.",
+      "plan": "Criar plano com IA",
+      "generate": "Planear e gerar com IA",
+      "configure": "Configure um fornecedor e ative a IA de produção.",
+      "settings": "Definições de IA",
+      "queued": "Enviado para a fila de produção."
     }
   }
 }

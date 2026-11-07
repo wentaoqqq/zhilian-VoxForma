@@ -1706,7 +1706,9 @@
     "gpu_report_engine_no_family_path": "CPU: no path for your GPU type",
     "gpu_report_engine_no_gpu": "CPU: no GPU available",
     "gpu_report_engine_needs_accelerator": "Needs a GPU ({{needs}}) this machine does not have",
-    "models_dir_desc": "Downloaded models are stored here. Choose a drive with more free space if this one fills up."
+    "models_dir_desc": "Downloaded models are stored here. Choose a drive with more free space if this one fills up.",
+    "llmskills_media_production_name": "Production AI",
+    "llmskills_media_production_desc": "Draft with AI"
   },
   "gallery": {
     "title": "VoiceStudio Gallery",
@@ -4657,6 +4659,48 @@
       "verify": "Verifying installation",
       "activate": "Activating engine",
       "complete": "Complete"
+    }
+  },
+  "production": {
+    "title": "Video production",
+    "product": "Product packaging",
+    "library": "Media library",
+    "deliveries": "Deliveries",
+    "source": "Product video",
+    "outro": "Brand outro",
+    "opening": "Opening title",
+    "cover": "Cover title",
+    "publication": "Publication title",
+    "brand": "Brand label",
+    "subtitles": "Subtitles",
+    "keep": "Keep existing subtitles",
+    "none": "No new subtitles",
+    "srt": "Import SRT / VTT",
+    "coverTime": "Cover frame (seconds)",
+    "generate": "Generate four files",
+    "download": "Download four files",
+    "choose": "Choose video",
+    "noRuns": "No tasks yet",
+    "edit": "Edit and regenerate",
+    "hint": "Package a product video with titles, timed subtitles, a cover and a separate brand outro.",
+    "steps": {
+      "inspect": "Inspect",
+      "render": "Render",
+      "cover": "Cover",
+      "verify": "Verify"
+    },
+    "plugin": "Product rules",
+    "generalPlugin": "General product",
+    "roundtablePlugin": "Electric round table",
+    "ai": {
+      "title": "Production AI",
+      "privacy": "Sends selected file names, metadata, subtitles and your instructions to your configured provider. Audio and video stay local.",
+      "instruction": "Describe confirmed product facts and the changes you want.",
+      "plan": "Draft with AI",
+      "generate": "AI plan and generate",
+      "configure": "Configure a provider and enable production AI.",
+      "settings": "AI settings",
+      "queued": "Submitted to the production queue."
     }
   }
 }

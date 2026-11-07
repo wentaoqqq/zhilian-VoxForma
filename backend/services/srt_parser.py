@@ -91,8 +91,8 @@ def webvtt_content_blocks(text: str, *, strict_blank: bool = False) -> list[str]
     return blocks
 
 
-def parse_srt(content: str) -> SrtParseResult:
-    """Parse SRT text and return cleaned, non-overlapping segments.
+def parse_srt(content: str, *, preserve_overlaps: bool = False) -> SrtParseResult:
+    """Parse SRT text and return cleaned segments.
 
     - Skips cues with non-positive duration or unparseable timestamps.
     - When two cues overlap, keeps the earlier one and shifts the later
@@ -101,6 +101,8 @@ def parse_srt(content: str) -> SrtParseResult:
       intent is usually "both lines should play, in order"). If the
       adjustment leaves the later cue with zero/negative duration it
       gets dropped and `dropped_overlaps` increments.
+      With ``preserve_overlaps=True``, keep these original timestamps for
+      rendering; the existing speech/dub callers retain their default behavior.
     """
     if not content:
         return SrtParseResult([], 0, 0)
@@ -188,7 +190,7 @@ def parse_srt(content: str) -> SrtParseResult:
     last_end = 0.0
     for r in raw:
         s, e = r["start"], r["end"]
-        if s < last_end:
+        if s < last_end and not preserve_overlaps:
             s = last_end
         if e <= s:
             dropped += 1

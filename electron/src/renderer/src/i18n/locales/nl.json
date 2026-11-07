@@ -1523,7 +1523,9 @@
     "gpu_report_engine_no_family_path": "CPU: geen pad voor uw GPU-type",
     "gpu_report_engine_no_gpu": "CPU: geen GPU beschikbaar",
     "gpu_report_engine_needs_accelerator": "Heeft een GPU ({{needs}}) nodig die deze computer niet heeft",
-    "models_dir_desc": "Gedownloade modellen worden hier opgeslagen. Kies een schijf met meer vrije ruimte als deze volraakt."
+    "models_dir_desc": "Gedownloade modellen worden hier opgeslagen. Kies een schijf met meer vrije ruimte als deze volraakt.",
+    "llmskills_media_production_name": "Productie-AI",
+    "llmskills_media_production_desc": "AI-plan maken"
   },
   "gallery": {
     "title": "VoiceStudio Galerij",
@@ -4657,6 +4659,48 @@
       "verify": "Installatie verifiëren",
       "activate": "Engine activeren",
       "complete": "Voltooid"
+    }
+  },
+  "production": {
+    "title": "Videoproductie",
+    "product": "Productpresentatie",
+    "library": "Mediabibliotheek",
+    "deliveries": "Resultaten",
+    "source": "Productvideo",
+    "outro": "Merkafsluiting",
+    "opening": "Openingstitel",
+    "cover": "Omslagtitel",
+    "publication": "Publicatietitel",
+    "brand": "Merklabel",
+    "subtitles": "Ondertitels",
+    "keep": "Bestaande ondertitels behouden",
+    "none": "Geen nieuwe ondertitels",
+    "srt": "SRT / VTT importeren",
+    "coverTime": "Omslagbeeld (seconden)",
+    "generate": "Vier bestanden maken",
+    "download": "Vier bestanden downloaden",
+    "choose": "Video kiezen",
+    "noRuns": "Nog geen taken",
+    "edit": "Bewerken en opnieuw maken",
+    "hint": "Voeg titels, getimede ondertitels, een omslag en een aparte merkafsluiting toe.",
+    "steps": {
+      "inspect": "Inspecteren",
+      "render": "Renderen",
+      "cover": "Omslag",
+      "verify": "Controleren"
+    },
+    "plugin": "Productregels",
+    "generalPlugin": "Algemeen product",
+    "roundtablePlugin": "Elektrische ronde tafel",
+    "ai": {
+      "title": "Productie-AI",
+      "privacy": "Verstuurt namen, metadata, ondertitels en instructies naar de ingestelde aanbieder. Audio en video blijven lokaal.",
+      "instruction": "Beschrijf bevestigde productgegevens en gewenste wijzigingen.",
+      "plan": "AI-plan maken",
+      "generate": "Met AI plannen en maken",
+      "configure": "Stel een aanbieder in en schakel productie-AI in.",
+      "settings": "AI-instellingen",
+      "queued": "Aan de productiewachtrij toegevoegd."
     }
   }
 }

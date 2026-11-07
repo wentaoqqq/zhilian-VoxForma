@@ -1523,7 +1523,9 @@
     "usage_empty": "아직 생성한 항목이 없습니다. 무언가 만들면 여기에 표시됩니다.",
     "usage_since": "{{date}}부터",
     "usage_starred": "별표 표시한 테이크",
-    "usage_takes": "생성한 테이크"
+    "usage_takes": "생성한 테이크",
+    "llmskills_media_production_name": "제작 AI",
+    "llmskills_media_production_desc": "AI 계획 생성"
   },
   "gallery": {
     "title": "VoiceStudio 갤러리",
@@ -4657,6 +4659,48 @@
       "verify": "설치 검증 중",
       "activate": "엔진 활성화 중",
       "complete": "완료"
+    }
+  },
+  "production": {
+    "title": "영상 제작",
+    "product": "제품 영상 꾸미기",
+    "library": "미디어 라이브러리",
+    "deliveries": "완성본",
+    "source": "제품 영상",
+    "outro": "브랜드 엔딩",
+    "opening": "오프닝 제목",
+    "cover": "표지 제목",
+    "publication": "게시 제목",
+    "brand": "브랜드 표시",
+    "subtitles": "자막",
+    "keep": "기존 자막 유지",
+    "none": "새 자막 추가 안 함",
+    "srt": "SRT / VTT 가져오기",
+    "coverTime": "표지 프레임 시간(초)",
+    "generate": "파일 4개 생성",
+    "download": "파일 4개 다운로드",
+    "choose": "영상 선택",
+    "noRuns": "아직 작업이 없습니다",
+    "edit": "수정 후 다시 생성",
+    "hint": "제품 영상에 제목, 시간 자막, 표지와 별도 브랜드 엔딩을 추가합니다.",
+    "steps": {
+      "inspect": "소재 확인",
+      "render": "렌더링",
+      "cover": "표지 제작",
+      "verify": "결과 확인"
+    },
+    "plugin": "제품 규칙",
+    "generalPlugin": "일반 제품",
+    "roundtablePlugin": "전동 원형 테이블",
+    "ai": {
+      "title": "제작 AI",
+      "privacy": "선택한 파일명, 메타데이터, 자막과 지시만 설정된 제공업체로 보냅니다. 음성과 영상은 로컬에 남습니다.",
+      "instruction": "확인된 제품 정보와 원하는 변경 사항을 설명하세요.",
+      "plan": "AI 계획 생성",
+      "generate": "AI 계획 및 생성",
+      "configure": "제공업체를 설정하고 제작 AI를 켜세요.",
+      "settings": "AI 설정",
+      "queued": "제작 대기열에 추가했습니다."
     }
   }
 }

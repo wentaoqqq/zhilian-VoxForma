@@ -18,6 +18,7 @@ import {
   ChevronRightIcon,
   BlocksIcon,
   WorkflowIcon,
+  ClapperboardIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -27,6 +28,7 @@ import './workspace-menu.css';
 
 type Destination = readonly [
   to:
+    | '/production'
     | '/avatar'
     | '/avatar/characters'
     | '/clone'
@@ -68,6 +70,7 @@ const avatarDestinations: Destination[] = [
   ['/avatar/characters', 'characters.library', ContactRoundIcon],
 ];
 const laterDestinations: Destination[] = [
+  ['/production', 'production.title', ClapperboardIcon],
   ['/transcriptions', 'nav.transcribe', MicIcon],
   ['/workflows', 'workflows.title', WorkflowIcon],
   ['/projects', 'projects.title', FolderIcon],
@@ -81,6 +84,7 @@ const iconClass =
   'workspace-nav-icon size-4 shrink-0 text-muted-foreground transition-[color,filter] duration-150';
 
 const iconMotion: Record<Destination[0], string> = {
+  '/production': 'tilt',
   '/avatar': 'pulse',
   '/avatar/characters': 'lift',
   '/clone': 'pulse',

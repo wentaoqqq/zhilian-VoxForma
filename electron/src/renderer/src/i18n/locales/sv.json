@@ -1523,7 +1523,9 @@
     "gpu_report_engine_no_family_path": "CPU: ingen väg för din GPU-typ",
     "gpu_report_engine_no_gpu": "CPU: ingen GPU tillgänglig",
     "gpu_report_engine_needs_accelerator": "Kräver en GPU ({{needs}}) som den här datorn inte har",
-    "models_dir_desc": "Nedladdade modeller lagras här. Välj en enhet med mer ledigt utrymme om den här blir full."
+    "models_dir_desc": "Nedladdade modeller lagras här. Välj en enhet med mer ledigt utrymme om den här blir full.",
+    "llmskills_media_production_name": "Produktions-AI",
+    "llmskills_media_production_desc": "Skapa AI-plan"
   },
   "gallery": {
     "title": "VoiceStudio Galleri",
@@ -4657,6 +4659,48 @@
       "verify": "Verifierar installation",
       "activate": "Aktiverar motor",
       "complete": "Klart"
+    }
+  },
+  "production": {
+    "title": "Videoproduktion",
+    "product": "Produktpresentation",
+    "library": "Mediebibliotek",
+    "deliveries": "Resultat",
+    "source": "Produktvideo",
+    "outro": "Varumärkesavslutning",
+    "opening": "Inledningstitel",
+    "cover": "Omslagstitel",
+    "publication": "Publiceringstitel",
+    "brand": "Varumärkesetikett",
+    "subtitles": "Undertexter",
+    "keep": "Behåll befintliga undertexter",
+    "none": "Inga nya undertexter",
+    "srt": "Importera SRT / VTT",
+    "coverTime": "Omslagsbild (sekunder)",
+    "generate": "Skapa fyra filer",
+    "download": "Hämta fyra filer",
+    "choose": "Välj video",
+    "noRuns": "Inga uppgifter ännu",
+    "edit": "Redigera och skapa igen",
+    "hint": "Lägg till titlar, tidsatta undertexter, omslag och en separat varumärkesavslutning.",
+    "steps": {
+      "inspect": "Granska",
+      "render": "Rendera",
+      "cover": "Omslag",
+      "verify": "Verifiera"
+    },
+    "plugin": "Produktregler",
+    "generalPlugin": "Allmän produkt",
+    "roundtablePlugin": "Elektriskt runt bord",
+    "ai": {
+      "title": "Produktions-AI",
+      "privacy": "Skickar namn, metadata, undertexter och instruktioner till vald leverantör. Ljud och video stannar lokalt.",
+      "instruction": "Beskriv bekräftade produktfakta och önskade ändringar.",
+      "plan": "Skapa AI-plan",
+      "generate": "Planera och skapa med AI",
+      "configure": "Konfigurera en leverantör och aktivera produktions-AI.",
+      "settings": "AI-inställningar",
+      "queued": "Tillagd i produktionskön."
     }
   }
 }

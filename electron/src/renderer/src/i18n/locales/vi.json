@@ -1523,7 +1523,9 @@
     "gpu_report_engine_no_family_path": "CPU: không có đường chạy cho loại GPU của bạn",
     "gpu_report_engine_no_gpu": "CPU: không có GPU",
     "gpu_report_engine_needs_accelerator": "Cần GPU ({{needs}}) mà máy này không có",
-    "models_dir_desc": "Các mô hình đã tải được lưu ở đây. Hãy chọn ổ có nhiều dung lượng trống hơn nếu ổ này đầy."
+    "models_dir_desc": "Các mô hình đã tải được lưu ở đây. Hãy chọn ổ có nhiều dung lượng trống hơn nếu ổ này đầy.",
+    "llmskills_media_production_name": "AI sản xuất",
+    "llmskills_media_production_desc": "Tạo kế hoạch AI"
   },
   "gallery": {
     "title": "VoiceStudio Thư viện ảnh",
@@ -4657,6 +4659,48 @@
       "verify": "Xác minh cài đặt",
       "activate": "Kích hoạt bộ máy",
       "complete": "Hoàn tất"
+    }
+  },
+  "production": {
+    "title": "Sản xuất video",
+    "product": "Trình bày sản phẩm",
+    "library": "Thư viện tư liệu",
+    "deliveries": "Thành phẩm",
+    "source": "Video sản phẩm",
+    "outro": "Đoạn kết thương hiệu",
+    "opening": "Tiêu đề mở đầu",
+    "cover": "Tiêu đề ảnh bìa",
+    "publication": "Tiêu đề bài đăng",
+    "brand": "Nhãn thương hiệu",
+    "subtitles": "Phụ đề",
+    "keep": "Giữ phụ đề hiện có",
+    "none": "Không thêm phụ đề mới",
+    "srt": "Nhập SRT / VTT",
+    "coverTime": "Khung ảnh bìa (giây)",
+    "generate": "Tạo bốn tệp",
+    "download": "Tải bốn tệp",
+    "choose": "Chọn video",
+    "noRuns": "Chưa có tác vụ",
+    "edit": "Sửa và tạo lại",
+    "hint": "Thêm tiêu đề, phụ đề theo thời gian, ảnh bìa và đoạn kết thương hiệu riêng.",
+    "steps": {
+      "inspect": "Kiểm tra nguồn",
+      "render": "Kết xuất",
+      "cover": "Ảnh bìa",
+      "verify": "Xác minh"
+    },
+    "plugin": "Quy tắc sản phẩm",
+    "generalPlugin": "Sản phẩm chung",
+    "roundtablePlugin": "Bàn tròn điện",
+    "ai": {
+      "title": "AI sản xuất",
+      "privacy": "Gửi tên, siêu dữ liệu, phụ đề và yêu cầu đến nhà cung cấp đã cấu hình. Âm thanh và video vẫn ở máy.",
+      "instruction": "Mô tả thông tin sản phẩm đã xác nhận và thay đổi mong muốn.",
+      "plan": "Tạo kế hoạch AI",
+      "generate": "AI lập kế hoạch và tạo",
+      "configure": "Cấu hình nhà cung cấp và bật AI sản xuất.",
+      "settings": "Cài đặt AI",
+      "queued": "Đã đưa vào hàng đợi sản xuất."
     }
   }
 }

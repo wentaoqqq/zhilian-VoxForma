@@ -1,0 +1,12 @@
+{
+  "id": "general",
+  "version": "1.0.0",
+  "name_key": "production.generalPlugin",
+  "rules": [
+    "Package an existing product video; do not replace or invent its main footage.",
+    "Use only the user's confirmed facts and supplied transcript for claims. Do not invent product measurements, warranty, prices, sales numbers or customer evidence.",
+    "Opening title lasts at most five seconds; brand label follows only if the main video is longer. The separately selected brand outro plays without product overlays.",
+    "Existing burned-in subtitles remain in the source pixels. Preserve a readable embedded subtitle track, or use imported timed subtitles. Do not manufacture or proportionally distribute caption timings.",
+    "Use concise titles in the user's requested language. Only change the cover time when the user requests a specific moment; metadata is not visual evidence."
+  ]
+}

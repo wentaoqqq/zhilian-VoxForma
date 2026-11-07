@@ -1523,7 +1523,9 @@
     "gpu_report_engine_no_family_path": "CPU：沒有適用於你的 GPU 類型的路徑",
     "gpu_report_engine_no_gpu": "CPU：沒有可用的 GPU",
     "gpu_report_engine_needs_accelerator": "需要這台電腦沒有的 GPU（{{needs}}）",
-    "models_dir_desc": "下載的模型存放在這裡。如果此磁碟空間不足，請選擇剩餘空間更多的磁碟。"
+    "models_dir_desc": "下載的模型存放在這裡。如果此磁碟空間不足，請選擇剩餘空間更多的磁碟。",
+    "llmskills_media_production_name": "AI 製作助手",
+    "llmskills_media_production_desc": "AI 產生計畫"
   },
   "gallery": {
     "title": "VoiceStudio 畫廊",
@@ -4657,6 +4659,48 @@
       "verify": "驗證安裝",
       "activate": "啟用引擎",
       "complete": "完成"
+    }
+  },
+  "production": {
+    "title": "影片製作",
+    "product": "產品包裝",
+    "library": "素材庫",
+    "deliveries": "成品庫",
+    "source": "產品影片",
+    "outro": "品牌片尾",
+    "opening": "開場標題",
+    "cover": "封面標題",
+    "publication": "發布標題",
+    "brand": "品牌標籤",
+    "subtitles": "字幕",
+    "keep": "保留現有字幕",
+    "none": "不加新字幕",
+    "srt": "匯入 SRT / VTT",
+    "coverTime": "封面取幀時間（秒）",
+    "generate": "產生四件套",
+    "download": "下載四件套",
+    "choose": "選擇影片",
+    "noRuns": "尚無任務",
+    "edit": "修改後重新產生",
+    "hint": "為現有產品影片加入標題、定時字幕與封面，再接上完整品牌片尾。",
+    "steps": {
+      "inspect": "檢查素材",
+      "render": "轉譯成片",
+      "cover": "製作封面",
+      "verify": "驗收"
+    },
+    "plugin": "產品規則",
+    "generalPlugin": "通用產品",
+    "roundtablePlugin": "電動圓桌",
+    "ai": {
+      "title": "AI 製作助手",
+      "privacy": "僅將所選素材名稱、參數、字幕與你的要求傳給已設定的模型。影音留在本機。",
+      "instruction": "描述已確認的產品資訊，以及想修改的地方。",
+      "plan": "AI 產生計畫",
+      "generate": "AI 一鍵製作",
+      "configure": "請設定模型供應商並啟用影片製作 AI。",
+      "settings": "AI 設定",
+      "queued": "已送至製作佇列。"
     }
   }
 }

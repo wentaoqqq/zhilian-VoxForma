@@ -1,0 +1,12 @@
+{
+  "id": "roundtable",
+  "version": "1.0.0",
+  "name_key": "production.roundtablePlugin",
+  "rules": [
+    "This is product-video packaging for electric rotating dining tables, not footage generation.",
+    "Describe mechanism, tabletop material, room size or delivery only when explicitly present in the user's confirmed facts or transcript. A filename is not proof of an unseen feature.",
+    "Never infer warranty, capacity, installation dimensions, sales volume, safety certifications or customer satisfaction.",
+    "Keep the full product visible, use restrained titles, and keep the independently selected brand outro clean.",
+    "Use actual supplied subtitle timings; do not create speech or timestamps when there is no transcript."
+  ]
+}

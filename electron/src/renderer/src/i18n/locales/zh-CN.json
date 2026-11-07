@@ -1523,7 +1523,9 @@
     "review_mode": "审核模式",
     "review_mode_off": "直接执行到底",
     "translate_cinematic": "影视级",
-    "translate_quality_desc": "快速模式直译且速度快；影视级模式使用 LLM 生成自然表达。"
+    "translate_quality_desc": "快速模式直译且速度快；影视级模式使用 LLM 生成自然表达。",
+    "llmskills_media_production_name": "AI 生产助手",
+    "llmskills_media_production_desc": "AI 生成计划"
   },
   "gallery": {
     "title": "VoiceStudio 音色库",
@@ -4657,6 +4659,48 @@
       "verify": "校验安装",
       "activate": "启用引擎",
       "complete": "完成"
+    }
+  },
+  "production": {
+    "title": "视频生产",
+    "product": "产品包装",
+    "library": "素材库",
+    "deliveries": "成品库",
+    "source": "产品视频",
+    "outro": "品牌片尾",
+    "opening": "开场标题",
+    "cover": "封面标题",
+    "publication": "发布标题",
+    "brand": "品牌标签",
+    "subtitles": "字幕",
+    "keep": "保留已有字幕",
+    "none": "不加新字幕",
+    "srt": "导入 SRT / VTT",
+    "coverTime": "封面取帧时间（秒）",
+    "generate": "生成四件套",
+    "download": "下载四件套",
+    "choose": "选择视频",
+    "noRuns": "暂无任务",
+    "edit": "修改后重新生成",
+    "hint": "为已有产品视频添加标题、定时字幕和封面，再完整接上品牌片尾。",
+    "steps": {
+      "inspect": "检查素材",
+      "render": "渲染成片",
+      "cover": "制作封面",
+      "verify": "验收"
+    },
+    "plugin": "产品规则",
+    "generalPlugin": "通用产品",
+    "roundtablePlugin": "电动圆桌",
+    "ai": {
+      "title": "AI 生产助手",
+      "privacy": "仅将所选素材名称、参数、字幕和你的要求发送给已配置的模型。音视频留在本地。",
+      "instruction": "描述已确认的产品信息，以及你想修改的地方。",
+      "plan": "AI 生成计划",
+      "generate": "AI 一键生成",
+      "configure": "请配置模型供应商，并开启视频生产 AI。",
+      "settings": "AI 设置",
+      "queued": "已提交到生产队列。"
     }
   }
 }

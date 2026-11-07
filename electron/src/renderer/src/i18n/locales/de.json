@@ -1523,7 +1523,9 @@
     "gpu_report_engine_no_family_path": "CPU: kein Pfad für Ihren GPU-Typ",
     "gpu_report_engine_no_gpu": "CPU: keine GPU verfügbar",
     "gpu_report_engine_needs_accelerator": "Benötigt eine GPU ({{needs}}), die dieser Rechner nicht hat",
-    "models_dir_desc": "Hier werden heruntergeladene Modelle gespeichert. Wählen Sie ein Laufwerk mit mehr freiem Speicher, wenn dieses voll wird."
+    "models_dir_desc": "Hier werden heruntergeladene Modelle gespeichert. Wählen Sie ein Laufwerk mit mehr freiem Speicher, wenn dieses voll wird.",
+    "llmskills_media_production_name": "Produktions-KI",
+    "llmskills_media_production_desc": "KI-Plan erstellen"
   },
   "gallery": {
     "title": "VoiceStudio Galerie",
@@ -4657,6 +4659,48 @@
       "verify": "Installation prüfen",
       "activate": "Engine aktivieren",
       "complete": "Abgeschlossen"
+    }
+  },
+  "production": {
+    "title": "Videoproduktion",
+    "product": "Produktgestaltung",
+    "library": "Mediathek",
+    "deliveries": "Ergebnisse",
+    "source": "Produktvideo",
+    "outro": "Markenabspann",
+    "opening": "Anfangstitel",
+    "cover": "Cover-Titel",
+    "publication": "Veröffentlichungstitel",
+    "brand": "Markenname",
+    "subtitles": "Untertitel",
+    "keep": "Vorhandene Untertitel behalten",
+    "none": "Keine neuen Untertitel",
+    "srt": "SRT / VTT importieren",
+    "coverTime": "Cover-Zeitpunkt (Sekunden)",
+    "generate": "Vier Dateien erstellen",
+    "download": "Vier Dateien herunterladen",
+    "choose": "Video auswählen",
+    "noRuns": "Noch keine Aufgaben",
+    "edit": "Bearbeiten und neu erstellen",
+    "hint": "Produktvideo mit Titeln, zeitgesteuerten Untertiteln, Cover und separatem Markenabspann gestalten.",
+    "steps": {
+      "inspect": "Prüfen",
+      "render": "Rendern",
+      "cover": "Cover",
+      "verify": "Validieren"
+    },
+    "plugin": "Produktregeln",
+    "generalPlugin": "Allgemeines Produkt",
+    "roundtablePlugin": "Elektrischer Drehtisch",
+    "ai": {
+      "title": "Produktions-KI",
+      "privacy": "Sendet ausgewählte Dateinamen, Metadaten, Untertitel und Anweisungen an den konfigurierten Anbieter. Audio und Video bleiben lokal.",
+      "instruction": "Bestätigte Produktdaten und gewünschte Änderungen beschreiben.",
+      "plan": "KI-Plan erstellen",
+      "generate": "Mit KI planen und erstellen",
+      "configure": "Anbieter konfigurieren und Produktions-KI aktivieren.",
+      "settings": "KI-Einstellungen",
+      "queued": "Zur Produktionswarteschlange hinzugefügt."
     }
   }
 }

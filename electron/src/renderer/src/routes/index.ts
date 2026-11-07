@@ -55,6 +55,7 @@ const SettingsPage = lazyRouteComponent(
 const ProPage = lazyRouteComponent(() => import('@/features/pro/pro-page'), 'ProPage');
 
 export const rootRoute = createRootRoute({ component: AppShell });
+export const productionRoute = createRoute({getParentRoute: () => rootRoute, path: '/production', component: lazyRouteComponent(() => import('@/features/production/production-page'), 'ProductionPage')});
 export const characterLibraryRoute = createRoute({getParentRoute: () => rootRoute, path: '/avatar/characters', component: lazyRouteComponent(() => import('@/features/avatar/character-library-page'), 'CharacterLibraryPage')});
 export const avatarRoute = createRoute({getParentRoute: () => rootRoute, path: '/avatar', component: lazyRouteComponent(() => import('@/features/avatar/avatar-page'), 'AvatarPage')});
 
@@ -277,6 +278,7 @@ export const diagnosticsRoute = createRoute({
   component: SettingsPage,
 });
 export const routeTree = rootRoute.addChildren([
+  productionRoute,
   avatarRoute,
   characterLibraryRoute,
   diagnosticsRoute,

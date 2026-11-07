@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from core.config import DB_PATH
 from core import db_backup
 from core.version import APP_VERSION
+from production.store_schema import PRODUCTION_SCHEMA
 
 logger = logging.getLogger("omnivoice.db")
 
@@ -37,7 +38,7 @@ def db_conn():
         conn.close()
 
 
-_BASE_SCHEMA = """
+_BASE_SCHEMA = PRODUCTION_SCHEMA + """
     CREATE TABLE IF NOT EXISTS voice_profiles (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,

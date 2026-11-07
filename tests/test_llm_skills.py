@@ -81,7 +81,7 @@ def test_selected_off_matches_runtime_but_allows_explicit_skill_override(skills,
 def test_all_skills_cover_every_consumption_point(skills):
     assert [s.id for s in skills.all_skills()] == [
         "dub_translation", "cinematic_translation", "slot_fitting",
-        "glossary_extract", "direction_parse", "dictation_refinement",
+        "glossary_extract", "direction_parse", "dictation_refinement", "media_production",
     ]
     for s in skills.all_skills():
         assert s.name_key == f"settings.llmskills_{s.id}_name"
