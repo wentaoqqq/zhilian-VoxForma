@@ -8,8 +8,22 @@ branch_labels = depends_on = None
 
 
 def upgrade():
-    from production.store_schema import PRODUCTION_SCHEMA
-    for statement in PRODUCTION_SCHEMA.split(";"):
+    schema = """
+CREATE TABLE IF NOT EXISTS media_assets (
+    id TEXT PRIMARY KEY,
+    sha256 TEXT NOT NULL UNIQUE,
+    filename TEXT NOT NULL,
+    metadata_json TEXT NOT NULL,
+    created_at REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS production_runs (
+    id TEXT PRIMARY KEY REFERENCES jobs(id),
+    plan_json TEXT NOT NULL,
+    steps_json TEXT NOT NULL DEFAULT '{}',
+    artifacts_json TEXT NOT NULL DEFAULT '{}'
+);
+"""
+    for statement in schema.split(";"):
         if statement.strip():
             op.get_bind().execute(sa.text(statement))
 

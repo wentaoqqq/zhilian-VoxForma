@@ -1524,8 +1524,10 @@
     "gpu_report_engine_no_gpu": "CPU: tidak ada GPU",
     "gpu_report_engine_needs_accelerator": "Memerlukan GPU ({{needs}}) yang tidak dimiliki komputer ini",
     "models_dir_desc": "Model yang diunduh disimpan di sini. Pilih drive dengan ruang kosong lebih besar jika drive ini penuh.",
-    "llmskills_media_production_name": "AI produksi",
-    "llmskills_media_production_desc": "Buat rencana AI"
+    "llmskills_media_production_name": "Produksi batch",
+    "llmskills_media_production_desc": "AI memeriksa bingkai dan transkrip; alat lokal menghasilkan seluruh batch.",
+    "llmskills_media_vision_name": "Analisis visual video",
+    "llmskills_media_vision_desc": "AI memeriksa bingkai dan transkrip; alat lokal menghasilkan seluruh batch."
   },
   "gallery": {
     "title": "VoiceStudio Galeri",
@@ -4701,6 +4703,35 @@
       "configure": "Atur penyedia dan aktifkan AI produksi.",
       "settings": "Pengaturan AI",
       "queued": "Dikirim ke antrean produksi."
+    },
+    "batch": {
+      "workbench": "Produksi batch",
+      "brands": "Pengaturan merek",
+      "workflow": "Alur produksi",
+      "product": "Promosi produk",
+      "talking_head": "Video pembicara",
+      "narration": "Adegan narasi",
+      "intake": "Pemasukan materi",
+      "chooseBrand": "Pilih merek tersimpan",
+      "instruction": "Jelaskan tugas atau langsung mulai batch ini.",
+      "cloudHint": "AI memeriksa bingkai dan transkrip; alat lokal menghasilkan seluruh batch.",
+      "start": "Mulai",
+      "upload": "Unggah satu batch",
+      "setupHint": "Atur merek, alur dan AI sekali, lalu mulai batch secara langsung.",
+      "installRuntime": "Pasang lingkungan agen",
+      "importPack": "Impor ZIP alur asli",
+      "newBrand": "Merek baru",
+      "pending": "Materi tertunda",
+      "selectAll": "Pilih semua",
+      "brandName": "Nama merek",
+      "brandNotes": "Konteks merek dan fakta terkonfirmasi",
+      "pack": "Paket alur",
+      "outros": "Kumpulan penutup merek (pilihan otomatis)",
+      "materials": "Materi tersedia",
+      "stickers": "Stiker merek",
+      "voice": "Suara Studio bawaan",
+      "log": "Log eksekusi AI",
+      "retryFailed": "Coba ulang hanya masukan gagal"
     }
   }
 }

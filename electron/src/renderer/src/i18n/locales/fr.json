@@ -1526,8 +1526,10 @@
     "gpu_report_engine_no_gpu": "CPU : aucun GPU disponible",
     "gpu_report_engine_needs_accelerator": "Nécessite un GPU ({{needs}}) que cette machine n'a pas",
     "models_dir_desc": "Les modèles téléchargés sont stockés ici. Choisissez un disque avec plus d'espace libre si celui-ci se remplit.",
-    "llmskills_media_production_name": "IA de production",
-    "llmskills_media_production_desc": "Créer un plan IA"
+    "llmskills_media_production_name": "Production par lots",
+    "llmskills_media_production_desc": "L’IA examine les images et transcriptions ; les outils locaux produisent le lot complet.",
+    "llmskills_media_vision_name": "Analyse visuelle vidéo",
+    "llmskills_media_vision_desc": "L’IA examine les images et transcriptions ; les outils locaux produisent le lot complet."
   },
   "gallery": {
     "title": "VoiceStudio Galerie",
@@ -4703,6 +4705,35 @@
       "configure": "Configurez un fournisseur et activez l’IA de production.",
       "settings": "Réglages IA",
       "queued": "Ajouté à la file de production."
+    },
+    "batch": {
+      "workbench": "Production par lots",
+      "brands": "Réglages de marque",
+      "workflow": "Chaîne de production",
+      "product": "Promotion produit",
+      "talking_head": "Vidéo de présentation orale",
+      "narration": "Scènes avec narration",
+      "intake": "Import de matériaux",
+      "chooseBrand": "Choisir une marque enregistrée",
+      "instruction": "Décrivez la tâche ou lancez directement ce lot.",
+      "cloudHint": "L’IA examine les images et transcriptions ; les outils locaux produisent le lot complet.",
+      "start": "Démarrer",
+      "upload": "Importer un lot",
+      "setupHint": "Configurez marque, workflow et IA une fois, puis lancez vos lots directement.",
+      "installRuntime": "Installer le moteur de l’agent",
+      "importPack": "Importer le workflow original ZIP",
+      "newBrand": "Nouvelle marque",
+      "pending": "Médias en attente",
+      "selectAll": "Tout sélectionner",
+      "brandName": "Nom de marque",
+      "brandNotes": "Contexte de marque et faits confirmés",
+      "pack": "Paquet de workflow",
+      "outros": "Génériques de marque (choix automatique)",
+      "materials": "Matériaux disponibles",
+      "stickers": "Autocollants de marque",
+      "voice": "Voix Studio par défaut",
+      "log": "Journal d’exécution IA",
+      "retryFailed": "Relancer uniquement les échecs"
     }
   }
 }

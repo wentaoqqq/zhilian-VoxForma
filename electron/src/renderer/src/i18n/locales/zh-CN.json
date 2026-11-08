@@ -1524,8 +1524,10 @@
     "review_mode_off": "直接执行到底",
     "translate_cinematic": "影视级",
     "translate_quality_desc": "快速模式直译且速度快；影视级模式使用 LLM 生成自然表达。",
-    "llmskills_media_production_name": "AI 生产助手",
-    "llmskills_media_production_desc": "AI 生成计划"
+    "llmskills_media_production_name": "批量生产",
+    "llmskills_media_production_desc": "AI 将查看抽样画面和字幕，调用本地工具完成整批制作。",
+    "llmskills_media_vision_name": "视频画面理解",
+    "llmskills_media_vision_desc": "AI 将查看抽样画面和字幕，调用本地工具完成整批制作。"
   },
   "gallery": {
     "title": "VoiceStudio 音色库",
@@ -4701,6 +4703,35 @@
       "configure": "请配置模型供应商，并开启视频生产 AI。",
       "settings": "AI 设置",
       "queued": "已提交到生产队列。"
+    },
+    "batch": {
+      "workbench": "批量生产",
+      "brands": "品牌配置",
+      "workflow": "生产线",
+      "product": "产品获客",
+      "talking_head": "口播人设",
+      "narration": "配音场景",
+      "intake": "素材入库",
+      "chooseBrand": "选择已配置的品牌",
+      "instruction": "告诉 AI 要做什么，或者直接开始这一批。",
+      "cloudHint": "AI 将查看抽样画面和字幕，调用本地工具完成整批制作。",
+      "start": "开始",
+      "upload": "上传一批素材",
+      "setupHint": "品牌、工作流和 AI 只需配置一次，之后直接批量开始。",
+      "installRuntime": "安装 AI 执行环境",
+      "importPack": "导入原项目工作流 ZIP",
+      "newBrand": "新建品牌",
+      "pending": "待处理素材",
+      "selectAll": "全选",
+      "brandName": "品牌名称",
+      "brandNotes": "品牌资料与已确认卖点",
+      "pack": "工作流包",
+      "outros": "品牌片尾池（自动选择）",
+      "materials": "可用素材",
+      "stickers": "品牌贴纸",
+      "voice": "默认配音声音",
+      "log": "AI 执行过程",
+      "retryFailed": "只重试失败项"
     }
   }
 }

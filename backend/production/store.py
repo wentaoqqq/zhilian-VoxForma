@@ -23,6 +23,8 @@ def get_asset(asset_id: str) -> dict:
         raise ValueError("Media asset not found.")
     data = dict(row)
     data.update(json.loads(data.pop("metadata_json")))
+    with db_conn() as conn:
+        data['use_count'] = conn.execute('SELECT COUNT(*) FROM production_asset_usage WHERE asset_id=?', (asset_id,)).fetchone()[0]
     return data
 
 

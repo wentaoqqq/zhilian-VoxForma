@@ -1524,8 +1524,10 @@
     "gpu_report_engine_no_gpu": "CPU: कोई GPU उपलब्ध नहीं",
     "gpu_report_engine_needs_accelerator": "ऐसे GPU ({{needs}}) की ज़रूरत है जो इस मशीन में नहीं है",
     "models_dir_desc": "डाउनलोड किए गए मॉडल यहाँ रखे जाते हैं। यह ड्राइव भर जाए तो ज़्यादा खाली जगह वाली ड्राइव चुनें।",
-    "llmskills_media_production_name": "निर्माण AI",
-    "llmskills_media_production_desc": "AI से योजना बनाएँ"
+    "llmskills_media_production_name": "बैच निर्माण",
+    "llmskills_media_production_desc": "AI चुने हुए फ़्रेम और प्रतिलेख देखता है; स्थानीय उपकरण पूरा बैच बनाते हैं।",
+    "llmskills_media_vision_name": "वीडियो दृश्य विश्लेषण",
+    "llmskills_media_vision_desc": "AI चुने हुए फ़्रेम और प्रतिलेख देखता है; स्थानीय उपकरण पूरा बैच बनाते हैं।"
   },
   "gallery": {
     "title": "VoiceStudio गैलरी",
@@ -4701,6 +4703,35 @@
       "configure": "प्रदाता सेट करें और निर्माण AI चालू करें।",
       "settings": "AI सेटिंग",
       "queued": "निर्माण कतार में जोड़ा गया।"
+    },
+    "batch": {
+      "workbench": "बैच निर्माण",
+      "brands": "ब्रांड सेटिंग",
+      "workflow": "निर्माण प्रक्रिया",
+      "product": "उत्पाद प्रचार",
+      "talking_head": "वक्ता वीडियो",
+      "narration": "वाचन दृश्य",
+      "intake": "सामग्री आयात",
+      "chooseBrand": "सहेजा हुआ ब्रांड चुनें",
+      "instruction": "कार्य बताएँ या यह बैच सीधे शुरू करें।",
+      "cloudHint": "AI चुने हुए फ़्रेम और प्रतिलेख देखता है; स्थानीय उपकरण पूरा बैच बनाते हैं।",
+      "start": "शुरू करें",
+      "upload": "सामग्री का बैच अपलोड करें",
+      "setupHint": "ब्रांड, प्रक्रिया और AI एक बार सेट करें, फिर सीधे बैच शुरू करें।",
+      "installRuntime": "एजेंट परिवेश स्थापित करें",
+      "importPack": "मूल प्रक्रिया ZIP आयात करें",
+      "newBrand": "नया ब्रांड",
+      "pending": "लंबित सामग्री",
+      "selectAll": "सभी चुनें",
+      "brandName": "ब्रांड नाम",
+      "brandNotes": "ब्रांड जानकारी और पुष्ट तथ्य",
+      "pack": "प्रक्रिया पैक",
+      "outros": "ब्रांड समापन संग्रह (स्वचालित चयन)",
+      "materials": "उपलब्ध सामग्री",
+      "stickers": "ब्रांड स्टिकर",
+      "voice": "डिफ़ॉल्ट Studio आवाज़",
+      "log": "AI निष्पादन लॉग",
+      "retryFailed": "केवल विफल इनपुट फिर चलाएँ"
     }
   }
 }

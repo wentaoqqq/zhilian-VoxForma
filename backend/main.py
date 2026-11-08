@@ -1360,6 +1360,8 @@ async def lifespan(app: FastAPI):
     _production = sys.modules.get("api.routers.production")
     if _production is not None:
         await _production.queue.stop()
+        from production import agent as _production_agent
+        await _production_agent.queue.stop()
     try:
         from services.telephony import gateway as telephony_gateway
         await telephony_gateway.stop()

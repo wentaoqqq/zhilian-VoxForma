@@ -1,115 +1,46 @@
-# Video production: product workflow
+# 视频生产：完整智能体与批量工作流
 
-The **Video production** workspace packages an existing product clip. Its three
-views are Product packaging, Media library, and Deliveries. This is the first
-working slice of the media-workbench integration, not the completed three-line
-editor.
+日常入口是：选择一次品牌和生产线，上传一批素材，点击「开始」，或输入自然语言要求。开场标题、封面标题、发布标题、字幕策略、封面帧和片尾不再是每条任务的必填表单。
 
-## Use the workspace
+## 执行链
 
-1. Upload or select a product video and a finished brand-outro video. Both have
-   inline previews. Uploads are limited to 2 GiB per file; matching content is
-   stored once. Preview support depends on the browser's codecs.
-2. Choose General product or Electric round table rules. These are declarative
-   content rules, not separate models. Customer names and claims are user input.
-3. Enter opening, cover and publication titles, an optional brand label, and
-   a cover-frame time. The frame comes from the original product clip.
-4. Choose a subtitle strategy:
-   - **Keep existing subtitles** retains burned-in text and burns the first
-     readable embedded text subtitle track into the export.
-   - **No new subtitles** adds no subtitle overlay and drops soft subtitle
-     tracks. Text already in the source pixels remains visible.
-   - **Import SRT / VTT** uses supplied timestamps. It does not invent speech,
-     guess timings, translate, or automatically run ASR. Correct malformed
-     cues before submission. Valid overlapping timings are retained. Bitmap subtitle tracks need an
-     imported text transcript.
-5. Generate. Closing the browser does not stop queued work. Tasks expose actual
-   inspect, render, cover and verify steps, plus cancellation and retry.
-6. Preview the result in Deliveries and download a ZIP with the video, 3:4
-   cover, publication title, and cover-title Markdown file.
+1. 应用冻结本批的品牌资料、素材列表、工作流版本和用户指令，创建逐条结果记录。
+2. 固定版本 OpenCode 执行智能体读取原项目的流程、行业预设、模板和工具，在独立批次目录中工作。
+3. 智能体调用画面工具：FFmpeg 按真实时间抽九帧、制作带时间标签的联系表，视觉模型分析原图。需要更多细节时可继续抽帧和查看。文件名不是画面识别证据。
+4. 有语音时调用本地已安装 ASR，保存实际词级/段级时间戳；文案配音通过 Studio 原生声音和 `/generate` 一次提交完整文案，保存配音再剪辑。ASR 子进程使用统一 GPU 租约，任务后卸载退出；不静默下载模型。
+5. 智能体按原工作流编排整批任务，执行原 HTML/GSAP 模板、字体子集化、Hyperframes 渲染、音画合成、自动片尾和封面工具。它具有读写及命令执行能力，不限于修改几项文案。
+6. 对实际成片做完整解码、分辨率/帧率检查，视觉模型检查成片抽帧和独立封面。失败则可修正重做；通过后注册实际四件套。仅回复「完成」不算成功。
+7. 单条失败记录具体原因并继续其他输入。页面展示每条结果、智能体执行日志、预览和整批下载。重试仅提交未成功的输入，保留之前交付并复制中间文件供复用。
 
-Changing the product clears its old imported captions, cover time and titles.
-The brand outro and label can be reused. This browser stores the current draft;
-the backend stores submitted plans and jobs. Editing a finished task opens a
-copy in the form and leaves the previous delivery intact.
+四条工作流入口对应原库：素材入库、口播人设、产品获客、配音场景。素材入库进行实际切分/标注并写入品牌素材索引；其余三线产出成片、3:4 封面、发布标题 TXT、封面图标题 Markdown。口播/配音素材使用次数只在成功发布时记录，产品包装不消耗 B-roll 次数。
 
-## In-app AI
+## 一次性设置
 
-Configure a provider under **Settings → Models → LLM**, then enable/route
-**Production AI** in LLM Skills. It uses the existing provider and encrypted
-credential settings, including DeepSeek or another compatible configured model.
-There is no second credential form, model download, chat server or GPU model.
+- 在「设置 → 模型 → LLM」配置支持工具调用的生产模型，并为「视频画面理解」选择支持图片输入的模型。二者可以是不同提供商。原有加密凭据管理继续使用，不增加第二套密钥表单。
+- 页面点击「安装 AI 执行环境」才安装固定 OpenCode 1.2.27、Hyperframes 0.6.93、字体工具和渲染浏览器；打开页面只查状态，不安装、不调用 AI。
+- 环境需要 Node.js 22+、FFmpeg/FFprobe、Bash、jq。Windows 使用 Git Bash；生产部署在 WSL。ASR/TTS 模型仍从 Studio 模型设置中显式安装。
+- 导入可信原项目 ZIP：根目录包含 `流程/`、`4_engine/templates/`、`4_engine/preset/`、`4_engine/references/`、`4_engine/tools/`、GSAP、字体和音效。不要打包凭据、旧输出、模型、虚拟环境或旧收件箱。工作流包含可执行脚本，只导入自己可信的库。
+- 品牌中一次保存已确认卖点、片尾池、素材池、贴纸和默认 Studio 声音。产品片尾由智能体从池中自动选择。原项目的行业规则沿用；旧客户名称和样例路径不覆盖当前品牌资料。
+- 给现有服务器部署时可直接由管理员预装原工作流包，用户不需要重复导入。
 
-- **Draft with AI** updates the current editable plan without creating a job.
-- **AI plan and generate** validates the suggested plan and submits through
-  exactly the same queue as the manual Generate button.
+WSL 下已实测浏览器 beginFrame 预热会卡住，默认使用 `PRODUCER_FORCE_SCREENSHOT=true` 的兼容逐帧捕获；仍由原 HTML/GSAP 引擎出片，不改变分辨率和帧率。其他系统保留渲染器默认捕获方式，可通过环境显式覆盖。
 
-The request sends selected filenames, metadata, the draft, supplied subtitles
-and the instruction. It sends no source audio, video or extracted frames. The
-model has **not viewed the video**: it cannot identify unseen product features
-or choose the most attractive frame from a filename. Supply confirmed facts,
-review generated copy, and use a known cover time.
+文本模型的工具调用经过仅当前批次有效的本机网关；视觉工具将抽样帧和封面发给选定视觉模型。转写音频在本地处理，转写文字会进入生产模型上下文。来源视频不整段上传给模型。使用远端提供商时，需按其计费和数据政策使用；模型生成质量取决于素材、提示和所选模型。
 
-AI can change the three titles, brand label and cover time. It cannot switch
-assets, rewrite subtitle timings, change frame rates or execute commands.
-Invalid output or missing inputs are reported instead of being silently
-replaced with marketing copy. A numeric consistency check rejects newly
-introduced numbers; it is not proof of a claim. Disabled/unconfigured AI leaves
-manual production available. Opening the page only reads configuration.
+## 存储、重试与回滚
 
-To keep the first version simple, this uses Studio's existing LLM service
-instead of adding OpenCode. OpenCode/tool-driven asset selection remains a
-later adapter and is not required for this workflow.
+`DATA_DIR/production/` 下保存 assets、packs、runtime、batches、deliveries。工作流包不写入公共 Git 仓库，避免误公开客户规则和大体积资源。每批保留工作副本、分析文件、真实时间戳、原生智能体会话编号和执行日志。
 
-## Rendering and storage
+应用负责批次队列、文件交付和素材计数；OpenCode 负责理解、工具选择、编排与修复。ASR/TTS 继续复用现有模型/GPU 调度。进程重启会将中断任务记为失败，供手动重试；不声称精确恢复每一步或自动续跑旧模型对话。
 
-- FFmpeg/FFprobe use the existing media-tools resolver. No additional production
-  dependency was added to the Python or JavaScript manifests.
-- Output is 1080×1920, 30 fps, H.264 CRF 18, AAC stereo 48 kHz. Normalization
-  preserves aspect ratio and pads instead of stretching.
-- Opening text ends by five seconds; an optional brand label follows it. A
-  separately normalized outro is appended without product overlays.
-- Covers are 1080×1440. Fonts resolve on the host: Microsoft YaHei on Windows,
-  Noto Sans CJK SC on Linux. Install an appropriate system font on WSL if CJK
-  glyphs are missing; no commercial font is bundled.
-- Initial rendering uses CPU encoding with two encoding/filter threads and one
-  production task at a time. It does not use Student's VRAM or change the
-  avatar workspace's native 25/optional 60 fps settings.
-- FFmpeg streams frames; Python does not retain entire videos in memory.
-  Work and deliveries stay under `DATA_DIR/production`. No source-library,
-  media or model directory is removed.
-- `media_assets` and `production_runs` are additive tables. Shared `jobs` owns
-  task state. Submitted plans and rule-pack snapshots are frozen.
-- Retry creates a new task and renders again. The shared startup sweep marks
-  interrupted tasks failed after a server restart. Automatic step-level resume
-  is **not implemented** in this slice.
+更新仅增加品牌/批次/使用次数数据表，原音色、数字人、项目和旧交付不迁移或删除。旧单条 `/production/runs` 接口保留兼容，但不再作为主页面工作流。旧文本助手 `/production/ai/plan` 返回 410，不能再冒充完整智能体。
 
-## Verification and limits
+回滚使用部署前保留的 release 和数据库在线备份；切换旧 release 不删除新增素材或交付。回退时无需恢复数据库覆盖期间新增的业务数据。
 
-```mermaid
-flowchart LR
-    Upload[Select or upload source and outro] --> Draft[Current draft]
-    Draft --> AI[Configured AI plus product rules]
-    AI --> Check[Validate typed changes and inputs]
-    Check --> Draft
-    Check -->|AI plan and generate| Queue[Shared production queue]
-    Draft -->|Manual generate| Queue
-    Queue --> Render[Inspect / render / cover / verify]
-    Render --> Delivery[Immutable delivery and ZIP]
-    Delivery -->|Edit a copy| Draft
-```
+## 验证界限
 
-Targeted checks cover real FFmpeg output for voiced/landscape/60 fps, silent,
-short and embedded-subtitle inputs; clean outros; range preview; cover size;
-ZIP downloads; cancellation; immutable plans; migration; and AI validation.
-The actual provider SDK is exercised against a local deterministic HTTP
-responder, including AI → queue → real render → download. Browser checks use
-the same approach, without paid requests. These checks do not establish real
-model copy quality, customer visual acceptance or local GPU inference quality.
-The full application startup test still requires the normal speech environment
-(including Torch); it is not replaced by the isolated production-router checks.
+本地可验证真实 FFmpeg、图片输入、工具 HTTP 调用、批量快照、失败项重试、ASR 时间戳转换及交付 ZIP；固定 OpenCode CLI 还须通过本地脚本化模型接口的实际命令执行检查。脚本化模型只验证调用链，不证明模型理解或视频效果。
 
-Talking-head A/B-roll editing, narration montage/TTS, automatic ASR/translation,
-Hyperframes animation, bulk planning, installable plugins and automatic restart
-recovery remain outside this first product slice. Existing TTS and avatar
-workspaces continue through their current integrations.
+实际 AI 的批量端到端验收需要已配置的工具调用模型、图片模型和真实素材。没有提供商时明确显示设置状态，不用静态示例或替代文案伪造 AI 成功。
+
+2026-11-08 验证记录：657 项针对性后端/语言检查通过，20 项页面和导航测试通过，前端类型检查与 22 语言检查通过。服务器已使用隔离数据库和脚本化模型响应，串联真实 OpenCode → 本机模型网关 → 九帧识图 → 原 HTML/GSAP/字体/Hyperframes → 自动片尾 → 原设计封面 → 图像验收 → 四件套 ZIP；验证一条成功、一条失败后成功结果保留。此测试不代表真实模型的内容理解或客户视频质量已经验收。原 ASR 词时间码、进程退出、取消后队列可继续运行另有针对性测试。

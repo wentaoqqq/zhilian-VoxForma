@@ -17,7 +17,7 @@ from services.srt_parser import parse_srt
 WIDTH, HEIGHT, FPS = 1080, 1920, 30
 
 
-async def probe(path: Path) -> dict:
+async def probe(path: Path, *, video_required: bool = True) -> dict:
     tool = find_ffprobe()
     if not tool:
         raise ValueError("FFprobe is missing. Install media tools in Settings.")
@@ -35,14 +35,14 @@ async def probe(path: Path) -> dict:
         raise ValueError("Cannot read this video. Upload a decodable video file.")
     raw = json.loads(out)
     video = next((s for s in raw.get("streams", []) if s["codec_type"] == "video" and not s.get("disposition", {}).get("attached_pic")), None)
-    if video is None:
+    if video is None and (video_required or not any(s['codec_type'] == 'audio' for s in raw.get('streams', []))):
         raise ValueError("The file has no video stream.")
-    duration = float(video.get("duration") or raw.get("format", {}).get("duration", 0))
+    duration = float((video or {}).get("duration") or raw.get("format", {}).get("duration", 0))
     if not math.isfinite(duration) or duration <= 0:
         raise ValueError("The video has no valid duration.")
     return {
-        "duration": duration, "width": int(video["width"]), "height": int(video["height"]),
-        "frame_rate": video.get("avg_frame_rate", "0/1"),
+        "duration": duration, "width": int((video or {}).get("width", 0)), "height": int((video or {}).get("height", 0)),
+        "frame_rate": (video or {}).get("avg_frame_rate", "0/1"), "kind": 'video' if video else 'audio',
         "has_audio": any(s["codec_type"] == "audio" for s in raw["streams"]),
         "has_subtitles": any(s["codec_type"] == "subtitle" for s in raw["streams"]),
     }

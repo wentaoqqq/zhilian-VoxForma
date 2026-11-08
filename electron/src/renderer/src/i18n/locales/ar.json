@@ -1552,8 +1552,10 @@
     "gpu_report_engine_no_gpu": "CPU: لا يتوفر GPU",
     "gpu_report_engine_needs_accelerator": "يحتاج إلى GPU ({{needs}}) غير موجود في هذا الجهاز",
     "models_dir_desc": "تُخزَّن النماذج المنزّلة هنا. اختر قرصًا به مساحة أكبر إذا امتلأ هذا القرص.",
-    "llmskills_media_production_name": "ذكاء الإنتاج",
-    "llmskills_media_production_desc": "إنشاء خطة بالذكاء"
+    "llmskills_media_production_name": "إنتاج الدُفعات",
+    "llmskills_media_production_desc": "يفحص الذكاء إطارات ونصوصًا مختارة وتنتج الأدوات المحلية الدفعة كاملة.",
+    "llmskills_media_vision_name": "تحليل مشاهد الفيديو",
+    "llmskills_media_vision_desc": "يفحص الذكاء إطارات ونصوصًا مختارة وتنتج الأدوات المحلية الدفعة كاملة."
   },
   "gallery": {
     "title": "VoiceStudio معرض",
@@ -4753,6 +4755,35 @@
       "configure": "اضبط المزوّد وفعّل ذكاء الإنتاج.",
       "settings": "إعدادات الذكاء",
       "queued": "أُضيف إلى قائمة انتظار الإنتاج."
+    },
+    "batch": {
+      "workbench": "إنتاج الدُفعات",
+      "brands": "إعدادات العلامة",
+      "workflow": "مسار الإنتاج",
+      "product": "ترويج المنتج",
+      "talking_head": "فيديو المتحدث",
+      "narration": "مشاهد التعليق الصوتي",
+      "intake": "إدخال المواد",
+      "chooseBrand": "اختيار علامة محفوظة",
+      "instruction": "صف المهمة أو ابدأ هذه الدفعة مباشرة.",
+      "cloudHint": "يفحص الذكاء إطارات ونصوصًا مختارة وتنتج الأدوات المحلية الدفعة كاملة.",
+      "start": "بدء",
+      "upload": "رفع دفعة مواد",
+      "setupHint": "اضبط العلامة والمسار والذكاء مرة واحدة ثم ابدأ الدُفعات مباشرة.",
+      "installRuntime": "تثبيت بيئة الوكيل",
+      "importPack": "استيراد ZIP لمسار العمل الأصلي",
+      "newBrand": "علامة جديدة",
+      "pending": "المواد المعلقة",
+      "selectAll": "تحديد الكل",
+      "brandName": "اسم العلامة",
+      "brandNotes": "معلومات العلامة والحقائق المؤكدة",
+      "pack": "حزمة مسار العمل",
+      "outros": "مجموعة خواتم العلامة (اختيار تلقائي)",
+      "materials": "المواد المتاحة",
+      "stickers": "ملصقات العلامة",
+      "voice": "صوت Studio الافتراضي",
+      "log": "سجل تنفيذ الذكاء",
+      "retryFailed": "إعادة المحاولة للعناصر الفاشلة فقط"
     }
   }
 }

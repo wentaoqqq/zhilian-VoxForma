@@ -1526,8 +1526,10 @@
     "gpu_report_engine_no_gpu": "CPU: no hay GPU disponible",
     "gpu_report_engine_needs_accelerator": "Necesita una GPU ({{needs}}) que este equipo no tiene",
     "models_dir_desc": "Aquí se guardan los modelos descargados. Elige una unidad con más espacio libre si esta se llena.",
-    "llmskills_media_production_name": "IA de producción",
-    "llmskills_media_production_desc": "Crear plan con IA"
+    "llmskills_media_production_name": "Producción por lotes",
+    "llmskills_media_production_desc": "La IA examina fotogramas y transcripciones; las herramientas locales producen todo el lote.",
+    "llmskills_media_vision_name": "Análisis visual de vídeo",
+    "llmskills_media_vision_desc": "La IA examina fotogramas y transcripciones; las herramientas locales producen todo el lote."
   },
   "gallery": {
     "title": "VoiceStudio Galería",
@@ -4703,6 +4705,35 @@
       "configure": "Configura un proveedor y activa la IA de producción.",
       "settings": "Ajustes de IA",
       "queued": "Enviado a la cola de producción."
+    },
+    "batch": {
+      "workbench": "Producción por lotes",
+      "brands": "Configuración de marca",
+      "workflow": "Línea de producción",
+      "product": "Promoción de productos",
+      "talking_head": "Vídeo de presentador",
+      "narration": "Escenas narradas",
+      "intake": "Incorporación de material",
+      "chooseBrand": "Elegir una marca guardada",
+      "instruction": "Describe la tarea o inicia directamente este lote.",
+      "cloudHint": "La IA examina fotogramas y transcripciones; las herramientas locales producen todo el lote.",
+      "start": "Iniciar",
+      "upload": "Subir un lote",
+      "setupHint": "Configura marca, flujo e IA una vez; después inicia los lotes directamente.",
+      "installRuntime": "Instalar entorno del agente",
+      "importPack": "Importar flujo original ZIP",
+      "newBrand": "Nueva marca",
+      "pending": "Material pendiente",
+      "selectAll": "Seleccionar todo",
+      "brandName": "Nombre de marca",
+      "brandNotes": "Datos de marca y hechos confirmados",
+      "pack": "Paquete de flujo",
+      "outros": "Cierres de marca (selección automática)",
+      "materials": "Material disponible",
+      "stickers": "Adhesivos de marca",
+      "voice": "Voz predeterminada de Studio",
+      "log": "Registro de ejecución de IA",
+      "retryFailed": "Reintentar solo los fallidos"
     }
   }
 }

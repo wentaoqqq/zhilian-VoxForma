@@ -1524,8 +1524,10 @@
     "gpu_report_engine_no_gpu": "CPU：GPU がありません",
     "gpu_report_engine_needs_accelerator": "このマシンにない GPU（{{needs}}）が必要です",
     "models_dir_desc": "ダウンロードしたモデルはここに保存されます。空き容量が足りなくなったら、より空きのあるドライブを選んでください。",
-    "llmskills_media_production_name": "制作 AI",
-    "llmskills_media_production_desc": "AI で計画を作成"
+    "llmskills_media_production_name": "一括制作",
+    "llmskills_media_production_desc": "AI が抽出フレームと字幕を確認し、ローカルツールで全件を制作します。",
+    "llmskills_media_vision_name": "映像理解",
+    "llmskills_media_vision_desc": "AI が抽出フレームと字幕を確認し、ローカルツールで全件を制作します。"
   },
   "gallery": {
     "title": "VoiceStudio ギャラリー",
@@ -4701,6 +4703,35 @@
       "configure": "プロバイダーを設定し、制作 AI を有効にしてください。",
       "settings": "AI 設定",
       "queued": "制作キューに追加しました。"
+    },
+    "batch": {
+      "workbench": "一括制作",
+      "brands": "ブランド設定",
+      "workflow": "制作フロー",
+      "product": "製品集客",
+      "talking_head": "人物トーク",
+      "narration": "ナレーション場面",
+      "intake": "素材登録",
+      "chooseBrand": "保存済みブランドを選択",
+      "instruction": "AI に指示するか、この一括処理を開始してください。",
+      "cloudHint": "AI が抽出フレームと字幕を確認し、ローカルツールで全件を制作します。",
+      "start": "開始",
+      "upload": "素材をまとめてアップロード",
+      "setupHint": "ブランド、フロー、AI を一度設定すれば、その後は一括開始できます。",
+      "installRuntime": "エージェント環境を導入",
+      "importPack": "元のワークフロー ZIP を読み込む",
+      "newBrand": "ブランド追加",
+      "pending": "未処理の素材",
+      "selectAll": "すべて選択",
+      "brandName": "ブランド名",
+      "brandNotes": "ブランド情報と確認済みの事実",
+      "pack": "ワークフローパック",
+      "outros": "ブランドエンディング集（自動選択）",
+      "materials": "利用可能な素材",
+      "stickers": "ブランドステッカー",
+      "voice": "既定の Studio 音声",
+      "log": "AI 実行ログ",
+      "retryFailed": "失敗した入力だけ再試行"
     }
   }
 }

@@ -1524,8 +1524,10 @@
     "gpu_report_engine_no_gpu": "CPU: ingen GPU tillgänglig",
     "gpu_report_engine_needs_accelerator": "Kräver en GPU ({{needs}}) som den här datorn inte har",
     "models_dir_desc": "Nedladdade modeller lagras här. Välj en enhet med mer ledigt utrymme om den här blir full.",
-    "llmskills_media_production_name": "Produktions-AI",
-    "llmskills_media_production_desc": "Skapa AI-plan"
+    "llmskills_media_production_name": "Batchproduktion",
+    "llmskills_media_production_desc": "AI granskar bildrutor och transkript; lokala verktyg producerar hela batchen.",
+    "llmskills_media_vision_name": "Visuell videoanalys",
+    "llmskills_media_vision_desc": "AI granskar bildrutor och transkript; lokala verktyg producerar hela batchen."
   },
   "gallery": {
     "title": "VoiceStudio Galleri",
@@ -4701,6 +4703,35 @@
       "configure": "Konfigurera en leverantör och aktivera produktions-AI.",
       "settings": "AI-inställningar",
       "queued": "Tillagd i produktionskön."
+    },
+    "batch": {
+      "workbench": "Batchproduktion",
+      "brands": "Varumärkesinställningar",
+      "workflow": "Produktionslinje",
+      "product": "Produktmarknadsföring",
+      "talking_head": "Talande presentatör",
+      "narration": "Berättade scener",
+      "intake": "Materialinmatning",
+      "chooseBrand": "Välj sparat varumärke",
+      "instruction": "Beskriv uppgiften eller starta batchen direkt.",
+      "cloudHint": "AI granskar bildrutor och transkript; lokala verktyg producerar hela batchen.",
+      "start": "Starta",
+      "upload": "Ladda upp en batch",
+      "setupHint": "Ställ in varumärke, arbetsflöde och AI en gång och starta sedan batcher direkt.",
+      "installRuntime": "Installera agentmiljö",
+      "importPack": "Importera ursprungligt arbetsflöde som ZIP",
+      "newBrand": "Nytt varumärke",
+      "pending": "Väntande material",
+      "selectAll": "Markera alla",
+      "brandName": "Varumärkesnamn",
+      "brandNotes": "Varumärkesinformation och bekräftade fakta",
+      "pack": "Arbetsflödespaket",
+      "outros": "Avslutningspool (automatiskt val)",
+      "materials": "Tillgängligt material",
+      "stickers": "Varumärkesdekaler",
+      "voice": "Standardröst i Studio",
+      "log": "AI-körningslogg",
+      "retryFailed": "Försök bara misslyckade indata igen"
     }
   }
 }

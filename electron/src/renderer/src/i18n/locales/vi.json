@@ -1524,8 +1524,10 @@
     "gpu_report_engine_no_gpu": "CPU: không có GPU",
     "gpu_report_engine_needs_accelerator": "Cần GPU ({{needs}}) mà máy này không có",
     "models_dir_desc": "Các mô hình đã tải được lưu ở đây. Hãy chọn ổ có nhiều dung lượng trống hơn nếu ổ này đầy.",
-    "llmskills_media_production_name": "AI sản xuất",
-    "llmskills_media_production_desc": "Tạo kế hoạch AI"
+    "llmskills_media_production_name": "Sản xuất hàng loạt",
+    "llmskills_media_production_desc": "AI xem khung hình và bản chép lời; công cụ cục bộ tạo toàn bộ lô.",
+    "llmskills_media_vision_name": "Phân tích hình ảnh video",
+    "llmskills_media_vision_desc": "AI xem khung hình và bản chép lời; công cụ cục bộ tạo toàn bộ lô."
   },
   "gallery": {
     "title": "VoiceStudio Thư viện ảnh",
@@ -4701,6 +4703,35 @@
       "configure": "Cấu hình nhà cung cấp và bật AI sản xuất.",
       "settings": "Cài đặt AI",
       "queued": "Đã đưa vào hàng đợi sản xuất."
+    },
+    "batch": {
+      "workbench": "Sản xuất hàng loạt",
+      "brands": "Cấu hình thương hiệu",
+      "workflow": "Quy trình sản xuất",
+      "product": "Quảng bá sản phẩm",
+      "talking_head": "Video người nói",
+      "narration": "Cảnh thuyết minh",
+      "intake": "Nhập tư liệu",
+      "chooseBrand": "Chọn thương hiệu đã lưu",
+      "instruction": "Mô tả yêu cầu hoặc bắt đầu ngay cả lô này.",
+      "cloudHint": "AI xem khung hình và bản chép lời; công cụ cục bộ tạo toàn bộ lô.",
+      "start": "Bắt đầu",
+      "upload": "Tải lên một lô tư liệu",
+      "setupHint": "Cấu hình thương hiệu, quy trình và AI một lần, sau đó bắt đầu lô trực tiếp.",
+      "installRuntime": "Cài môi trường tác nhân",
+      "importPack": "Nhập ZIP quy trình gốc",
+      "newBrand": "Thương hiệu mới",
+      "pending": "Tư liệu chờ xử lý",
+      "selectAll": "Chọn tất cả",
+      "brandName": "Tên thương hiệu",
+      "brandNotes": "Thông tin thương hiệu và dữ kiện xác nhận",
+      "pack": "Gói quy trình",
+      "outros": "Kho đoạn kết thương hiệu (tự chọn)",
+      "materials": "Tư liệu có sẵn",
+      "stickers": "Nhãn dán thương hiệu",
+      "voice": "Giọng Studio mặc định",
+      "log": "Nhật ký thực thi AI",
+      "retryFailed": "Chỉ thử lại các mục thất bại"
     }
   }
 }

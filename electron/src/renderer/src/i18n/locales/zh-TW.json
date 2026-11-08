@@ -1524,8 +1524,10 @@
     "gpu_report_engine_no_gpu": "CPU：沒有可用的 GPU",
     "gpu_report_engine_needs_accelerator": "需要這台電腦沒有的 GPU（{{needs}}）",
     "models_dir_desc": "下載的模型存放在這裡。如果此磁碟空間不足，請選擇剩餘空間更多的磁碟。",
-    "llmskills_media_production_name": "AI 製作助手",
-    "llmskills_media_production_desc": "AI 產生計畫"
+    "llmskills_media_production_name": "批次製作",
+    "llmskills_media_production_desc": "AI 將檢視抽樣畫面與字幕，呼叫本機工具完成整批製作。",
+    "llmskills_media_vision_name": "影片畫面理解",
+    "llmskills_media_vision_desc": "AI 將檢視抽樣畫面與字幕，呼叫本機工具完成整批製作。"
   },
   "gallery": {
     "title": "VoiceStudio 畫廊",
@@ -4701,6 +4703,35 @@
       "configure": "請設定模型供應商並啟用影片製作 AI。",
       "settings": "AI 設定",
       "queued": "已送至製作佇列。"
+    },
+    "batch": {
+      "workbench": "批次製作",
+      "brands": "品牌設定",
+      "workflow": "製作流程",
+      "product": "產品行銷",
+      "talking_head": "人物口播",
+      "narration": "配音場景",
+      "intake": "素材入庫",
+      "chooseBrand": "選擇已設定的品牌",
+      "instruction": "告訴 AI 要做什麼，或直接開始這一批。",
+      "cloudHint": "AI 將檢視抽樣畫面與字幕，呼叫本機工具完成整批製作。",
+      "start": "開始",
+      "upload": "上傳一批素材",
+      "setupHint": "品牌、工作流與 AI 只需設定一次，之後直接批次開始。",
+      "installRuntime": "安裝 AI 執行環境",
+      "importPack": "匯入原專案工作流 ZIP",
+      "newBrand": "新增品牌",
+      "pending": "待處理素材",
+      "selectAll": "全選",
+      "brandName": "品牌名稱",
+      "brandNotes": "品牌資料與已確認特點",
+      "pack": "工作流套件",
+      "outros": "品牌片尾池（自動選擇）",
+      "materials": "可用素材",
+      "stickers": "品牌貼紙",
+      "voice": "預設配音聲音",
+      "log": "AI 執行過程",
+      "retryFailed": "只重試失敗項目"
     }
   }
 }

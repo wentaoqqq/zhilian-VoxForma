@@ -1526,8 +1526,10 @@
     "gpu_report_engine_no_gpu": "CPU: nenhuma GPU disponível",
     "gpu_report_engine_needs_accelerator": "Precisa de uma GPU ({{needs}}) que esta máquina não tem",
     "models_dir_desc": "Os modelos baixados ficam aqui. Escolha uma unidade com mais espaço livre se esta encher.",
-    "llmskills_media_production_name": "IA de produção",
-    "llmskills_media_production_desc": "Criar plano com IA"
+    "llmskills_media_production_name": "Produção em lote",
+    "llmskills_media_production_desc": "A IA analisa imagens e transcrições; ferramentas locais produzem o lote completo.",
+    "llmskills_media_vision_name": "Análise visual de vídeo",
+    "llmskills_media_vision_desc": "A IA analisa imagens e transcrições; ferramentas locais produzem o lote completo."
   },
   "gallery": {
     "title": "VoiceStudio Galeria",
@@ -4703,6 +4705,35 @@
       "configure": "Configure um fornecedor e ative a IA de produção.",
       "settings": "Definições de IA",
       "queued": "Enviado para a fila de produção."
+    },
+    "batch": {
+      "workbench": "Produção em lote",
+      "brands": "Configuração da marca",
+      "workflow": "Linha de produção",
+      "product": "Promoção de produtos",
+      "talking_head": "Vídeo de apresentador",
+      "narration": "Cenas narradas",
+      "intake": "Entrada de materiais",
+      "chooseBrand": "Escolher marca guardada",
+      "instruction": "Descreva a tarefa ou inicie diretamente este lote.",
+      "cloudHint": "A IA analisa imagens e transcrições; ferramentas locais produzem o lote completo.",
+      "start": "Iniciar",
+      "upload": "Carregar um lote",
+      "setupHint": "Configure marca, fluxo e IA uma vez e depois inicie os lotes diretamente.",
+      "installRuntime": "Instalar ambiente do agente",
+      "importPack": "Importar fluxo original ZIP",
+      "newBrand": "Nova marca",
+      "pending": "Materiais pendentes",
+      "selectAll": "Selecionar tudo",
+      "brandName": "Nome da marca",
+      "brandNotes": "Contexto da marca e factos confirmados",
+      "pack": "Pacote de fluxo",
+      "outros": "Encerramentos da marca (seleção automática)",
+      "materials": "Materiais disponíveis",
+      "stickers": "Autocolantes da marca",
+      "voice": "Voz predefinida do Studio",
+      "log": "Registo de execução da IA",
+      "retryFailed": "Repetir apenas os elementos com falha"
     }
   }
 }

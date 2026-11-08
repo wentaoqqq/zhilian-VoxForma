@@ -1524,8 +1524,10 @@
     "gpu_report_engine_no_gpu": "CPU: keine GPU verfügbar",
     "gpu_report_engine_needs_accelerator": "Benötigt eine GPU ({{needs}}), die dieser Rechner nicht hat",
     "models_dir_desc": "Hier werden heruntergeladene Modelle gespeichert. Wählen Sie ein Laufwerk mit mehr freiem Speicher, wenn dieses voll wird.",
-    "llmskills_media_production_name": "Produktions-KI",
-    "llmskills_media_production_desc": "KI-Plan erstellen"
+    "llmskills_media_production_name": "Stapelproduktion",
+    "llmskills_media_production_desc": "KI prüft Bildstichproben und Transkripte; lokale Werkzeuge produzieren den gesamten Stapel.",
+    "llmskills_media_vision_name": "Video-Bildanalyse",
+    "llmskills_media_vision_desc": "KI prüft Bildstichproben und Transkripte; lokale Werkzeuge produzieren den gesamten Stapel."
   },
   "gallery": {
     "title": "VoiceStudio Galerie",
@@ -4701,6 +4703,35 @@
       "configure": "Anbieter konfigurieren und Produktions-KI aktivieren.",
       "settings": "KI-Einstellungen",
       "queued": "Zur Produktionswarteschlange hinzugefügt."
+    },
+    "batch": {
+      "workbench": "Stapelproduktion",
+      "brands": "Markeneinstellungen",
+      "workflow": "Produktionsablauf",
+      "product": "Produktwerbung",
+      "talking_head": "Sprechervideo",
+      "narration": "Vertonte Szenen",
+      "intake": "Materialaufnahme",
+      "chooseBrand": "Gespeicherte Marke wählen",
+      "instruction": "Aufgabe beschreiben oder den Stapel direkt starten.",
+      "cloudHint": "KI prüft Bildstichproben und Transkripte; lokale Werkzeuge produzieren den gesamten Stapel.",
+      "start": "Starten",
+      "upload": "Dateistapel hochladen",
+      "setupHint": "Marke, Ablauf und KI einmal einrichten, danach Stapel direkt starten.",
+      "installRuntime": "Agent-Laufzeit installieren",
+      "importPack": "Originalen Workflow als ZIP importieren",
+      "newBrand": "Neue Marke",
+      "pending": "Ausstehende Medien",
+      "selectAll": "Alle auswählen",
+      "brandName": "Markenname",
+      "brandNotes": "Markendaten und bestätigte Fakten",
+      "pack": "Workflow-Paket",
+      "outros": "Abspann-Pool (automatische Auswahl)",
+      "materials": "Verfügbares Material",
+      "stickers": "Markenaufkleber",
+      "voice": "Standardstimme aus Studio",
+      "log": "KI-Ausführungsprotokoll",
+      "retryFailed": "Nur fehlgeschlagene Eingaben wiederholen"
     }
   }
 }

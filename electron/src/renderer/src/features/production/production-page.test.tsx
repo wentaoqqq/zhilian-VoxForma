@@ -1,47 +1,55 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { ProductionPage } from './production-page';
-
-const { request, fetchFile } = vi.hoisted(() => ({ request: vi.fn(), fetchFile: vi.fn() }));
+const { request } = vi.hoisted(() => ({ request: vi.fn() }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 vi.mock('@/lib/api/client', () => ({
   apiJson: request,
-  apiFetch: fetchFile,
-  apiPath: (path: string) => path,
-  describeError: (e: unknown) => String(e),
+  apiPath: (p: string) => p,
+  describeError: String,
+}));
+vi.mock('@/hooks/use-profiles', () => ({ useProfiles: () => ({ data: [] }) }));
+vi.mock('@shared/components/VoiceSelector', () => ({
+  default: () => <div>Native voice selector</div>,
+}));
+vi.mock('@shared/components/SearchableSelect', () => ({
+  default: ({ value, onChange, options, ariaLabel }: any) => (
+    <div aria-label={ariaLabel}>
+      {options.map((o: any) => (
+        <button key={o.value} aria-pressed={value === o.value} onClick={() => onChange(o.value)}>
+          {o.label}
+        </button>
+      ))}
+    </div>
+  ),
 }));
 vi.mock('@/components/app-shell/workspace-header', () => ({
   WorkspaceHeader: ({ children }: { children: React.ReactNode }) => <header>{children}</header>,
 }));
-
-const source = {
-  id: 'source',
-  filename: 'Product.mp4',
-  duration: 12,
-  width: 1920,
-  height: 1080,
-  bytes: 1200,
+const one = {
+  id: 'one',
+  filename: 'First.mp4',
+  kind: 'video',
+  duration: 4,
+  width: 1080,
+  height: 1920,
+  bytes: 1000,
 };
-const outro = { ...source, id: 'outro', filename: 'Outro.mp4', duration: 2 };
-const savedPlan = {
-  schema_version: 1,
-  plugin_id: 'general',
-  source_id: source.id,
-  outro_id: outro.id,
-  title: 'Opening',
-  cover_title: 'Cover',
-  publication_title: 'Publication',
-  brand_text: '',
-  subtitle_mode: 'keep',
-  captions: [],
-  cover_time: 0,
+const two = { ...one, id: 'two', filename: 'Second.mp4' };
+const outro = { ...one, id: 'outro', filename: 'Outro.mp4' };
+const brand = {
+  id: 'brand',
+  name: 'My brand',
+  pack_id: 'roundtable',
+  notes: 'Confirmed facts',
+  outro_ids: ['outro'],
+  material_ids: [],
+  sticker_ids: [],
+  voice_profile: null,
+  tts_engine: null,
 };
-const configResponses: Record<string, unknown> = {
-  '/production/plugins': [{ id: 'general', name_key: 'production.generalPlugin' }],
-  '/production/ai/status': { ready: true, provider_display_name: 'Local test model' },
-};
-
+let assets: any[], batches: any[], ready: boolean;
 function mount() {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
@@ -52,221 +60,146 @@ function mount() {
     </QueryClientProvider>,
   );
 }
-
 beforeEach(() => {
   vi.clearAllMocks();
   localStorage.clear();
+  assets = [one, two, outro];
+  batches = [];
+  ready = true;
   request.mockImplementation(async (path: string, init?: RequestInit) => {
-    if (configResponses[path]) return configResponses[path];
-    if (path === '/production/assets') return [source, outro];
-    if (path === '/production/plugins')
-      return [{ id: 'general', name_key: 'production.generalPlugin' }];
-    if (path === '/production/ai/status')
-      return { ready: true, provider_display_name: 'Local test model' };
-    if (path === '/production/runs' && !init) return [];
-    if (path.startsWith('/production/assets?')) return source;
-    if (path === '/production/runs' && init?.method === 'POST') return { id: 'new-run' };
-    return [];
+    if (path === '/production/assets') return assets;
+    if (path === '/production/brands') return [brand];
+    if (path === '/production/agent/status')
+      return {
+        planner: { ready },
+        vision: { ready },
+        runtime: { installed: true, packs: ['roundtable'] },
+      };
+    if (path === '/production/batches' && !init) return batches;
+    if (path === '/production/batches' && init?.method === 'POST') return { id: 'new-batch' };
+    if (path.startsWith('/production/assets?')) {
+      const id = 'new' + assets.length;
+      const asset = {
+        ...one,
+        id,
+        filename: new URLSearchParams(path.split('?')[1]).get('filename'),
+      };
+      assets.push(asset);
+      return asset;
+    }
+    return {};
   });
 });
-
-it('requires a source, outro and titles before submitting', async () => {
+it('starts all pending inputs with no per-video title or outro form', async () => {
   mount();
-  expect(screen.getByRole('button', { name: 'production.generate' })).toBeDisabled();
-  await screen.findByTestId('production-page');
-  expect(request).not.toHaveBeenCalledWith(
-    '/production/runs',
-    expect.objectContaining({ method: 'POST' }),
-  );
-});
-
-it('shows previews and lets library videos fill either role', async () => {
-  const { container } = mount();
-  fireEvent.click(screen.getByRole('button', { name: 'production.library' }));
-  const card = (await screen.findByText('Product.mp4')).closest('article')!;
-  expect(within(card).getByText(/1920 × 1080/)).toBeInTheDocument();
-  expect(card.querySelector('video')?.getAttribute('src')).toBe(
-    '/production/assets/source/preview',
-  );
-  fireEvent.click(within(card).getByRole('button', { name: 'production.source' }));
-  expect(container.querySelector('video')?.getAttribute('src')).toBe(
-    '/production/assets/source/preview',
-  );
-  expect(screen.getByRole('button', { name: 'production.generate' })).toBeDisabled();
-});
-
-it('uploads a real file body and updates the current source', async () => {
-  const { container } = mount();
-  const file = new File(['test file bytes'], 'New product.mp4', { type: 'video/mp4' });
-  fireEvent.change(screen.getByLabelText('gallery.upload', { selector: 'input' }), {
-    target: { files: [file] },
-  });
+  const start = await screen.findByRole('button', { name: 'production.batch.start · 2' });
+  await waitFor(() => expect(start).toBeEnabled());
+  expect(screen.queryByLabelText('production.opening')).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('production.coverTime')).not.toBeInTheDocument();
+  fireEvent.click(start);
   await waitFor(() =>
     expect(request).toHaveBeenCalledWith(
-      '/production/assets?filename=New+product.mp4',
-      expect.objectContaining({ method: 'POST', body: file }),
+      '/production/batches',
+      expect.objectContaining({ method: 'POST' }),
+    ),
+  );
+  const body = JSON.parse(
+    request.mock.calls.find(([p, i]) => p === '/production/batches' && i?.method === 'POST')![1]
+      .body,
+  );
+  expect(body.source_ids).toEqual(['one', 'two']);
+  expect(body.brand_id).toBe('brand');
+  expect(body.request_id).toBeTruthy();
+});
+it('uploads multiple real files and selects the new batch', async () => {
+  mount();
+  const a = new File(['a'], 'A.mp4'),
+    b = new File(['b'], 'B.mp4');
+  fireEvent.change(screen.getByTestId('batch-upload'), { target: { files: [a, b] } });
+  await waitFor(() =>
+    expect(request).toHaveBeenCalledWith(
+      '/production/assets?filename=B.mp4',
+      expect.objectContaining({ body: b }),
     ),
   );
   await waitFor(() =>
-    expect(container.querySelector('video')).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'production.batch.start · 2' })).toBeEnabled(),
+  );
+  expect(screen.getByRole('checkbox', { name: 'A.mp4' })).toBeChecked();
+  expect(screen.getByRole('checkbox', { name: 'First.mp4' })).not.toBeChecked();
+});
+it('clear stays empty rather than silently selecting everything', async () => {
+  mount();
+  await screen.findByRole('button', { name: 'production.batch.start · 2' });
+  fireEvent.click(screen.getByRole('button', { name: 'common.clear' }));
+  expect(screen.getByRole('button', { name: 'production.batch.start · 0' })).toBeDisabled();
+});
+it('does not regenerate completed or active inputs', async () => {
+  batches = [
+    {
+      id: 'old',
+      status: 'done',
+      items: [{ source_id: 'one', filename: one.filename, status: 'done', artifacts: {} }],
+      log: [],
+      request: { options: { workflow: 'product' }, brand },
+    },
+  ];
+  mount();
+  await waitFor(() =>
+    expect(screen.getByRole('button', { name: 'production.batch.start · 1' })).toBeEnabled(),
+  );
+  expect(screen.queryByRole('checkbox', { name: 'First.mp4' })).not.toBeInTheDocument();
+});
+it('shows missing setup without calling AI on page open', async () => {
+  ready = false;
+  mount();
+  await screen.findByText('production.batch.setupHint');
+  expect(await screen.findByRole('button', { name: 'production.batch.start · 2' })).toBeDisabled();
+  expect(request.mock.calls.filter(([, i]) => i?.method === 'POST')).toHaveLength(0);
+});
+it('previews real media', async () => {
+  const { baseElement } = mount();
+  await screen.findByRole('button', { name: 'common.play First.mp4' });
+  fireEvent.click(screen.getByRole('button', { name: 'common.play First.mp4' }));
+  await waitFor(() =>
+    expect(baseElement.querySelector('video')).toHaveAttribute(
       'src',
-      '/production/assets/source/preview',
+      '/production/assets/one/preview',
     ),
   );
-  expect(screen.getByLabelText('production.opening')).toHaveValue('New product');
 });
-
-it('reopens an immutable plan for editing and submits through the production queue', async () => {
-  request.mockImplementation(async (path: string, init?: RequestInit) => {
-    if (configResponses[path]) return configResponses[path];
-    if (path === '/production/assets') return [source, outro];
-    if (path === '/production/runs' && !init)
-      return [
+it('offers failed-only retry and completed downloads together', async () => {
+  batches = [
+    {
+      id: 'mixed',
+      status: 'done',
+      items: [
         {
-          id: 'failed',
-          status: 'failed',
-          error: 'Stopped',
-          steps: {},
-          artifacts: {},
-          plan: savedPlan,
+          source_id: 'one',
+          filename: one.filename,
+          status: 'done',
+          artifacts: { video: 'video.mp4' },
         },
-      ];
-    return { id: 'new' };
-  });
+        {
+          source_id: 'two',
+          filename: two.filename,
+          status: 'failed',
+          error: 'Missing useful footage',
+          artifacts: {},
+        },
+      ],
+      log: [],
+      request: { options: { workflow: 'product' }, brand },
+    },
+  ];
   mount();
-  fireEvent.click(await screen.findByRole('button', { name: 'production.edit' }));
-  expect(screen.getByLabelText('production.opening')).toHaveValue('Opening');
-  expect(screen.getByRole('button', { name: 'production.generate' })).toBeEnabled();
-  fireEvent.click(screen.getByRole('button', { name: 'production.generate' }));
+  expect(await screen.findByText('Missing useful footage')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'production.download' })).toHaveAttribute(
+    'href',
+    '/production/batches/mixed/download',
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'production.batch.retryFailed' }));
   await waitFor(() =>
-    expect(request).toHaveBeenCalledWith('/production/runs', {
-      method: 'POST',
-      body: JSON.stringify(savedPlan),
-    }),
-  );
-});
-
-it('exposes cancellation for active work and a download for completed deliveries', async () => {
-  request.mockImplementation(
-    async (path: string) =>
-      configResponses[path] ||
-      (path === '/production/assets'
-        ? [source, outro]
-        : [
-            {
-              id: 'active',
-              status: 'running',
-              steps: { render: 'running' },
-              plan: savedPlan,
-              artifacts: {},
-            },
-            {
-              id: 'done',
-              status: 'done',
-              steps: { render: 'done' },
-              plan: savedPlan,
-              artifacts: { video: 'video.mp4' },
-            },
-          ]),
-  );
-  const { container } = mount();
-  fireEvent.click(await screen.findByRole('button', { name: 'common.cancel' }));
-  await waitFor(() =>
-    expect(request).toHaveBeenCalledWith('/production/runs/active/cancel', { method: 'POST' }),
-  );
-  fireEvent.click(screen.getByRole('button', { name: 'production.deliveries' }));
-  expect(screen.getByRole('button', { name: 'production.download' })).toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: 'common.cancel' })).not.toBeInTheDocument();
-  expect(container.querySelector('video')?.getAttribute('src')).toBe(
-    '/production/runs/done/files/video',
-  );
-});
-
-it('AI edits the current draft and only auto-submits when explicitly requested', async () => {
-  localStorage.setItem('voxforma.production.draft.v1', JSON.stringify(savedPlan));
-  const next = { ...savedPlan, title: 'AI opening' };
-  request.mockImplementation(async (path: string, init?: RequestInit) => {
-    if (configResponses[path]) return configResponses[path];
-    if (path === '/production/assets') return [source, outro];
-    if (path === '/production/runs') return [];
-    if (path === '/production/ai/plan')
-      return {
-        plan: next,
-        explanation: 'Revised opening',
-        issues: [],
-        ready: true,
-        run: JSON.parse(String(init?.body)).submit ? { id: 'new' } : null,
-      };
-    return [];
-  });
-  mount();
-  fireEvent.change(screen.getByLabelText('production.ai.instruction'), {
-    target: { value: 'Use a concise opening' },
-  });
-  await waitFor(() =>
-    expect(screen.getByRole('button', { name: 'production.ai.plan' })).toBeEnabled(),
-  );
-  fireEvent.click(screen.getByRole('button', { name: 'production.ai.plan' }));
-  await waitFor(() =>
-    expect(screen.getByLabelText('production.opening')).toHaveValue('AI opening'),
-  );
-  expect(request).toHaveBeenCalledWith('/production/ai/plan', {
-    method: 'POST',
-    body: JSON.stringify({ draft: savedPlan, instruction: 'Use a concise opening', submit: false }),
-  });
-  expect(request).not.toHaveBeenCalledWith(
-    '/production/runs',
-    expect.objectContaining({ method: 'POST' }),
-  );
-  fireEvent.click(screen.getByRole('button', { name: 'production.ai.generate' }));
-  await screen.findByText('production.ai.queued');
-  expect(request).toHaveBeenCalledWith('/production/ai/plan', {
-    method: 'POST',
-    body: JSON.stringify({ draft: next, instruction: 'Use a concise opening', submit: true }),
-  });
-});
-
-it('changing the product resets the previous product subtitles and titles', async () => {
-  localStorage.setItem(
-    'voxforma.production.draft.v1',
-    JSON.stringify({
-      ...savedPlan,
-      subtitle_mode: 'provided',
-      captions: [{ start: 0, end: 10, text: 'Old product claim' }],
-    }),
-  );
-  mount();
-  fireEvent.click(screen.getByRole('button', { name: 'production.library' }));
-  const card = (await screen.findByText('Outro.mp4')).closest('article')!;
-  fireEvent.click(within(card).getByRole('button', { name: 'production.source' }));
-  expect(screen.getByLabelText('production.opening')).toHaveValue('Outro');
-  fireEvent.click(screen.getByRole('button', { name: 'production.generate' }));
-  await waitFor(() =>
-    expect(request).toHaveBeenCalledWith('/production/runs', {
-      method: 'POST',
-      body: JSON.stringify({
-        ...savedPlan,
-        source_id: 'outro',
-        title: 'Outro',
-        cover_title: 'Outro',
-        publication_title: 'Outro',
-      }),
-    }),
-  );
-});
-
-it('keeps manual production available when AI has no provider', async () => {
-  localStorage.setItem('voxforma.production.draft.v1', JSON.stringify(savedPlan));
-  request.mockImplementation(async (path: string) => {
-    if (path === '/production/ai/status') return { ready: false };
-    if (configResponses[path]) return configResponses[path];
-    if (path === '/production/assets') return [source, outro];
-    return [];
-  });
-  mount();
-  await screen.findByText('production.ai.configure', { exact: false });
-  expect(screen.getByRole('button', { name: 'production.ai.plan' })).toBeDisabled();
-  await waitFor(() =>
-    expect(screen.getByRole('button', { name: 'production.generate' })).toBeEnabled(),
+    expect(request).toHaveBeenCalledWith('/production/batches/mixed/retry', { method: 'POST' }),
   );
 });

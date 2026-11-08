@@ -1707,8 +1707,10 @@
     "gpu_report_engine_no_gpu": "CPU: non hai GPU dispoñible",
     "gpu_report_engine_needs_accelerator": "Necesita unha GPU ({{needs}}) que esta máquina non ten",
     "models_dir_desc": "Os modelos descargados almacénanse aquí. Escolle unha unidade con máis espazo libre se esta se enche.",
-    "llmskills_media_production_name": "IA de produción",
-    "llmskills_media_production_desc": "Crear plan coa IA"
+    "llmskills_media_production_name": "Produción por lotes",
+    "llmskills_media_production_desc": "A IA examina fotogramas e transcricións; as ferramentas locais producen todo o lote.",
+    "llmskills_media_vision_name": "Análise visual de vídeo",
+    "llmskills_media_vision_desc": "A IA examina fotogramas e transcricións; as ferramentas locais producen todo o lote."
   },
   "gallery": {
     "title": "Galería VoiceStudio",
@@ -4701,6 +4703,35 @@
       "configure": "Configura un provedor e activa a IA de produción.",
       "settings": "Axustes de IA",
       "queued": "Engadido á cola de produción."
+    },
+    "batch": {
+      "workbench": "Produción por lotes",
+      "brands": "Configuración da marca",
+      "workflow": "Liña de produción",
+      "product": "Promoción de produtos",
+      "talking_head": "Vídeo de presentador",
+      "narration": "Escenas narradas",
+      "intake": "Entrada de materiais",
+      "chooseBrand": "Escoller unha marca gardada",
+      "instruction": "Describe a tarefa ou inicia directamente este lote.",
+      "cloudHint": "A IA examina fotogramas e transcricións; as ferramentas locais producen todo o lote.",
+      "start": "Iniciar",
+      "upload": "Subir un lote",
+      "setupHint": "Configura marca, fluxo e IA unha vez e inicia os lotes directamente.",
+      "installRuntime": "Instalar o contorno do axente",
+      "importPack": "Importar o fluxo orixinal ZIP",
+      "newBrand": "Nova marca",
+      "pending": "Materiais pendentes",
+      "selectAll": "Seleccionar todo",
+      "brandName": "Nome da marca",
+      "brandNotes": "Contexto da marca e feitos confirmados",
+      "pack": "Paquete de fluxo",
+      "outros": "Finais de marca (selección automática)",
+      "materials": "Materiais dispoñibles",
+      "stickers": "Adhesivos da marca",
+      "voice": "Voz predeterminada de Studio",
+      "log": "Rexistro de execución da IA",
+      "retryFailed": "Reintentar só os elementos fallidos"
     }
   }
 }

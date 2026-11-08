@@ -79,6 +79,7 @@ _SKILLS: tuple[LLMSkill, ...] = (
     _skill("direction_parse"),
     _skill("dictation_refinement"),
     _skill("media_production"),
+    _skill("media_vision"),
 )
 
 _BY_ID: dict[str, LLMSkill] = {s.id: s for s in _SKILLS}

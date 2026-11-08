@@ -1524,8 +1524,10 @@
     "gpu_report_engine_no_gpu": "CPU: kullanılabilir GPU yok",
     "gpu_report_engine_needs_accelerator": "Bu bilgisayarda olmayan bir GPU ({{needs}}) gerekir",
     "models_dir_desc": "İndirilen modeller burada saklanır. Bu sürücü dolarsa daha fazla boş alanı olan bir sürücü seçin.",
-    "llmskills_media_production_name": "Üretim yapay zekâsı",
-    "llmskills_media_production_desc": "Yapay zekâ planı"
+    "llmskills_media_production_name": "Toplu üretim",
+    "llmskills_media_production_desc": "AI örnek kareleri ve dökümleri inceler; yerel araçlar tüm grubu üretir.",
+    "llmskills_media_vision_name": "Video görüntü analizi",
+    "llmskills_media_vision_desc": "AI örnek kareleri ve dökümleri inceler; yerel araçlar tüm grubu üretir."
   },
   "gallery": {
     "title": "VoiceStudio Galeri",
@@ -4701,6 +4703,35 @@
       "configure": "Sağlayıcıyı yapılandırın ve üretim yapay zekâsını açın.",
       "settings": "Yapay zekâ ayarları",
       "queued": "Üretim kuyruğuna eklendi."
+    },
+    "batch": {
+      "workbench": "Toplu üretim",
+      "brands": "Marka ayarları",
+      "workflow": "Üretim hattı",
+      "product": "Ürün tanıtımı",
+      "talking_head": "Konuşmacı videosu",
+      "narration": "Anlatımlı sahneler",
+      "intake": "Malzeme alımı",
+      "chooseBrand": "Kayıtlı marka seç",
+      "instruction": "Görevi açıklayın veya bu grubu doğrudan başlatın.",
+      "cloudHint": "AI örnek kareleri ve dökümleri inceler; yerel araçlar tüm grubu üretir.",
+      "start": "Başlat",
+      "upload": "Toplu dosya yükle",
+      "setupHint": "Marka, iş akışı ve AI ayarlarını bir kez yapın, sonra grupları doğrudan başlatın.",
+      "installRuntime": "Ajan ortamını kur",
+      "importPack": "Özgün iş akışı ZIP dosyasını içe aktar",
+      "newBrand": "Yeni marka",
+      "pending": "Bekleyen malzemeler",
+      "selectAll": "Tümünü seç",
+      "brandName": "Marka adı",
+      "brandNotes": "Marka bilgileri ve doğrulanmış gerçekler",
+      "pack": "İş akışı paketi",
+      "outros": "Marka kapanış havuzu (otomatik seçim)",
+      "materials": "Kullanılabilir malzemeler",
+      "stickers": "Marka çıkartmaları",
+      "voice": "Varsayılan Studio sesi",
+      "log": "AI yürütme günlüğü",
+      "retryFailed": "Yalnızca başarısız girdileri yeniden dene"
     }
   }
 }

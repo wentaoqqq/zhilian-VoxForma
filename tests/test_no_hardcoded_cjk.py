@@ -40,6 +40,7 @@ _ALLOWED_PREFIXES = (
     "docs/readme/",  # translated READMEs and their native language-switcher links
 )
 _ALLOWED_FILES = {
+    "docs/media-production.md",  # Chinese workflow guide for this customer deployment, not runtime UI.
     "docs/plans/media-workbench-integration-plan.zh-CN.md",  # Chinese integration design for owner review, not runtime UI.
     "docs/install/voxforma-wsl.md",  # Chinese customer installation guide, not runtime UI copy.
     "README.upstream.md",  # Archived upstream README retains its native language-switcher names.

@@ -1707,8 +1707,10 @@
     "gpu_report_engine_no_gpu": "CPU: no GPU available",
     "gpu_report_engine_needs_accelerator": "Needs a GPU ({{needs}}) this machine does not have",
     "models_dir_desc": "Downloaded models are stored here. Choose a drive with more free space if this one fills up.",
-    "llmskills_media_production_name": "Production AI",
-    "llmskills_media_production_desc": "Draft with AI"
+    "llmskills_media_production_name": "Batch production",
+    "llmskills_media_production_desc": "AI examines sampled frames and transcripts; local tools execute the complete batch.",
+    "llmskills_media_vision_name": "Video vision",
+    "llmskills_media_vision_desc": "AI examines sampled frames and transcripts; local tools execute the complete batch."
   },
   "gallery": {
     "title": "VoiceStudio Gallery",
@@ -4701,6 +4703,35 @@
       "configure": "Configure a provider and enable production AI.",
       "settings": "AI settings",
       "queued": "Submitted to the production queue."
+    },
+    "batch": {
+      "workbench": "Batch production",
+      "brands": "Brand settings",
+      "workflow": "Production line",
+      "product": "Product acquisition",
+      "talking_head": "Talking head",
+      "narration": "Narration scenes",
+      "intake": "Material intake",
+      "chooseBrand": "Choose a saved brand",
+      "instruction": "Tell AI what to do, or just start this batch.",
+      "cloudHint": "AI examines sampled frames and transcripts; local tools execute the complete batch.",
+      "start": "Start",
+      "upload": "Upload a batch",
+      "setupHint": "Configure the brand, workflow and AI once, then start batches directly.",
+      "installRuntime": "Install agent runtime",
+      "importPack": "Import original workflow ZIP",
+      "newBrand": "New brand",
+      "pending": "Pending inputs",
+      "selectAll": "Select all",
+      "brandName": "Brand name",
+      "brandNotes": "Brand context and confirmed facts",
+      "pack": "Workflow pack",
+      "outros": "Outro pool (automatic selection)",
+      "materials": "Available materials",
+      "stickers": "Brand stickers",
+      "voice": "Default Studio voice",
+      "log": "AI execution log",
+      "retryFailed": "Retry failed inputs only"
     }
   }
 }

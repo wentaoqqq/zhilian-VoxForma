@@ -1524,8 +1524,10 @@
     "gpu_report_engine_no_gpu": "CPU: geen GPU beschikbaar",
     "gpu_report_engine_needs_accelerator": "Heeft een GPU ({{needs}}) nodig die deze computer niet heeft",
     "models_dir_desc": "Gedownloade modellen worden hier opgeslagen. Kies een schijf met meer vrije ruimte als deze volraakt.",
-    "llmskills_media_production_name": "Productie-AI",
-    "llmskills_media_production_desc": "AI-plan maken"
+    "llmskills_media_production_name": "Batchproductie",
+    "llmskills_media_production_desc": "AI bekijkt voorbeeldframes en transcripties; lokale tools maken de hele batch.",
+    "llmskills_media_vision_name": "Video-beeldanalyse",
+    "llmskills_media_vision_desc": "AI bekijkt voorbeeldframes en transcripties; lokale tools maken de hele batch."
   },
   "gallery": {
     "title": "VoiceStudio Galerij",
@@ -4701,6 +4703,35 @@
       "configure": "Stel een aanbieder in en schakel productie-AI in.",
       "settings": "AI-instellingen",
       "queued": "Aan de productiewachtrij toegevoegd."
+    },
+    "batch": {
+      "workbench": "Batchproductie",
+      "brands": "Merkinstellingen",
+      "workflow": "Productielijn",
+      "product": "Productpromotie",
+      "talking_head": "Sprekende presentator",
+      "narration": "Vertelde scènes",
+      "intake": "Materiaalinname",
+      "chooseBrand": "Opgeslagen merk kiezen",
+      "instruction": "Beschrijf de taak of start deze batch direct.",
+      "cloudHint": "AI bekijkt voorbeeldframes en transcripties; lokale tools maken de hele batch.",
+      "start": "Starten",
+      "upload": "Een batch uploaden",
+      "setupHint": "Stel merk, workflow en AI eenmaal in en start daarna batches direct.",
+      "installRuntime": "Agentomgeving installeren",
+      "importPack": "Originele workflow-ZIP importeren",
+      "newBrand": "Nieuw merk",
+      "pending": "Wachtende media",
+      "selectAll": "Alles selecteren",
+      "brandName": "Merknaam",
+      "brandNotes": "Merkcontext en bevestigde feiten",
+      "pack": "Workflowpakket",
+      "outros": "Merkafsluitingen (automatische keuze)",
+      "materials": "Beschikbaar materiaal",
+      "stickers": "Merkstickers",
+      "voice": "Standaardstem uit Studio",
+      "log": "AI-uitvoeringslog",
+      "retryFailed": "Alleen mislukte invoer opnieuw proberen"
     }
   }
 }

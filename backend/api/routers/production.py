@@ -10,10 +10,11 @@ import re
 import time
 import uuid
 import zipfile
+from PIL import Image
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field
 
 from api.dependencies import require_consumer
 from core import job_store
@@ -21,11 +22,9 @@ from core.db import db_conn
 from core.job_queue import Job, JobQueue
 from production import store
 from production.models import ProductPlan
-from production.planner import PlannerRequest, plan_with_ai, SKILL_ID
 from production.plugins import get_plugin, list_plugins
 from production.render import probe, render_product
 from services.srt_parser import parse_srt
-from services import llm_skills
 
 queue = JobQueue("production-cpu", concurrency=1)
 
@@ -34,6 +33,8 @@ queue = JobQueue("production-cpu", concurrency=1)
 async def lifespan(_app):
     yield
     await queue.stop()
+    from production import agent
+    await agent.queue.stop()
 
 
 router = APIRouter(prefix="/production", tags=["production"], dependencies=[Depends(require_consumer)], lifespan=lifespan)
@@ -65,8 +66,9 @@ def list_assets():
 
 @router.post("/assets")
 async def upload_asset(request: Request, filename: str):
-    if Path(filename).suffix.lower() not in {".mp4", ".mov", ".mkv", ".webm", ".avi", ".m4v"}:
-        raise HTTPException(400, "Upload an MP4, MOV, MKV, WebM, AVI or M4V video.")
+    suffix = Path(filename).suffix.lower()
+    if suffix not in {'.mp4', '.mov', '.mkv', '.webm', '.avi', '.m4v', '.wav', '.mp3', '.m4a', '.flac', '.ogg', '.png', '.jpg', '.jpeg', '.webp', '.txt'}:
+        raise HTTPException(400, 'Upload a video, audio file, image or UTF-8 text script.')
     incoming = store.ROOT / "incoming"
     incoming.mkdir(parents=True, exist_ok=True)
     temp = incoming / (uuid.uuid4().hex + Path(filename).suffix.lower())
@@ -81,7 +83,17 @@ async def upload_asset(request: Request, filename: str):
                 await asyncio.to_thread(output.write, chunk)
         if not size:
             raise HTTPException(400, "The uploaded file is empty.")
-        metadata = await probe(temp)
+        if suffix == '.txt':
+            text = temp.read_text(encoding='utf-8-sig')
+            if not text.strip():
+                raise ValueError('The script is empty.')
+            metadata = {'kind': 'text', 'duration': 0, 'width': 0, 'height': 0, 'has_audio': False}
+        elif suffix in {'.png', '.jpg', '.jpeg', '.webp'}:
+            with Image.open(temp) as image:
+                metadata = {'kind': 'image', 'duration': 0, 'width': image.width, 'height': image.height, 'has_audio': False}
+                image.verify()
+        else:
+            metadata = await probe(temp, video_required=False)
         metadata["bytes"] = size
         asset_id = digest.hexdigest()
         dest = store.asset_path(asset_id)
@@ -105,7 +117,8 @@ def asset_preview(asset_id: str):
     data = asset_or_404(asset_id)
     # FileResponse supplies range requests for video seeking, including over LAN.
     suffix = Path(data["filename"]).suffix.lower()
-    media_type = {".webm": "video/webm", ".mkv": "video/x-matroska", ".mov": "video/quicktime", ".avi": "video/x-msvideo"}.get(suffix, "video/mp4")
+    import mimetypes
+    media_type = mimetypes.guess_type(data['filename'])[0] or 'application/octet-stream'
     return FileResponse(store.asset_path(asset_id), media_type=media_type)
 
 
@@ -142,39 +155,13 @@ def plugins():
 @router.get("/ai/status")
 def ai_status():
     # Read configuration only. Merely opening the workspace never calls a model.
-    return llm_skills.describe(SKILL_ID)
+    from production import agent
+    return agent.status()
 
 
 @router.post("/ai/plan")
-async def ai_plan(request: PlannerRequest):
-    source = asset_or_404(request.draft.source_id)
-    outro = asset_or_404(request.draft.outro_id)
-    if not request.instruction.strip():
-        raise HTTPException(400, "Describe the product and the changes you want.")
-    try:
-        get_plugin(request.draft.plugin_id)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    if not llm_skills.resolve_skill(SKILL_ID).ready:
-        raise HTTPException(503, "Configure a provider in Settings and enable the video production AI skill.")
-    try:
-        result = await asyncio.to_thread(plan_with_ai, request, source, outro)
-    except ValueError as exc:
-        raise HTTPException(422, "AI returned an invalid plan. " + str(exc).split("\n")[0]) from exc
-    except Exception as exc:
-        # SDK exceptions may contain private endpoint/key details; do not echo them.
-        raise HTTPException(502, "AI request failed. Check the provider configuration and retry.") from exc
-    ready_plan = None
-    try:
-        ready_plan = ProductPlan.model_validate(result["plan"])
-        validate_plan(ready_plan)
-    except ValidationError as exc:
-        result["issues"].extend(e["msg"] for e in exc.errors(include_input=False))
-    except HTTPException as exc:
-        result["issues"].append(str(exc.detail))
-    result["ready"] = ready_plan is not None and not result["issues"]
-    result["run"] = await create_run(ready_plan) if request.submit and result["ready"] else None
-    return result
+async def ai_plan():
+    raise HTTPException(410, 'The text-only planner was replaced by the full production agent. Use /production/batches.')
 
 
 async def execute(job: Job, plan: ProductPlan):
@@ -284,3 +271,7 @@ def download_bundle(run_id: str):
         raise HTTPException(409, "A delivery file is missing. Retry this task.") from exc
     from starlette.background import BackgroundTask
     return FileResponse(bundle, media_type="application/zip", filename=stem + ".zip", background=BackgroundTask(bundle.unlink, missing_ok=True))
+
+
+from api.routers.production_batches import router as batch_router
+router.include_router(batch_router)

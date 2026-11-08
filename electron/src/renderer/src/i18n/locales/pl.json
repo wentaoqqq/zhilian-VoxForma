@@ -1538,8 +1538,10 @@
     "gpu_report_engine_no_gpu": "CPU: brak dostępnego GPU",
     "gpu_report_engine_needs_accelerator": "Wymaga GPU ({{needs}}), którego ten komputer nie ma",
     "models_dir_desc": "Tu są przechowywane pobrane modele. Jeśli ten dysk się zapełni, wybierz dysk z większą ilością wolnego miejsca.",
-    "llmskills_media_production_name": "AI produkcji",
-    "llmskills_media_production_desc": "Utwórz plan AI"
+    "llmskills_media_production_name": "Produkcja wsadowa",
+    "llmskills_media_production_desc": "AI analizuje klatki i transkrypcje; lokalne narzędzia produkują całą serię.",
+    "llmskills_media_vision_name": "Analiza obrazu wideo",
+    "llmskills_media_vision_desc": "AI analizuje klatki i transkrypcje; lokalne narzędzia produkują całą serię."
   },
   "gallery": {
     "title": "VoiceStudio Galeria",
@@ -4729,6 +4731,35 @@
       "configure": "Skonfiguruj dostawcę i włącz AI produkcji.",
       "settings": "Ustawienia AI",
       "queued": "Dodano do kolejki produkcji."
+    },
+    "batch": {
+      "workbench": "Produkcja wsadowa",
+      "brands": "Ustawienia marki",
+      "workflow": "Linia produkcyjna",
+      "product": "Promocja produktu",
+      "talking_head": "Wideo z prowadzącym",
+      "narration": "Sceny z narracją",
+      "intake": "Import materiałów",
+      "chooseBrand": "Wybierz zapisaną markę",
+      "instruction": "Opisz zadanie lub od razu uruchom serię.",
+      "cloudHint": "AI analizuje klatki i transkrypcje; lokalne narzędzia produkują całą serię.",
+      "start": "Rozpocznij",
+      "upload": "Prześlij serię plików",
+      "setupHint": "Skonfiguruj markę, proces i AI raz, potem uruchamiaj serie bezpośrednio.",
+      "installRuntime": "Zainstaluj środowisko agenta",
+      "importPack": "Importuj oryginalny proces ZIP",
+      "newBrand": "Nowa marka",
+      "pending": "Oczekujące materiały",
+      "selectAll": "Zaznacz wszystko",
+      "brandName": "Nazwa marki",
+      "brandNotes": "Informacje o marce i potwierdzone fakty",
+      "pack": "Pakiet procesu",
+      "outros": "Pula zakończeń marki (wybór automatyczny)",
+      "materials": "Dostępne materiały",
+      "stickers": "Naklejki marki",
+      "voice": "Domyślny głos Studio",
+      "log": "Dziennik wykonania AI",
+      "retryFailed": "Ponów tylko nieudane elementy"
     }
   }
 }

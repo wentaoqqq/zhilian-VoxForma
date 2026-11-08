@@ -1526,8 +1526,10 @@
     "gpu_report_engine_no_gpu": "CPU: nessuna GPU disponibile",
     "gpu_report_engine_needs_accelerator": "Richiede una GPU ({{needs}}) che questo computer non ha",
     "models_dir_desc": "Qui vengono salvati i modelli scaricati. Scegli un disco con più spazio libero se questo si riempie.",
-    "llmskills_media_production_name": "IA di produzione",
-    "llmskills_media_production_desc": "Crea piano con IA"
+    "llmskills_media_production_name": "Produzione in serie",
+    "llmskills_media_production_desc": "L’IA esamina fotogrammi e trascrizioni; gli strumenti locali producono l’intero lotto.",
+    "llmskills_media_vision_name": "Analisi visiva video",
+    "llmskills_media_vision_desc": "L’IA esamina fotogrammi e trascrizioni; gli strumenti locali producono l’intero lotto."
   },
   "gallery": {
     "title": "VoiceStudio Galleria",
@@ -4703,6 +4705,35 @@
       "configure": "Configura un fornitore e abilita l’IA di produzione.",
       "settings": "Impostazioni IA",
       "queued": "Inviato alla coda di produzione."
+    },
+    "batch": {
+      "workbench": "Produzione in serie",
+      "brands": "Impostazioni marchio",
+      "workflow": "Linea di produzione",
+      "product": "Promozione prodotto",
+      "talking_head": "Video parlato",
+      "narration": "Scene narrate",
+      "intake": "Acquisizione materiali",
+      "chooseBrand": "Scegli un marchio salvato",
+      "instruction": "Descrivi l’attività o avvia direttamente questo lotto.",
+      "cloudHint": "L’IA esamina fotogrammi e trascrizioni; gli strumenti locali producono l’intero lotto.",
+      "start": "Avvia",
+      "upload": "Carica un lotto",
+      "setupHint": "Configura marchio, flusso e IA una volta, poi avvia direttamente i lotti.",
+      "installRuntime": "Installa ambiente agente",
+      "importPack": "Importa flusso originale ZIP",
+      "newBrand": "Nuovo marchio",
+      "pending": "Materiali in attesa",
+      "selectAll": "Seleziona tutto",
+      "brandName": "Nome marchio",
+      "brandNotes": "Contesto del marchio e dati confermati",
+      "pack": "Pacchetto del flusso",
+      "outros": "Chiusure del marchio (scelta automatica)",
+      "materials": "Materiali disponibili",
+      "stickers": "Adesivi del marchio",
+      "voice": "Voce Studio predefinita",
+      "log": "Registro di esecuzione IA",
+      "retryFailed": "Riprova solo gli elementi non riusciti"
     }
   }
 }
