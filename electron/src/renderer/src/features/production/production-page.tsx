@@ -521,14 +521,18 @@ export function ProductionPage() {
                         {t('production.batch.installRuntime')}
                       </Button>
                     )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={busy}
-                      onClick={() => packRef.current?.click()}
-                    >
-                      {t('production.batch.importPack')}
-                    </Button>
+                    {!status.data?.runtime.packs.includes(
+                      currentBrand?.pack_id || 'roundtable',
+                    ) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={busy}
+                        onClick={() => packRef.current?.click()}
+                      >
+                        {t('production.batch.importPack')}
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"

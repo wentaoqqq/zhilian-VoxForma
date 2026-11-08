@@ -154,6 +154,11 @@ it('shows missing setup without calling AI on page open', async () => {
   ready = false;
   mount();
   await screen.findByText('production.batch.setupHint');
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('button', { name: 'production.batch.importPack' }),
+    ).not.toBeInTheDocument(),
+  );
   expect(await screen.findByRole('button', { name: 'production.batch.start · 2' })).toBeDisabled();
   expect(request.mock.calls.filter(([, i]) => i?.method === 'POST')).toHaveLength(0);
 });
