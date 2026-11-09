@@ -4788,7 +4788,11 @@
       "workflowProduct": "제품",
       "workflowTalkingHead": "카메라 앞에서 말하기",
       "you": "나",
-      "skipped": "미처리"
+      "skipped": "미처리",
+      "importExisting": "기존 소재의 소속 지정",
+      "assignToProduct": "현재 제품에 추가",
+      "unassignedAssets": "소속이 지정되지 않은 소재",
+      "noUnassigned": "소속이 지정되지 않은 소재가 없습니다"
     }
   }
 }

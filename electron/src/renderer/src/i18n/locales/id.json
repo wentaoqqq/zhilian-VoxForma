@@ -4788,7 +4788,11 @@
       "workflowProduct": "Produk",
       "workflowTalkingHead": "Presentasi di depan kamera",
       "you": "Anda",
-      "skipped": "Belum diproses"
+      "skipped": "Belum diproses",
+      "importExisting": "Tetapkan produk untuk materi yang sudah ada",
+      "assignToProduct": "Tambahkan ke produk saat ini",
+      "unassignedAssets": "Materi tanpa produk",
+      "noUnassigned": "Tidak ada materi tanpa produk"
     }
   }
 }

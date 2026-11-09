@@ -4788,7 +4788,11 @@
       "workflowProduct": "产品",
       "workflowTalkingHead": "口播",
       "you": "你",
-      "skipped": "未处理"
+      "skipped": "未处理",
+      "importExisting": "归属已有素材",
+      "assignToProduct": "加入当前产品",
+      "unassignedAssets": "未归属素材",
+      "noUnassigned": "暂无未归属素材"
     }
   }
 }

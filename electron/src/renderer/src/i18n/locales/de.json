@@ -4788,7 +4788,11 @@
       "workflowProduct": "Produkt",
       "workflowTalkingHead": "Sprechervideo",
       "you": "Du",
-      "skipped": "Nicht verarbeitet"
+      "skipped": "Nicht verarbeitet",
+      "importExisting": "Vorhandenes Material zuordnen",
+      "assignToProduct": "Zum aktuellen Produkt hinzufügen",
+      "unassignedAssets": "Nicht zugeordnetes Material",
+      "noUnassigned": "Kein nicht zugeordnetes Material"
     }
   }
 }

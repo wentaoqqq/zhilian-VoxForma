@@ -4788,7 +4788,11 @@
       "workflowProduct": "商品",
       "workflowTalkingHead": "カメラに向かって話す動画",
       "you": "あなた",
-      "skipped": "未処理"
+      "skipped": "未処理",
+      "importExisting": "既存素材の所属を設定",
+      "assignToProduct": "現在の商品に追加",
+      "unassignedAssets": "所属未設定の素材",
+      "noUnassigned": "所属未設定の素材はありません"
     }
   }
 }

@@ -56,3 +56,15 @@ def update_asset(product_id: str, asset_id: str, assignment: AssetUpdate):
         return product_store.update_asset(product_id, asset_id, **assignment.model_dump(exclude_unset=True))
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
+
+
+@router.post('/products/{product_id}/assets/{asset_id}')
+def attach_existing_asset(product_id: str, asset_id: str, assignment: AssetUpdate):
+    product_or_404(product_id)
+    from production import store
+    try:
+        if not store.asset_path(asset_id).is_file():
+            raise ValueError('Media file is missing.')
+        return product_store.attach_asset(product_id, asset_id, **assignment.model_dump())
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc

@@ -4788,7 +4788,11 @@
       "workflowProduct": "產品",
       "workflowTalkingHead": "口播",
       "you": "你",
-      "skipped": "未處理"
+      "skipped": "未處理",
+      "importExisting": "指派現有素材歸屬",
+      "assignToProduct": "加入目前產品",
+      "unassignedAssets": "未指派歸屬的素材",
+      "noUnassigned": "目前沒有未指派歸屬的素材"
     }
   }
 }

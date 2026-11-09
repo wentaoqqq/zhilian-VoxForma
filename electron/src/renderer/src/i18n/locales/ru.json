@@ -4816,7 +4816,11 @@
       "workflowProduct": "Продукт",
       "workflowTalkingHead": "Речь в кадре",
       "you": "Вы",
-      "skipped": "Не обработано"
+      "skipped": "Не обработано",
+      "importExisting": "Назначить продукт имеющимся материалам",
+      "assignToProduct": "Добавить к текущему продукту",
+      "unassignedAssets": "Материалы без продукта",
+      "noUnassigned": "Нет материалов без продукта"
     }
   }
 }

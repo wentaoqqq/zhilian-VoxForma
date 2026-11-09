@@ -4840,7 +4840,11 @@
       "workflowProduct": "منتج",
       "workflowTalkingHead": "تقديم أمام الكاميرا",
       "you": "أنت",
-      "skipped": "لم تتم المعالجة"
+      "skipped": "لم تتم المعالجة",
+      "importExisting": "تعيين تبعية المواد الموجودة",
+      "assignToProduct": "إضافة إلى المنتج الحالي",
+      "unassignedAssets": "مواد غير معيّنة لمنتج",
+      "noUnassigned": "لا توجد مواد غير معيّنة لمنتج"
     }
   }
 }

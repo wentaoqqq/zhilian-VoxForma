@@ -58,7 +58,13 @@ def run_or_404(run_id: str) -> dict:
 
 
 @router.get("/assets")
-def list_assets(product_id: str | None = None, category_id: str | None = None, video_type_id: str | None = None):
+def list_assets(product_id: str | None = None, category_id: str | None = None, video_type_id: str | None = None, unassigned: bool = False):
+    if unassigned:
+        if product_id is not None or category_id is not None or video_type_id is not None:
+            raise HTTPException(400, 'Choose an unassigned-media view or a product scope.')
+        with db_conn() as conn:
+            rows = conn.execute('SELECT a.* FROM media_assets a WHERE NOT EXISTS (SELECT 1 FROM production_product_assets p WHERE p.asset_id=a.id) ORDER BY a.created_at DESC').fetchall()
+        return [{'id': r['id'], 'filename': r['filename'], 'created_at': r['created_at'], **json.loads(r['metadata_json'])} for r in rows]
     if product_id is not None:
         try:
             return product_store.list_assets(product_id, category_id, video_type_id)

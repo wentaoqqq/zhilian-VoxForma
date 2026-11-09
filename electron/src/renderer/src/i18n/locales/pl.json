@@ -4816,7 +4816,11 @@
       "workflowProduct": "Produkt",
       "workflowTalkingHead": "Prezentacja przed kamerą",
       "you": "Ty",
-      "skipped": "Nie przetworzono"
+      "skipped": "Nie przetworzono",
+      "importExisting": "Przypisz istniejące materiały",
+      "assignToProduct": "Dodaj do bieżącego produktu",
+      "unassignedAssets": "Nieprzypisane materiały",
+      "noUnassigned": "Brak nieprzypisanych materiałów"
     }
   }
 }

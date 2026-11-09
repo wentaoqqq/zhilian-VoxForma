@@ -4788,7 +4788,11 @@
       "workflowProduct": "Produkt",
       "workflowTalkingHead": "Presentation framför kameran",
       "you": "Du",
-      "skipped": "Inte bearbetat"
+      "skipped": "Inte bearbetat",
+      "importExisting": "Tilldela befintligt material",
+      "assignToProduct": "Lägg till i aktuell produkt",
+      "unassignedAssets": "Ej tilldelat material",
+      "noUnassigned": "Inget ej tilldelat material"
     }
   }
 }

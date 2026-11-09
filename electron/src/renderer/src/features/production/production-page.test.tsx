@@ -151,7 +151,27 @@ beforeEach(() => {
       assets = assets.map((a) => (a.id === id ? { ...a, ...patch } : a));
       return assets.find((a) => a.id === id);
     }
+    if (
+      url.pathname.startsWith('/production/products/') &&
+      url.pathname.includes('/assets/') &&
+      init?.method === 'POST'
+    ) {
+      const id = url.pathname.split('/').at(-1);
+      const patch = JSON.parse(init.body as string);
+      assets = assets.map((a) =>
+        a.id === id
+          ? {
+              ...a,
+              ...patch,
+              product_id: url.pathname.split('/')[3],
+              classification_status: 'pending',
+            }
+          : a,
+      );
+      return assets.find((a) => a.id === id);
+    }
     if (url.pathname === '/production/assets') {
+      if (url.searchParams.get('unassigned') === 'true') return assets.filter((a) => !a.product_id);
       if (init?.method === 'POST') {
         const asset = {
           ...one,
@@ -204,6 +224,52 @@ beforeEach(() => {
     }
     return {};
   });
+});
+it('hides existing-file assignment when no unassigned material or no product/type exists', async () => {
+  mount();
+  await readyToSend();
+  await waitFor(() =>
+    expect(client.isFetching({ queryKey: ['production-unassigned-assets'] })).toBe(0),
+  );
+  expect(screen.queryByRole('button', { name: key('importExisting') })).not.toBeInTheDocument();
+  products[0].video_types = [];
+  assets.push({ ...one, id: 'legacy', filename: 'Legacy.mp4', product_id: null });
+  await act(async () => {
+    await client.invalidateQueries({ queryKey: ['production-products'] });
+    await client.invalidateQueries({ queryKey: ['production-unassigned-assets'] });
+  });
+  expect(screen.queryByRole('button', { name: key('importExisting') })).not.toBeInTheDocument();
+});
+it('previews and assigns multiple existing files to the current product/type without upload or AI', async () => {
+  assets.push(
+    { ...one, id: 'legacy-a', filename: 'Legacy A.mp4', product_id: null },
+    { ...one, id: 'legacy-b', filename: 'Legacy B.mp4', product_id: null },
+  );
+  mount();
+  await readyToSend();
+  expect(screen.queryByRole('checkbox', { name: 'Legacy A.mp4' })).not.toBeInTheDocument();
+  pick(key('videoTypes'), 'Voiceover');
+  fireEvent.click(await screen.findByRole('button', { name: key('importExisting') }));
+  fireEvent.click(screen.getByRole('button', { name: 'common.play Legacy A.mp4' }));
+  expect(screen.getAllByRole('dialog').at(-1)?.querySelector('video')).toHaveAttribute(
+    'src',
+    '/production/assets/legacy-a/preview',
+  );
+  fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+  await waitFor(() => expect(screen.getAllByRole('dialog')).toHaveLength(1));
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Legacy A.mp4' }));
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Legacy B.mp4' }));
+  fireEvent.click(screen.getByRole('button', { name: key('assignToProduct') }));
+  await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  const changes = request.mock.calls.filter(([, init]) => init?.method === 'POST');
+  expect(changes.map(([path]) => path)).toEqual([
+    '/production/products/product-a/assets/legacy-a',
+    '/production/products/product-a/assets/legacy-b',
+  ]);
+  for (const [, init] of changes)
+    expect(JSON.parse(init.body)).toEqual({ video_type_id: 'voiceover', role: 'input' });
+  expect(screen.getByRole('checkbox', { name: 'Legacy A.mp4' })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: key('importExisting') })).not.toBeInTheDocument();
 });
 it('starts with zero attachments and lets the backend select pending input without front-end keyword checks', async () => {
   mount();

@@ -4788,7 +4788,11 @@
       "workflowProduct": "Product",
       "workflowTalkingHead": "Presentatie voor de camera",
       "you": "Jij",
-      "skipped": "Niet verwerkt"
+      "skipped": "Niet verwerkt",
+      "importExisting": "Bestaand materiaal toewijzen",
+      "assignToProduct": "Toevoegen aan huidig product",
+      "unassignedAssets": "Niet-toegewezen materiaal",
+      "noUnassigned": "Geen niet-toegewezen materiaal"
     }
   }
 }

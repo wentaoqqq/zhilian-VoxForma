@@ -4788,7 +4788,11 @@
       "workflowProduct": "Sản phẩm",
       "workflowTalkingHead": "Nói trước máy quay",
       "you": "Bạn",
-      "skipped": "Chưa xử lý"
+      "skipped": "Chưa xử lý",
+      "importExisting": "Gán tư liệu hiện có",
+      "assignToProduct": "Thêm vào sản phẩm hiện tại",
+      "unassignedAssets": "Tư liệu chưa được gán",
+      "noUnassigned": "Không có tư liệu chưa được gán"
     }
   }
 }

@@ -4790,7 +4790,11 @@
       "workflowProduct": "Producto",
       "workflowTalkingHead": "Presentación a cámara",
       "you": "Tú",
-      "skipped": "Sin procesar"
+      "skipped": "Sin procesar",
+      "importExisting": "Asignar materiales existentes",
+      "assignToProduct": "Añadir al producto actual",
+      "unassignedAssets": "Materiales sin asignar",
+      "noUnassigned": "No hay materiales sin asignar"
     }
   }
 }

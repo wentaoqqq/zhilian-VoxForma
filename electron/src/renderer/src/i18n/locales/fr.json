@@ -4790,7 +4790,11 @@
       "workflowProduct": "Produit",
       "workflowTalkingHead": "Présentation face caméra",
       "you": "Vous",
-      "skipped": "Non traité"
+      "skipped": "Non traité",
+      "importExisting": "Affecter des médias existants",
+      "assignToProduct": "Ajouter au produit actuel",
+      "unassignedAssets": "Médias non affectés",
+      "noUnassigned": "Aucun média non affecté"
     }
   }
 }

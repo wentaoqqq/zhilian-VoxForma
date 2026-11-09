@@ -4788,7 +4788,11 @@
       "workflowProduct": "Product",
       "workflowTalkingHead": "Talking head",
       "you": "You",
-      "skipped": "Not processed"
+      "skipped": "Not processed",
+      "importExisting": "Assign existing media",
+      "assignToProduct": "Add to current product",
+      "unassignedAssets": "Unassigned media",
+      "noUnassigned": "No unassigned media"
     }
   }
 }

@@ -155,6 +155,8 @@ export function ProductionPage() {
   const [editor, setEditor] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [preview, setPreview] = useState<Asset | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [unassignedIds, setUnassignedIds] = useState<string[]>([]);
   const [outgoing, setOutgoing] = useState<Outgoing | null>(null);
   const sending = useRef(false);
   const uploadRef = useRef<HTMLInputElement>(null);
@@ -176,6 +178,11 @@ export function ProductionPage() {
     queryFn: () =>
       apiJson<Asset[]>(base + '/assets?' + new URLSearchParams({ product_id: product!.id })),
     refetchInterval: 3000,
+  });
+  const unassigned = useQuery({
+    queryKey: ['production-unassigned-assets'],
+    enabled: !!product && !!videoType,
+    queryFn: () => apiJson<Asset[]>(base + '/assets?unassigned=true'),
   });
   const conversations = useQuery({
     queryKey: ['production-conversations', product?.id, videoType?.id],
@@ -260,6 +267,7 @@ export function ProductionPage() {
       [
         'production-products',
         'production-assets',
+        'production-unassigned-assets',
         'production-conversations',
         'production-conversation',
         'production-agent-status',
@@ -370,6 +378,23 @@ export function ProductionPage() {
         body: JSON.stringify(patch),
       });
       await refresh();
+    });
+  }
+  async function assignExisting() {
+    if (!product || !videoType) return;
+    await action(async () => {
+      try {
+        for (const id of unassignedIds) {
+          await apiJson(base + '/products/' + product.id + '/assets/' + id, {
+            method: 'POST',
+            body: JSON.stringify({ video_type_id: videoType.id, role: 'input' }),
+          });
+          setUnassignedIds((ids) => ids.filter((value) => value !== id));
+        }
+        setImporting(false);
+      } finally {
+        await refresh();
+      }
     });
   }
   async function send(retry?: Outgoing) {
@@ -960,6 +985,11 @@ export function ProductionPage() {
             <h2 className="font-medium">
               {t('production.library')} · {product?.name}
             </h2>
+            {!!product && !!videoType && !!unassigned.data?.length && (
+              <Button size="sm" disabled={busy} onClick={() => setImporting(true)}>
+                {w('importExisting')}
+              </Button>
+            )}
             <SearchableSelect
               {...selectProps}
               value={categoryId}
@@ -1320,15 +1350,53 @@ export function ProductionPage() {
         </Dialog>
       )}
       <Dialog
-        open={!!preview}
+        open={!!preview || importing}
         onOpenChange={(open) => {
-          if (!open) setPreview(null);
+          if (!open && !busy) {
+            if (preview) setPreview(null);
+            else setImporting(false);
+          }
         }}
       >
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{preview?.filename}</DialogTitle>
+            <DialogTitle>{preview?.filename || w('unassignedAssets')}</DialogTitle>
           </DialogHeader>
+          {importing && !preview && (
+            <>
+              {error && <p role="alert">{error}</p>}
+              {!unassigned.data?.length && <p>{w('noUnassigned')}</p>}
+              {(unassigned.data ?? []).map((asset) => (
+                <div key={asset.id} className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    aria-label={asset.filename}
+                    checked={unassignedIds.includes(asset.id)}
+                    disabled={busy}
+                    onChange={(e) =>
+                      setUnassignedIds((ids) =>
+                        e.target.checked ? [...ids, asset.id] : ids.filter((id) => id !== asset.id),
+                      )
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="truncate underline"
+                    aria-label={t('common.play') + ' ' + asset.filename}
+                    onClick={() => setPreview(asset)}
+                  >
+                    {asset.filename}
+                  </button>
+                </div>
+              ))}
+              <Button
+                disabled={busy || !product || !videoType || !unassignedIds.length}
+                onClick={() => void assignExisting()}
+              >
+                {w('assignToProduct')}
+              </Button>
+            </>
+          )}
           {preview &&
             (preview.kind === 'audio' ? (
               <audio

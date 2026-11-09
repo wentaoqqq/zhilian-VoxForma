@@ -345,3 +345,31 @@ def test_delete_product_allows_terminal_batches_and_ignores_other_product_activi
     batch(None, 'product', [], status='running', brand_id=p['id'])
     assert client.delete('/production/products/' + p['id']).status_code == 200
     assert store.asset_path(asset['id']).is_file()
+
+
+def test_existing_media_can_be_assigned_without_upload_copy_or_generation(client):
+    legacy = client.post('/production/assets', params={'filename': 'legacy.txt'}, content=b'Existing content.').json()
+    path = store.asset_path(legacy['id'])
+    original = (path.stat().st_mtime_ns, path.read_bytes())
+    assert [a['id'] for a in client.get('/production/assets?unassigned=true').json()] == [legacy['id']]
+    p = product(client, categories=[{'id': 'detail', 'name': 'Details'}])
+    response = client.post(f"/production/products/{p['id']}/assets/{legacy['id']}", json={'video_type_id': 'narration'})
+    assert response.status_code == 200, response.text
+    assert response.json()['classification_status'] == 'pending'
+    assert response.json()['video_type_id'] == 'narration'
+    assert client.get('/production/assets?unassigned=true').json() == []
+    assert (path.stat().st_mtime_ns, path.read_bytes()) == original
+    client.put(f"/production/products/{p['id']}/assets/{legacy['id']}", json={'category_id': 'detail'})
+    repeated = client.post(f"/production/products/{p['id']}/assets/{legacy['id']}", json={'video_type_id': 'narration'})
+    assert repeated.json()['category_id'] == 'detail'
+    with db.db_conn() as conn:
+        assert conn.execute('SELECT COUNT(*) FROM jobs').fetchone()[0] == 0
+
+
+def test_existing_media_assignment_rejects_invalid_scope_without_claiming_file(client):
+    legacy = client.post('/production/assets', params={'filename': 'legacy.txt'}, content=b'Existing content.').json()
+    p = product(client)
+    result = client.post(f"/production/products/{p['id']}/assets/{legacy['id']}", json={'video_type_id': 'missing'})
+    assert result.status_code == 400
+    assert len(client.get('/production/assets?unassigned=true').json()) == 1
+    assert client.get('/production/assets', params={'unassigned': True, 'product_id': p['id']}).status_code == 400

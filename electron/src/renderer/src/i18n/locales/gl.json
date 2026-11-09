@@ -4788,7 +4788,11 @@
       "workflowProduct": "Produto",
       "workflowTalkingHead": "Presentación ante a cámara",
       "you": "Ti",
-      "skipped": "Sen procesar"
+      "skipped": "Sen procesar",
+      "importExisting": "Asignar materiais existentes",
+      "assignToProduct": "Engadir ao produto actual",
+      "unassignedAssets": "Materiais sen asignar",
+      "noUnassigned": "Non hai materiais sen asignar"
     }
   }
 }

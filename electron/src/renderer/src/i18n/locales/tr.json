@@ -4788,7 +4788,11 @@
       "workflowProduct": "Ürün",
       "workflowTalkingHead": "Kamera karşısında anlatım",
       "you": "Siz",
-      "skipped": "İşlenmedi"
+      "skipped": "İşlenmedi",
+      "importExisting": "Mevcut materyalleri ürüne ata",
+      "assignToProduct": "Geçerli ürüne ekle",
+      "unassignedAssets": "Atanmamış materyaller",
+      "noUnassigned": "Atanmamış materyal yok"
     }
   }
 }
