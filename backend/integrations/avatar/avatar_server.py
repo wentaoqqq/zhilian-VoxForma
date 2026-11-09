@@ -102,16 +102,15 @@ async def _release_models(request):
             await asyncio.sleep(.25)
         from services import model_lifecycle
         result=await model_lifecycle.unload_all()
+        # Unloaded engines can leave unused allocator/cuBLAS caches behind.
+        # Give those blocks back before handing the lease to the next job.
+        await asyncio.to_thread(model_lifecycle.free_vram)
         snapshot=model_lifecycle.list_loaded()
         if snapshot.get('degraded_sources') or snapshot.get('models'):
             return JSONResponse({'released':False,'error':'Models could not be completely unloaded','remaining':snapshot.get('models',[])},status_code=409)
-        import subprocess
-        def memory_free():
-            r=subprocess.run([smi_path(),'--query-gpu=memory.free','--format=csv,noheader,nounits'],capture_output=True,text=True,errors='replace',check=True,timeout=8)
-            return int(r.stdout.splitlines()[0].strip())
-        free=await asyncio.to_thread(memory_free)
-        if free<int(os.environ.get('AVATAR_STUDENT_MIN_FREE_MIB','13000')):
-            return JSONResponse({'released':False,'error':f'GPU memory still occupied; only {free} MiB free'},status_code=409)
+        # Student's free-memory budget belongs at check_gpu_for_video(), not
+        # here: audio-only jobs and lease cleanup do not launch Student. Other
+        # applications' VRAM must not permanently block this service's lease.
         return {'released':True,'results':result.get('results',{})}
     finally:gpu_client.current_lease.reset(token)
 

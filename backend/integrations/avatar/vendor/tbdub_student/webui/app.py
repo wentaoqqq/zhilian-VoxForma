@@ -16,7 +16,7 @@ import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
-from unified_jobs import JobManager, QueueFullError
+from unified_jobs import JobManager, QueueFullError, default_tts_provider
 
 ROOT = Path(os.environ.get("OMNIVOICE_TBDUB_DIR", str(Path(__file__).resolve().parents[1])))
 PYTHON = Path(os.environ.get("OMNIVOICE_TBDUB_PYTHON", str(ROOT/".venv/bin/python")))
@@ -315,7 +315,7 @@ class Handler(BaseHTTPRequestHandler):
                 resolve_media(video_rel)
             payload = {"video": video_rel if not audio_only else None, "fps": fps,
                        "mode": mode, "audio_only": audio_only}
-            if data.get('character_id'):
+            if data.get('character_id') and not audio_only:
                 for key in ('character_id','character_name','character_revision'):
                     value=data.get(key)
                     if not isinstance(value,str) or not 1<=len(value)<=200:
@@ -355,7 +355,7 @@ class Handler(BaseHTTPRequestHandler):
                     if audio_rel not in audios: raise ValueError("请选择有效配音音频。")
                     resolve_media(audio_rel)
                     payload["audio"] = audio_rel
-            provider=data.get('tts_provider','legacy_indextts')
+            provider=data.get('tts_provider',default_tts_provider())
             engine=data.get('tts_engine','indextts2')
             if provider not in ('legacy_indextts','voicestudio') or not isinstance(engine,str) or not re.fullmatch(r'[a-z0-9_-]{1,80}',engine) or (provider=='legacy_indextts' and engine!='indextts2'):
                 raise ValueError('Invalid TTS provider or engine')

@@ -15,6 +15,11 @@ import shutil
 import hashlib
 from gpu_runtime import execution_lease, delegate_env, check_gpu_for_video
 
+def default_tts_provider():
+    """Managed legacy pages use Studio; standalone installs keep their engine."""
+    return 'voicestudio' if os.environ.get('AVATAR_INTEGRATION_DIR') else 'legacy_indextts'
+
+
 class QueueFullError(ValueError):
     pass
 
