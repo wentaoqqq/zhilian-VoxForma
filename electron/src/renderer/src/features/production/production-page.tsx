@@ -1,17 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  ClapperboardIcon,
-  UploadIcon,
-  PlayIcon,
-  PlusIcon,
-  SettingsIcon,
-  DownloadIcon,
-} from 'lucide-react';
+import { ClapperboardIcon, UploadIcon, PlusIcon, SendIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 // @ts-expect-error Existing shared JSX controls have no declaration files.
 import SearchableSelect from '@shared/components/SearchableSelect';
-// @ts-expect-error Reuse Studio's native voice selector rather than inventing another voice model.
+// @ts-expect-error Reuse Studio's native voice selector.
 import VoiceSelector from '@shared/components/VoiceSelector';
 import { useProfiles } from '@/hooks/use-profiles';
 import { apiJson, apiPath, describeError } from '@/lib/api/client';
@@ -27,62 +20,116 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 
-type Workflow = 'product' | 'talking_head' | 'narration' | 'intake';
-interface Asset {
-  id: string;
-  filename: string;
-  kind?: 'video' | 'audio' | 'image' | 'text';
-  duration: number;
-  bytes: number;
-  width: number;
-  height: number;
-}
-interface Brand {
+type Workflow = 'product' | 'talking_head' | 'narration';
+type Role = 'input' | 'material' | 'outro' | 'sticker';
+interface Category {
   id: string;
   name: string;
-  pack_id: string;
+  description: string;
+}
+interface VideoType {
+  id: string;
+  name: string;
+  workflow: Workflow;
+  instruction: string;
+}
+interface Product {
+  id: string;
+  name: string;
   notes: string;
+  pack_id: string;
   outro_ids: string[];
   material_ids: string[];
   sticker_ids: string[];
   voice_profile: string | null;
   tts_engine: string | null;
+  categories: Category[];
+  video_types: VideoType[];
 }
-interface Item {
-  source_id: string;
+interface Asset {
+  id: string;
   filename: string;
-  status: string;
-  error?: string;
-  artifacts: Record<string, string>;
+  kind?: 'video' | 'audio' | 'image' | 'text';
+  product_id: string;
+  category_id?: string | null;
+  video_type_id?: string | null;
+  classification_status?: string;
+  role?: Role;
 }
 interface Batch {
   id: string;
   status: string;
   error?: string;
-  items: Item[];
+  items: {
+    source_id: string;
+    filename: string;
+    status: string;
+    error?: string;
+    artifacts: Record<string, string>;
+  }[];
   log: { time: number; kind: string; text: string }[];
-  request: { options: { workflow: Workflow }; brand: Brand };
+}
+interface Message {
+  id: string;
+  role: string;
+  text: string;
+  batch_id?: string;
+  created_at?: number | string;
+}
+interface Conversation {
+  id: string;
+  product_id: string;
+  video_type_id: string;
+  title?: string;
+  messages: Message[];
+  batches: Batch[];
+}
+interface Turn {
+  id: string;
+  messages: Message[];
+  batch?: Batch;
 }
 interface AgentStatus {
   planner: { ready: boolean };
   vision: { ready: boolean };
   runtime: { installed: boolean; packs: string[]; job?: { status: string; error?: string } | null };
 }
+interface Outgoing {
+  productId: string;
+  typeId: string;
+  conversationId: string;
+  text: string;
+  sourceIds?: string[];
+  requestId: string;
+  error?: string;
+}
 const base = '/production';
 const picker = 'w-full rounded-md border border-border bg-background px-3 py-2 text-left text-sm';
-const blankBrand: Omit<Brand, 'id'> = {
-  name: '',
-  pack_id: 'roundtable',
-  notes: '',
-  outro_ids: [],
-  material_ids: [],
-  sticker_ids: [],
-  voice_profile: null,
-  tts_engine: null,
+const workflows: Workflow[] = ['product', 'talking_head', 'narration'];
+const workflowKeys = {
+  product: 'workflowProduct',
+  talking_head: 'workflowTalkingHead',
+  narration: 'workflowNarration',
 };
-function remembered(key: string) {
+const roles: Role[] = ['input', 'material', 'outro', 'sticker'];
+const roleKeys = {
+  input: 'roleInput',
+  material: 'roleMaterial',
+  outro: 'roleOutro',
+  sticker: 'roleSticker',
+};
+const classificationKeys: Record<string, string> = {
+  pending: 'classificationPending',
+  classified: 'classificationClassified',
+  unclassified: 'classificationUnclassified',
+};
+// HTTP LAN deployments do not expose randomUUID in every browser.
+const newId = () =>
+  globalThis.crypto?.randomUUID?.() ??
+  Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+function rememberedProduct() {
   try {
-    return localStorage.getItem(key) || '';
+    return localStorage.getItem('voxforma.production.product') || '';
   } catch {
     return '';
   }
@@ -90,96 +137,134 @@ function remembered(key: string) {
 
 export function ProductionPage() {
   const { t } = useTranslation();
+  const w = (key: string, values?: Record<string, unknown>) =>
+    t('production.workspace.' + key, values);
   const client = useQueryClient();
   const profiles = useProfiles();
-  const [tab, setTab] = useState<'work' | 'library' | 'brands' | 'results'>('work');
-  const [brandId, setBrandId] = useState(() => remembered('voxforma.production.brand'));
-  const [workflow, setWorkflow] = useState<Workflow>('product');
+  const [productId, setProductId] = useState(rememberedProduct);
+  const [typeId, setTypeId] = useState('');
+  // null opens the latest saved session; an empty string explicitly starts a new one.
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
-  const [explicitSelection, setExplicitSelection] = useState(false);
-  const [instruction, setInstruction] = useState('');
+  const [discussionOnly, setDiscussionOnly] = useState(false);
+  const [categoryId, setCategoryId] = useState('');
+  const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState('');
-  const [editor, setEditor] = useState<Brand | Omit<Brand, 'id'> | null>(null);
+  const [editor, setEditor] = useState<Product | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [preview, setPreview] = useState<Asset | null>(null);
-  const [openLogs, setOpenLogs] = useState<string[]>([]);
+  const [outgoing, setOutgoing] = useState<Outgoing | null>(null);
+  const sending = useRef(false);
   const uploadRef = useRef<HTMLInputElement>(null);
   const packRef = useRef<HTMLInputElement>(null);
-  const submission = useRef<{ signature: string; id: string } | null>(null);
-  const assets = useQuery({
-    queryKey: ['production-assets'],
-    queryFn: () => apiJson<Asset[]>(base + '/assets'),
+  const transcriptRef = useRef<HTMLDivElement>(null);
+  const products = useQuery({
+    queryKey: ['production-products'],
+    queryFn: () => apiJson<Product[]>(base + '/products'),
   });
-  const brands = useQuery({
-    queryKey: ['production-brands'],
-    queryFn: () => apiJson<Brand[]>(base + '/brands'),
+  const product = products.data?.find((p) => p.id === productId) ?? products.data?.[0];
+  const videoType = product?.video_types.find((v) => v.id === typeId) ?? product?.video_types[0];
+  const scope = new URLSearchParams({
+    product_id: product?.id ?? '',
+    video_type_id: videoType?.id ?? '',
+  });
+  const assets = useQuery({
+    queryKey: ['production-assets', product?.id],
+    enabled: !!product,
+    queryFn: () =>
+      apiJson<Asset[]>(base + '/assets?' + new URLSearchParams({ product_id: product!.id })),
+    refetchInterval: 3000,
+  });
+  const conversations = useQuery({
+    queryKey: ['production-conversations', product?.id, videoType?.id],
+    enabled: !!product && !!videoType,
+    queryFn: () => apiJson<Conversation[]>(base + '/conversations?' + scope),
+    refetchInterval: 3000,
+  });
+  const activeId = conversationId === null ? (conversations.data?.[0]?.id ?? '') : conversationId;
+  useEffect(() => {
+    if (conversationId === null && conversations.data)
+      setConversationId(conversations.data[0]?.id ?? '');
+  }, [conversationId, conversations.data]);
+  const conversation = useQuery({
+    queryKey: ['production-conversation', activeId],
+    enabled: !!activeId,
+    queryFn: () => apiJson<Conversation>(base + '/conversations/' + activeId),
+    refetchInterval: 1500,
   });
   const status = useQuery({
     queryKey: ['production-agent-status'],
     queryFn: () => apiJson<AgentStatus>(base + '/agent/status'),
     refetchInterval: 10000,
   });
-  const batches = useQuery({
-    queryKey: ['production-batches'],
-    queryFn: () => apiJson<Batch[]>(base + '/batches'),
-    refetchInterval: 3000,
-  });
-  const currentBrand = brands.data?.find((b) => b.id === brandId);
-  useEffect(() => {
-    if (!brandId && brands.data?.length === 1) {
-      setBrandId(brands.data[0].id);
-      try {
-        localStorage.setItem('voxforma.production.brand', brands.data[0].id);
-      } catch {
-        /* Selection remains in memory. */
-      }
-    }
-  }, [brandId, brands.data]);
-  const validKinds =
-    workflow === 'narration'
-      ? ['audio', 'text']
-      : workflow === 'intake'
-        ? ['video', 'image']
-        : ['video'];
-  const finishedOrActive = new Set(
-    (batches.data ?? [])
-      .filter((b) => b.request.brand.id === brandId && b.request.options.workflow === workflow)
-      .flatMap((b) =>
-        b.items
-          .filter((i) => i.status === 'done' || ['pending', 'running'].includes(b.status))
-          .map((i) => i.source_id),
-      ),
-  );
-  const eligible = (assets.data ?? []).filter(
-    (a) =>
-      validKinds.includes(a.kind ?? 'video') &&
-      !currentBrand?.outro_ids.includes(a.id) &&
-      !currentBrand?.sticker_ids.includes(a.id),
-  );
-  const inputs = eligible.filter(
-    (a) =>
-      selected.includes(a.id) ||
-      (!finishedOrActive.has(a.id) && !currentBrand?.material_ids.includes(a.id)),
-  );
-  const chosen = explicitSelection
-    ? selected.filter((id) => eligible.some((a) => a.id === id))
-    : inputs.map((a) => a.id);
-  const listed = tab === 'library' ? (assets.data ?? []) : inputs;
   const ready = !!(
     status.data?.planner.ready &&
-    status.data?.vision.ready &&
-    status.data?.runtime.installed &&
-    currentBrand &&
-    status.data.runtime.packs.includes(currentBrand.pack_id)
+    status.data.runtime.installed &&
+    product &&
+    status.data.runtime.packs.includes(product.pack_id)
   );
+  const canSend = ready && !!videoType && !conversations.isPending;
+  const scopedAssets = (assets.data ?? []).filter((a) => a.product_id === product?.id);
+  const roleOf = (a: Asset): Role =>
+    a.role ??
+    (product?.outro_ids.includes(a.id)
+      ? 'outro'
+      : product?.sticker_ids.includes(a.id)
+        ? 'sticker'
+        : product?.material_ids.includes(a.id)
+          ? 'material'
+          : 'input');
+  const attachments = scopedAssets.filter(
+    (a) => selected.includes(a.id) && a.video_type_id === videoType?.id && roleOf(a) === 'input',
+  );
+  const batches = conversation.data?.batches ?? [];
+  const visibleOutgoing =
+    outgoing &&
+    outgoing.productId === product?.id &&
+    outgoing.typeId === videoType?.id &&
+    outgoing.conversationId === activeId
+      ? outgoing
+      : null;
+  const messages = conversation.data?.messages ?? [];
+  const batchesById = new Map(batches.map((batch) => [batch.id, batch]));
+  const turns: Turn[] = [];
+  const turnsByBatch = new Map<string, Turn>();
+  let latestUserTurn: Turn | undefined;
+  for (const message of messages) {
+    let turn = message.batch_id ? turnsByBatch.get(message.batch_id) : undefined;
+    if (!turn && !message.batch_id && message.role !== 'user') turn = latestUserTurn;
+    if (!turn) {
+      turn = {
+        id: message.id,
+        messages: [],
+        batch: message.batch_id ? batchesById.get(message.batch_id) : undefined,
+      };
+      turns.push(turn);
+    }
+    turn.messages.push(message);
+    if (message.batch_id) turnsByBatch.set(message.batch_id, turn);
+    if (message.role === 'user') latestUserTurn = turn;
+  }
+  // Preserve batches from older conversations whose messages have no batch_id.
+  for (const batch of batches) {
+    if (!turnsByBatch.has(batch.id)) turns.push({ id: 'batch-' + batch.id, messages: [], batch });
+  }
+  const progressSize = batches.reduce((n, b) => n + (b.log?.length ?? 0), 0);
+  useEffect(() => {
+    transcriptRef.current?.scrollTo?.({ top: transcriptRef.current.scrollHeight });
+  }, [activeId, messages.length, progressSize, outgoing]);
   async function refresh() {
-    await Promise.all([
-      client.invalidateQueries({ queryKey: ['production-assets'] }),
-      client.invalidateQueries({ queryKey: ['production-brands'] }),
-      client.invalidateQueries({ queryKey: ['production-batches'] }),
-      client.invalidateQueries({ queryKey: ['production-agent-status'] }),
-    ]);
+    await Promise.all(
+      [
+        'production-products',
+        'production-assets',
+        'production-conversations',
+        'production-conversation',
+        'production-agent-status',
+      ].map((key) => client.invalidateQueries({ queryKey: [key] })),
+    );
   }
   async function action(fn: () => Promise<unknown>) {
     setBusy(true);
@@ -193,162 +278,164 @@ export function ProductionPage() {
       setUploading('');
     }
   }
-  function chooseBrand(id: string) {
-    setBrandId(id);
-    setExplicitSelection(false);
+  function resetChat() {
+    setConversationId(null);
+    setSelected([]);
+    setDiscussionOnly(false);
+    setDraft('');
+    setOutgoing(null);
+    setError('');
+  }
+  function chooseProduct(id: string) {
+    setProductId(id);
+    setTypeId('');
+    setCategoryId('');
+    resetChat();
     try {
-      localStorage.setItem('voxforma.production.brand', id);
+      localStorage.setItem('voxforma.production.product', id);
     } catch {
-      /* Selection remains in memory. */
+      /* In-memory selection works. */
     }
   }
-  async function upload(files: File[]) {
-    await action(async () => {
-      const ids: string[] = [];
-      for (const file of files) {
-        setUploading(file.name);
-        const result = await apiJson<Asset>(
-          base + '/assets?' + new URLSearchParams({ filename: file.name }),
-          { method: 'POST', body: file, headers: { 'Content-Type': 'application/octet-stream' } },
-        );
-        ids.push(result.id);
-      }
-      setSelected((current) => Array.from(new Set([...current, ...ids])));
-      setExplicitSelection(true);
-      await refresh();
+  function createProduct() {
+    setDeleting(false);
+    setEditor({
+      id: '',
+      name: '',
+      notes: '',
+      pack_id: 'roundtable',
+      outro_ids: [],
+      material_ids: [],
+      sticker_ids: [],
+      voice_profile: null,
+      tts_engine: null,
+      categories: [],
+      video_types: workflows.map((workflow) => ({
+        id: newId(),
+        name: w(workflowKeys[workflow]),
+        workflow,
+        instruction: '',
+      })),
     });
   }
-  async function start() {
-    const snapshot = {
-      brand_id: brandId,
-      workflow,
-      source_ids: chosen,
-      instruction: instruction.trim() || t('production.batch.start'),
-    };
-    const signature = JSON.stringify(snapshot);
-    if (submission.current?.signature !== signature)
-      submission.current = {
-        signature,
-        id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2),
-      };
-    const requestId = submission.current.id;
-    await action(async () => {
-      const result = await apiJson<Batch>(base + '/batches', {
-        method: 'POST',
-        body: JSON.stringify({ ...snapshot, request_id: requestId }),
-      });
-      submission.current = null;
-      setSelected((current) => current.filter((id) => !snapshot.source_ids.includes(id)));
-      setExplicitSelection(false);
-      setOpenLogs((current) => [result.id, ...current]);
-      await refresh();
-    });
-  }
-  async function saveBrand() {
+  async function saveProduct() {
     if (!editor) return;
     await action(async () => {
-      const id = 'id' in editor ? editor.id : null;
-      const saved = await apiJson<Brand>(base + '/brands' + (id ? '/' + id : ''), {
+      const { id, ...payload } = editor;
+      const saved = await apiJson<Product>(base + '/products' + (id ? '/' + id : ''), {
         method: id ? 'PUT' : 'POST',
-        body: JSON.stringify(editor),
+        body: JSON.stringify(payload),
       });
-      chooseBrand(saved.id);
+      chooseProduct(saved.id);
       setEditor(null);
-      setTab('work');
       await refresh();
     });
   }
-  async function jobAction(id: string, verb: 'cancel' | 'retry') {
+  async function upload(files: File[]) {
+    if (!product || !videoType || !files.length) return;
+    const uploadProduct = product.id,
+      uploadType = videoType.id;
     await action(async () => {
-      await apiJson(base + '/batches/' + id + '/' + verb, { method: 'POST' });
+      const ids: string[] = [];
+      try {
+        for (const file of files) {
+          setUploading(file.name);
+          const asset = await apiJson<Asset>(
+            base +
+              '/assets?' +
+              new URLSearchParams({
+                filename: file.name,
+                product_id: uploadProduct,
+                video_type_id: uploadType,
+              }),
+            { method: 'POST', body: file, headers: { 'Content-Type': 'application/octet-stream' } },
+          );
+          ids.push(asset.id);
+        }
+      } finally {
+        if (ids.length) setDiscussionOnly(false);
+        setSelected((current) => [...new Set([...current, ...ids])]);
+        await client.invalidateQueries({ queryKey: ['production-assets', uploadProduct] });
+      }
+    });
+  }
+  async function updateAsset(
+    asset: Asset,
+    patch: { category_id?: string | null; video_type_id?: string; role?: Role },
+  ) {
+    if (!product) return;
+    await action(async () => {
+      await apiJson(base + '/products/' + product.id + '/assets/' + asset.id, {
+        method: 'PUT',
+        body: JSON.stringify(patch),
+      });
       await refresh();
     });
   }
-  const toggle = (id: string) => {
-    setSelected(chosen.includes(id) ? chosen.filter((x) => x !== id) : [...chosen, id]);
-    setExplicitSelection(true);
-  };
-  const state = (value: string) => t('batch.status_' + (value === 'pending' ? 'queued' : value));
-  const media = (a: Asset) =>
-    a.kind === 'audio' ? (
-      <audio src={apiPath(base + '/assets/' + a.id + '/preview')} controls className="w-full" />
-    ) : a.kind === 'image' ? (
-      <img
-        src={apiPath(base + '/assets/' + a.id + '/preview')}
-        alt={a.filename}
-        className="mx-auto max-h-96 max-w-full object-contain"
-      />
-    ) : a.kind === 'text' ? (
-      <a href={apiPath(base + '/assets/' + a.id + '/preview')} target="_blank" rel="noreferrer">
-        {a.filename}
-      </a>
-    ) : (
-      <video
-        src={apiPath(base + '/assets/' + a.id + '/preview')}
-        controls
-        playsInline
-        preload="metadata"
-        className="mx-auto max-h-[65vh] max-w-full rounded bg-black object-contain"
-      />
-    );
-  const uploadInput = (
-    <input
-      ref={uploadRef}
-      type="file"
-      multiple
-      accept="video/*,audio/*,image/*,.txt,.mkv"
-      className="sr-only"
-      aria-hidden="true"
-      tabIndex={-1}
-      disabled={busy}
-      data-testid="batch-upload"
-      onChange={(e) => {
-        const files = Array.from(e.currentTarget.files ?? []);
-        e.currentTarget.value = '';
-        if (files.length) void upload(files);
-      }}
-    />
-  );
-  function pool(
-    key: 'outro_ids' | 'material_ids' | 'sticker_ids',
-    kind: 'video' | 'image',
-    label: string,
-  ) {
-    return (
-      <div className="grid gap-2">
-        <h3 className="text-sm font-medium">{label}</h3>
-        <div className="grid max-h-48 gap-2 overflow-y-auto rounded-lg border border-border p-3">
-          {(assets.data ?? [])
-            .filter((a) => (a.kind ?? 'video') === kind)
-            .map((a) => (
-              <label key={a.id} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  disabled={busy}
-                  checked={editor?.[key].includes(a.id) ?? false}
-                  onChange={() =>
-                    setEditor((current) =>
-                      current
-                        ? {
-                            ...current,
-                            [key]: current[key].includes(a.id)
-                              ? current[key].filter((id) => id !== a.id)
-                              : [...current[key], a.id],
-                          }
-                        : current,
-                    )
-                  }
-                />
-                <span className="min-w-0 flex-1 truncate">{a.filename}</span>
-                <button type="button" className="text-xs underline" onClick={() => setPreview(a)}>
-                  {t('common.play')}
-                </button>
-              </label>
-            ))}
-        </div>
-      </div>
-    );
+  async function send(retry?: Outgoing) {
+    if (!product || !videoType || sending.current) return;
+    sending.current = true;
+    const next = retry ?? {
+      productId: product.id,
+      typeId: videoType.id,
+      conversationId: activeId,
+      text: draft.trim() || t('production.batch.start'),
+      sourceIds: discussionOnly
+        ? []
+        : attachments.length
+          ? attachments.map((a) => a.id)
+          : undefined,
+      requestId: newId(),
+    };
+    setOutgoing({ ...next, error: undefined });
+    setDraft('');
+    setBusy(true);
+    setError('');
+    try {
+      if (!next.conversationId) {
+        const created = await apiJson<Conversation>(base + '/conversations', {
+          method: 'POST',
+          body: JSON.stringify({ product_id: next.productId, video_type_id: next.typeId }),
+        });
+        next.conversationId = created.id;
+        client.setQueryData(['production-conversation', created.id], created);
+        setConversationId(created.id);
+        setOutgoing({ ...next, error: undefined });
+      }
+      await client.cancelQueries({ queryKey: ['production-conversation', next.conversationId] });
+      const result = await apiJson<Conversation>(
+        base + '/conversations/' + next.conversationId + '/messages',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            text: next.text,
+            ...(next.sourceIds !== undefined ? { source_ids: next.sourceIds } : {}),
+            request_id: next.requestId,
+          }),
+        },
+      );
+      client.setQueryData(['production-conversation', result.id], result);
+      setOutgoing(null);
+      setSelected([]);
+      await client.invalidateQueries({
+        queryKey: ['production-conversations', next.productId, next.typeId],
+      });
+    } catch (e) {
+      setOutgoing({ ...next, error: describeError(e) });
+    } finally {
+      sending.current = false;
+      setBusy(false);
+    }
   }
+  const state = (value: string) =>
+    value === 'skipped'
+      ? w('skipped')
+      : t('batch.status_' + (value === 'pending' ? 'queued' : value));
+  const fileUrl = (batch: Batch, source: string, name: string) =>
+    apiPath(
+      base + '/batches/' + batch.id + '/items/' + source + '/files/' + encodeURIComponent(name),
+    );
+  const selectProps = { buttonClassName: picker, menuPortal: true, disabled: busy };
   return (
     <div className="flex h-full min-h-0 flex-col">
       <WorkspaceHeader>
@@ -357,435 +444,640 @@ export function ProductionPage() {
           {t('production.title')}
         </h1>
       </WorkspaceHeader>
-      <main className="flex-1 overflow-y-auto p-5" data-testid="production-page">
-        <div className="mx-auto grid max-w-6xl gap-5">
-          <div className="flex flex-wrap gap-2">
-            {(['work', 'library', 'brands', 'results'] as const).map((key) => (
-              <Button
-                key={key}
-                variant={tab === key ? 'default' : 'outline'}
-                onClick={() => setTab(key)}
-              >
-                {t(
-                  key === 'work'
-                    ? 'production.batch.workbench'
-                    : key === 'library'
-                      ? 'production.library'
-                      : key === 'brands'
-                        ? 'production.batch.brands'
-                        : 'production.deliveries',
-                )}
-              </Button>
-            ))}
+      <main
+        className="flex min-h-0 flex-1 flex-col gap-4 overflow-auto p-4"
+        data-testid="production-page"
+      >
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="grid min-w-48 flex-1 gap-1">
+            <span className="text-sm">{w('products')}</span>
+            <SearchableSelect
+              {...selectProps}
+              value={product?.id ?? ''}
+              onChange={chooseProduct}
+              options={(products.data ?? []).map((p) => ({ value: p.id, label: p.name }))}
+              ariaLabel={w('products')}
+              placeholder={w('chooseProduct')}
+            />
           </div>
-          {(error || assets.isError || brands.isError || batches.isError || status.isError) && (
-            <p role="alert" className="break-words text-sm text-destructive">
-              {error ||
-                describeError(assets.error || brands.error || batches.error || status.error)}
-            </p>
-          )}
-          {busy && (
-            <p role="status" className="text-sm">
-              {t('common.saving')} {uploading}
-            </p>
-          )}
-          {!editor && uploadInput}
-          <input
-            ref={packRef}
-            type="file"
-            accept=".zip"
-            className="sr-only"
-            aria-hidden="true"
-            tabIndex={-1}
-            disabled={busy}
-            onChange={(e) => {
-              const file = e.currentTarget.files?.[0];
-              e.currentTarget.value = '';
-              if (file)
-                void action(async () => {
-                  await apiJson(base + '/packs/' + (currentBrand?.pack_id || 'roundtable'), {
-                    method: 'POST',
-                    body: file,
-                    headers: { 'Content-Type': 'application/zip' },
-                  });
-                  await refresh();
-                });
+          <div className="grid min-w-48 flex-1 gap-1">
+            <span className="text-sm">{w('videoTypes')}</span>
+            <SearchableSelect
+              {...selectProps}
+              value={videoType?.id ?? ''}
+              onChange={(id: string) => {
+                setTypeId(id);
+                resetChat();
+              }}
+              options={(product?.video_types ?? []).map((v) => ({ value: v.id, label: v.name }))}
+              ariaLabel={w('videoTypes')}
+              placeholder={w('chooseVideoType')}
+            />
+          </div>
+          <Button variant="outline" disabled={busy} onClick={createProduct}>
+            <PlusIcon />
+            {w('newProduct')}
+          </Button>
+          <Button
+            variant="outline"
+            disabled={busy || !product}
+            onClick={() => {
+              setDeleting(false);
+              setEditor(structuredClone(product!));
             }}
-          />
-          {tab === 'work' && (
-            <>
-              <section className="grid gap-4 rounded-xl border border-border p-5 sm:grid-cols-2">
-                <div className="grid content-start gap-2">
-                  <span className="text-sm">{t('production.batch.workflow')}</span>
-                  <SearchableSelect
-                    value={workflow}
-                    onChange={(v: Workflow) => {
-                      setWorkflow(v);
-                      setSelected([]);
-                      setExplicitSelection(false);
-                    }}
-                    options={(['product', 'talking_head', 'narration', 'intake'] as const).map(
-                      (value) => ({ value, label: t('production.batch.' + value) }),
-                    )}
-                    ariaLabel={t('production.batch.workflow')}
-                    menuPortal
-                    buttonClassName={picker}
-                    disabled={busy}
-                  />
-                </div>
-                <div className="grid content-start gap-2">
-                  <span className="text-sm">{t('production.batch.brands')}</span>
-                  <div className="flex gap-2">
-                    <SearchableSelect
-                      value={brandId}
-                      onChange={chooseBrand}
-                      options={(brands.data ?? []).map((b) => ({ value: b.id, label: b.name }))}
-                      placeholder={t('production.batch.chooseBrand')}
-                      ariaLabel={t('production.batch.brands')}
-                      menuPortal
-                      buttonClassName={picker}
-                      disabled={busy}
-                    />
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      aria-label={t('production.batch.brands')}
-                      onClick={() => setTab('brands')}
-                    >
-                      <SettingsIcon />
-                    </Button>
-                  </div>
-                </div>
-                <div className="grid gap-3 sm:col-span-2">
-                  <Textarea
-                    value={instruction}
-                    onChange={(e) => setInstruction(e.target.value)}
-                    disabled={busy}
-                    rows={3}
-                    placeholder={t('production.batch.instruction')}
-                    aria-label={t('production.batch.instruction')}
-                  />
-                  <p className="text-xs text-muted-foreground">{t('production.batch.cloudHint')}</p>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      onClick={() => void start()}
-                      disabled={busy || !ready || !chosen.length}
-                      size="lg"
-                    >
-                      <PlayIcon />
-                      {t('production.batch.start')} · {chosen.length}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      disabled={busy}
-                      onClick={() => uploadRef.current?.click()}
-                    >
-                      <UploadIcon />
-                      {t('production.batch.upload')}
-                    </Button>
-                  </div>
-                </div>
-              </section>
-              {!ready && (
-                <section className="grid gap-3 rounded-xl border border-border p-4">
-                  <p className="text-sm">{t('production.batch.setupHint')}</p>
-                  {status.data?.runtime.job?.status === 'failed' && (
-                    <p role="alert" className="text-sm text-destructive">
-                      {status.data.runtime.job.error}
-                    </p>
-                  )}
-                  {['pending', 'running'].includes(status.data?.runtime.job?.status ?? '') && (
-                    <p role="status" className="text-sm">
-                      {t('common.saving')}
-                    </p>
-                  )}
-                  <div className="flex flex-wrap gap-2">
-                    <a href="#/settings/models/llm" className="text-sm underline">
-                      {t('production.ai.settings')}
-                    </a>
-                    {!status.data?.runtime.installed && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={
-                          busy ||
-                          ['pending', 'running'].includes(status.data?.runtime.job?.status ?? '')
-                        }
-                        onClick={() =>
-                          void action(async () => {
-                            await apiJson(base + '/runtime/install', { method: 'POST' });
-                            await refresh();
-                          })
-                        }
-                      >
-                        {t('production.batch.installRuntime')}
-                      </Button>
-                    )}
-                    {!status.data?.runtime.packs.includes(
-                      currentBrand?.pack_id || 'roundtable',
-                    ) && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={busy}
-                        onClick={() => packRef.current?.click()}
-                      >
-                        {t('production.batch.importPack')}
-                      </Button>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setEditor({ ...blankBrand });
-                        setTab('brands');
-                      }}
-                    >
-                      {t('production.batch.newBrand')}
-                    </Button>
-                  </div>
-                </section>
+          >
+            {w('editProduct')}
+          </Button>
+        </div>
+        {(error ||
+          products.error ||
+          assets.error ||
+          conversations.error ||
+          conversation.error ||
+          status.error) && (
+          <p role="alert" className="break-words text-sm text-destructive">
+            {error ||
+              describeError(
+                products.error ||
+                  assets.error ||
+                  conversations.error ||
+                  conversation.error ||
+                  status.error,
               )}
-            </>
-          )}
-          {(tab === 'work' || tab === 'library') && (
-            <section className="grid gap-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <h2 className="font-medium">
-                  {t(tab === 'work' ? 'production.batch.pending' : 'production.library')} ·{' '}
-                  {listed.length}
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={busy}
-                  onClick={() => {
-                    setSelected(listed.map((a) => a.id));
-                    setExplicitSelection(true);
-                  }}
-                >
-                  {t('production.batch.selectAll')}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={busy}
-                  onClick={() => {
-                    setSelected([]);
-                    setExplicitSelection(true);
-                  }}
-                >
-                  {t('common.clear')}
-                </Button>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {listed.map((a) => (
-                  <div
-                    key={a.id}
-                    className="flex items-center gap-3 rounded-lg border border-border p-3"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={chosen.includes(a.id)}
-                      disabled={busy}
-                      aria-label={a.filename}
-                      onChange={() => toggle(a.id)}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm" title={a.filename}>
-                        {a.filename}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {a.kind ?? 'video'} · {a.duration ? a.duration.toFixed(1) + 's · ' : ''}
-                        {(a.bytes / 1024 ** 2).toFixed(1)} MiB
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label={t('common.play') + ' ' + a.filename}
-                      onClick={() => setPreview(a)}
-                    >
-                      <PlayIcon />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              {tab === 'library' && (
+          </p>
+        )}
+        {busy && (
+          <p role="status" className="text-sm">
+            {t('common.saving')} {uploading}
+          </p>
+        )}
+        {(!ready || (status.data && !status.data.vision.ready)) && (
+          <section className="grid gap-2 rounded-lg border border-border p-3 text-sm">
+            {!ready && <p>{w('setupHint')}</p>}
+            {status.data && !status.data.vision.ready && <p>{w('visionHint')}</p>}
+            {status.data?.runtime.job?.error && <p role="alert">{status.data.runtime.job.error}</p>}
+            <div className="flex flex-wrap items-center gap-3">
+              <a href="#/settings/models/llm" className="underline">
+                {t('production.ai.settings')}
+              </a>
+              {status.data && !status.data.runtime.installed && (
                 <Button
                   variant="outline"
+                  disabled={
+                    busy || ['pending', 'running'].includes(status.data.runtime.job?.status ?? '')
+                  }
+                  onClick={() =>
+                    void action(async () => {
+                      await apiJson(base + '/runtime/install', { method: 'POST' });
+                      await refresh();
+                    })
+                  }
+                >
+                  {t('production.batch.installRuntime')}
+                </Button>
+              )}
+              {product && status.data && !status.data.runtime.packs.includes(product.pack_id) && (
+                <Button variant="outline" disabled={busy} onClick={() => packRef.current?.click()}>
+                  {t('production.batch.importPack')}
+                </Button>
+              )}
+            </div>
+          </section>
+        )}
+        <input
+          ref={packRef}
+          data-testid="pack-upload"
+          type="file"
+          accept=".zip"
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden="true"
+          disabled={busy || !product}
+          onChange={(e) => {
+            const file = e.currentTarget.files?.[0];
+            e.currentTarget.value = '';
+            if (file && product)
+              void action(async () => {
+                await apiJson(base + '/packs/' + encodeURIComponent(product.pack_id), {
+                  method: 'POST',
+                  body: file,
+                  headers: { 'Content-Type': 'application/zip' },
+                });
+                await refresh();
+              });
+          }}
+        />
+        <input
+          ref={uploadRef}
+          data-testid="batch-upload"
+          type="file"
+          multiple
+          accept=".mp4,.mov,.mkv,.webm,.avi,.m4v,.wav,.mp3,.m4a,.flac,.ogg,.png,.jpg,.jpeg,.webp,.txt"
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden="true"
+          disabled={busy || !product || !videoType}
+          onChange={(e) => {
+            const files = Array.from(e.currentTarget.files ?? []);
+            e.currentTarget.value = '';
+            void upload(files);
+          }}
+        />
+        <div className="grid min-h-[32rem] flex-1 gap-4 lg:min-h-0 lg:grid-cols-[12rem_minmax(0,1fr)_20rem]">
+          <aside
+            className="flex min-h-0 flex-col gap-3 rounded-xl border border-border p-3"
+            aria-label={w('conversations')}
+          >
+            <h2 className="font-medium">{w('conversations')}</h2>
+            <Button
+              variant="outline"
+              disabled={busy || !product || !videoType}
+              onClick={() => {
+                setConversationId('');
+                setDraft('');
+                setOutgoing(null);
+                setSelected([]);
+                setDiscussionOnly(false);
+              }}
+            >
+              {w('newConversation')}
+            </Button>
+            <div className="grid gap-2 overflow-auto">
+              {!conversations.data?.length && (
+                <p className="text-sm text-muted-foreground">{w('noConversations')}</p>
+              )}
+              {(conversations.data ?? []).map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  aria-current={c.id === activeId ? 'page' : undefined}
                   disabled={busy}
+                  className={
+                    'break-words rounded-lg p-2 text-left text-sm ' +
+                    (c.id === activeId ? 'bg-muted' : 'hover:bg-muted/50')
+                  }
+                  onClick={() => {
+                    setConversationId(c.id);
+                    setOutgoing(null);
+                    setDraft('');
+                    setSelected([]);
+                    setDiscussionOnly(false);
+                  }}
+                >
+                  {c.title || w('untitledConversation')}
+                </button>
+              ))}
+            </div>
+          </aside>
+          <section
+            className="flex min-h-0 flex-col rounded-xl border border-border"
+            aria-label={w('assistant')}
+          >
+            <div
+              ref={transcriptRef}
+              className="flex-1 space-y-4 overflow-y-auto p-4"
+              role="log"
+              aria-label={w('conversations')}
+            >
+              {!messages.length && !visibleOutgoing && (
+                <p className="py-10 text-center text-sm text-muted-foreground">{w('chatEmpty')}</p>
+              )}
+              {turns.map((turn) => (
+                <section
+                  key={turn.id}
+                  data-turn-id={turn.id}
+                  data-batch-id={turn.batch?.id}
+                  className="space-y-4"
+                >
+                  {turn.messages.map((m) => (
+                    <article
+                      key={m.id}
+                      data-message-role={m.role}
+                      className={
+                        'max-w-[95%] rounded-xl p-3 text-sm ' +
+                        (m.role === 'user' ? 'ml-auto bg-primary/10' : 'bg-muted/40')
+                      }
+                    >
+                      <p className="mb-1 text-xs font-medium text-muted-foreground">
+                        {w(
+                          m.role === 'user'
+                            ? 'you'
+                            : m.role === 'assistant'
+                              ? 'assistant'
+                              : 'system',
+                        )}
+                      </p>
+                      <p className="whitespace-pre-wrap break-words">{m.text}</p>
+                    </article>
+                  ))}
+                  {turn.batch &&
+                    (() => {
+                      const batch = turn.batch;
+                      const active = ['pending', 'running'].includes(batch.status);
+                      const hasDeliveries = batch.items.some(
+                        (item) =>
+                          item.status === 'done' && Object.values(item.artifacts).some(Boolean),
+                      );
+                      const assistantEvents = (batch.log ?? []).filter((event) =>
+                        ['text', 'assistant'].includes(event.kind),
+                      );
+                      const toolEvents = (batch.log ?? []).filter(
+                        (event) => !['text', 'assistant'].includes(event.kind),
+                      );
+                      // OpenCode emits text as assistant progress. Tool/runtime events remain an activity log.
+                      const hasAssistantMessage = turn.messages.some(
+                        (m) => m.role === 'assistant' && m.batch_id === batch.id,
+                      );
+                      return (
+                        <section
+                          key={batch.id}
+                          aria-label={batch.id}
+                          className="space-y-3 rounded-xl border border-border p-3"
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                            <span>
+                              {hasDeliveries ? t('production.deliveries') : w('tools')} ·{' '}
+                              {state(batch.status)}
+                            </span>
+                            <span className="text-xs text-muted-foreground">{batch.id}</span>
+                          </div>
+                          {!hasAssistantMessage &&
+                            assistantEvents.map((event, index) => (
+                              <article
+                                key={index}
+                                data-message-role="assistant"
+                                className="rounded-lg bg-muted/40 p-3 text-sm"
+                              >
+                                <p className="mb-1 text-xs font-medium">{w('assistant')}</p>
+                                <p className="whitespace-pre-wrap break-words">{event.text}</p>
+                              </article>
+                            ))}
+                          {batch.error && (
+                            <p
+                              role={batch.status === 'skipped' ? 'status' : 'alert'}
+                              className={
+                                'break-words text-sm ' +
+                                (batch.status === 'skipped'
+                                  ? 'text-muted-foreground'
+                                  : 'text-destructive')
+                              }
+                            >
+                              {batch.error}
+                            </p>
+                          )}
+                          <details>
+                            <summary className="cursor-pointer text-sm">
+                              {w('tools')} · {toolEvents.length}
+                            </summary>
+                            <div
+                              role="log"
+                              aria-label={w('tools')}
+                              className="mt-2 max-h-72 space-y-2 overflow-auto rounded bg-muted/40 p-2"
+                            >
+                              {toolEvents.map((event, index) => (
+                                <p
+                                  key={index}
+                                  className="whitespace-pre-wrap break-words font-mono text-xs"
+                                >
+                                  [{event.kind}] {event.text}
+                                </p>
+                              ))}
+                            </div>
+                          </details>
+                          {(batch.items ?? []).map((item) => (
+                            <div
+                              key={item.source_id}
+                              className="space-y-2 rounded-lg border border-border p-2 text-sm"
+                            >
+                              <p className="break-words">
+                                {item.filename} ·{' '}
+                                {state(
+                                  !active && item.status === 'pending' ? batch.status : item.status,
+                                )}
+                              </p>
+                              {item.error && (
+                                <p
+                                  className={
+                                    'break-words ' +
+                                    (item.status === 'skipped'
+                                      ? 'text-muted-foreground'
+                                      : 'text-destructive')
+                                  }
+                                >
+                                  {item.error}
+                                </p>
+                              )}
+                              {item.status === 'done' && (
+                                <>
+                                  {item.artifacts.video && (
+                                    <video
+                                      src={fileUrl(batch, item.source_id, 'video')}
+                                      controls
+                                      preload="metadata"
+                                      playsInline
+                                      className="max-h-80 w-full rounded bg-black"
+                                    />
+                                  )}
+                                  {item.artifacts.cover && (
+                                    <img
+                                      src={fileUrl(batch, item.source_id, 'cover')}
+                                      alt={item.filename}
+                                      loading="lazy"
+                                      className="max-h-60 max-w-full rounded object-contain"
+                                    />
+                                  )}
+                                  <div className="flex flex-wrap gap-3">
+                                    {Object.keys(item.artifacts).map((name) => (
+                                      <a
+                                        key={name}
+                                        className="underline"
+                                        href={fileUrl(batch, item.source_id, name)}
+                                        download
+                                      >
+                                        {t('production.download')} · {name}
+                                      </a>
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          ))}
+                          <div className="flex flex-wrap gap-2">
+                            {active ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={busy}
+                                onClick={() =>
+                                  void action(async () => {
+                                    await apiJson(base + '/batches/' + batch.id + '/cancel', {
+                                      method: 'POST',
+                                    });
+                                    await refresh();
+                                  })
+                                }
+                              >
+                                {t('common.cancel')}
+                              </Button>
+                            ) : batch.status !== 'skipped' &&
+                              batch.items.some((i) => !['done', 'skipped'].includes(i.status)) ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={busy}
+                                onClick={() =>
+                                  void action(async () => {
+                                    await apiJson(base + '/batches/' + batch.id + '/retry', {
+                                      method: 'POST',
+                                    });
+                                    await refresh();
+                                  })
+                                }
+                              >
+                                {t('production.batch.retryFailed')}
+                              </Button>
+                            ) : null}
+                            {hasDeliveries && (
+                              <a
+                                className="text-sm underline"
+                                href={apiPath(base + '/batches/' + batch.id + '/download')}
+                              >
+                                {t('production.download')}
+                              </a>
+                            )}
+                          </div>
+                        </section>
+                      );
+                    })()}
+                </section>
+              ))}
+              {visibleOutgoing && (
+                <article
+                  data-message-role="user"
+                  className="ml-auto max-w-[95%] rounded-xl bg-primary/10 p-3 text-sm"
+                >
+                  <p className="mb-1 text-xs text-muted-foreground">
+                    {w('you')} · {visibleOutgoing.error ? w('sendFailed') : t('common.saving')}
+                  </p>
+                  <p className="whitespace-pre-wrap break-words">{visibleOutgoing.text}</p>
+                  {visibleOutgoing.error && (
+                    <>
+                      <p role="alert" className="mt-2 text-destructive">
+                        {visibleOutgoing.error}
+                      </p>
+                      <Button
+                        variant="outline"
+                        disabled={busy}
+                        onClick={() => void send(visibleOutgoing)}
+                      >
+                        {w('retrySend')}
+                      </Button>
+                    </>
+                  )}
+                </article>
+              )}
+            </div>
+            <form
+              className="space-y-3 border-t border-border p-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!busy && canSend && !visibleOutgoing?.error) void send();
+              }}
+            >
+              <p className="text-xs text-muted-foreground">{w('autoInputs')}</p>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={discussionOnly}
+                  disabled={busy || !!visibleOutgoing?.error}
+                  onChange={(e) => {
+                    setDiscussionOnly(e.target.checked);
+                    if (e.target.checked) setSelected([]);
+                  }}
+                />
+                {w('discussionOnly')}
+              </label>
+              {attachments.length > 0 && (
+                <div aria-label={w('attachments')} className="flex flex-wrap gap-2">
+                  {attachments.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      disabled={busy}
+                      aria-label={w('removeAttachment') + ' ' + a.filename}
+                      className="max-w-full truncate rounded border border-border px-2 py-1 text-xs"
+                      onClick={() => setSelected((ids) => ids.filter((id) => id !== a.id))}
+                    >
+                      {a.filename} ×
+                    </button>
+                  ))}
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    disabled={busy}
+                    onClick={() => setSelected([])}
+                  >
+                    {t('common.clear')}
+                  </Button>
+                </div>
+              )}
+              <Textarea
+                rows={3}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                disabled={busy || !!visibleOutgoing?.error}
+                placeholder={w('messagePlaceholder')}
+                aria-label={w('messagePlaceholder')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                    e.preventDefault();
+                    e.currentTarget.form?.requestSubmit();
+                  }
+                }}
+              />
+              <div className="flex justify-between gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={busy || !product || !videoType}
                   onClick={() => uploadRef.current?.click()}
                 >
                   <UploadIcon />
                   {t('production.batch.upload')}
                 </Button>
-              )}
-            </section>
-          )}
-          {tab === 'brands' && (
-            <section className="grid gap-4">
-              <div className="flex justify-end">
-                <Button disabled={busy} onClick={() => setEditor({ ...blankBrand })}>
-                  <PlusIcon />
-                  {t('production.batch.newBrand')}
+                <Button type="submit" disabled={busy || !canSend || !!visibleOutgoing?.error}>
+                  <SendIcon />
+                  {draft.trim() ? w('send') : t('production.batch.start')}
                 </Button>
               </div>
-              {(brands.data ?? []).map((brand) => (
-                <article
-                  key={brand.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border p-5"
-                >
-                  <div>
-                    <h2 className="font-medium">{brand.name}</h2>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {t('production.batch.outros')}: {brand.outro_ids.length} ·{' '}
-                      {t('production.batch.materials')}: {brand.material_ids.length}
-                    </p>
-                  </div>
-                  <Button variant="outline" disabled={busy} onClick={() => setEditor({ ...brand })}>
-                    {t('common.details')}
-                  </Button>
-                </article>
-              ))}
-            </section>
-          )}
-          {(tab === 'work' || tab === 'results') && (
-            <section className="grid gap-4">
-              <h2 className="font-medium">
-                {t(tab === 'results' ? 'production.deliveries' : 'avatar.queue')}
-              </h2>
-              {!batches.data?.length && (
-                <p className="text-sm text-muted-foreground">{t('production.noRuns')}</p>
-              )}
-              {(batches.data ?? []).map((batch) => {
-                const done = batch.items.filter((i) => i.status === 'done').length;
-                const active = ['pending', 'running'].includes(batch.status);
-                return (
-                  <article
-                    key={batch.id}
-                    className="grid gap-3 rounded-xl border border-border p-4"
-                  >
-                    <div className="flex flex-wrap justify-between gap-2">
-                      <h3 className="font-medium">
-                        {batch.request.brand.name} ·{' '}
-                        {t('production.batch.' + batch.request.options.workflow)}
+            </form>
+          </section>
+          <aside
+            className="flex min-h-0 flex-col gap-3 rounded-xl border border-border p-3"
+            aria-label={t('production.library')}
+          >
+            <h2 className="font-medium">
+              {t('production.library')} · {product?.name}
+            </h2>
+            <SearchableSelect
+              {...selectProps}
+              value={categoryId}
+              onChange={setCategoryId}
+              options={[
+                { value: '', label: w('allCategories') },
+                { value: '__uncategorized', label: w('uncategorized') },
+                ...(product?.categories ?? []).map((c) => ({ value: c.id, label: c.name })),
+              ]}
+              ariaLabel={w('categories')}
+            />
+            <div className="space-y-4 overflow-y-auto">
+              {[
+                ...(product?.categories ?? []),
+                { id: '', name: w('uncategorized'), description: '' },
+              ]
+                .filter(
+                  (c) =>
+                    !categoryId || (categoryId === '__uncategorized' ? !c.id : c.id === categoryId),
+                )
+                .map((category) => {
+                  const files = scopedAssets.filter(
+                    (a) =>
+                      (a.category_id && product?.categories.some((c) => c.id === a.category_id)
+                        ? a.category_id
+                        : '') === category.id,
+                  );
+                  return (
+                    <section key={category.id} className="space-y-2">
+                      <h3 className="text-sm font-medium">
+                        {category.name} · {files.length}
                       </h3>
-                      <span className="text-sm">
-                        {done}/{batch.items.length} · {state(batch.status)}
-                      </span>
-                    </div>
-                    {batch.error && <p className="text-sm text-destructive">{batch.error}</p>}
-                    <div className="grid gap-2">
-                      {batch.items.map((item) => (
-                        <div key={item.source_id} className="rounded-lg border border-border p-3">
-                          <div className="flex justify-between gap-3 text-sm">
-                            <span className="truncate">{item.filename}</span>
-                            <span>
-                              {state(
-                                !active && item.status === 'pending' ? batch.status : item.status,
-                              )}
-                            </span>
+                      {category.description && (
+                        <p className="text-xs text-muted-foreground">{category.description}</p>
+                      )}
+                      {files.map((a) => (
+                        <article
+                          key={a.id}
+                          className="space-y-2 rounded-lg border border-border p-2 text-xs"
+                        >
+                          <div className="flex items-start gap-2">
+                            <input
+                              type="checkbox"
+                              aria-label={a.filename}
+                              checked={attachments.some((item) => item.id === a.id)}
+                              disabled={
+                                busy || a.video_type_id !== videoType?.id || roleOf(a) !== 'input'
+                              }
+                              onChange={(e) => {
+                                setDiscussionOnly(false);
+                                setSelected((ids) =>
+                                  e.target.checked
+                                    ? [...new Set([...ids, a.id])]
+                                    : ids.filter((id) => id !== a.id),
+                                );
+                              }}
+                            />
+                            <button
+                              type="button"
+                              className="break-all text-left underline"
+                              aria-label={t('common.play') + ' ' + a.filename}
+                              onClick={() => setPreview(a)}
+                            >
+                              {a.filename}
+                            </button>
                           </div>
-                          {item.error && (
-                            <p className="mt-2 break-words text-xs text-destructive">
-                              {item.error}
+                          {a.classification_status && (
+                            <p className="break-words text-muted-foreground">
+                              {w('classification', {
+                                status: classificationKeys[a.classification_status]
+                                  ? w(classificationKeys[a.classification_status])
+                                  : a.classification_status,
+                              })}
                             </p>
                           )}
-                          {item.status === 'done' && item.artifacts.video && (
-                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                              <video
-                                src={apiPath(
-                                  base +
-                                    '/batches/' +
-                                    batch.id +
-                                    '/items/' +
-                                    item.source_id +
-                                    '/files/video',
-                                )}
-                                controls
-                                preload="metadata"
-                                playsInline
-                                className="mx-auto aspect-[9/16] h-80 w-auto max-w-full rounded bg-black object-contain"
-                              />
-                              <img
-                                src={apiPath(
-                                  base +
-                                    '/batches/' +
-                                    batch.id +
-                                    '/items/' +
-                                    item.source_id +
-                                    '/files/cover',
-                                )}
-                                alt={item.filename}
-                                loading="lazy"
-                                className="mx-auto aspect-[3/4] h-60 w-auto max-w-full rounded object-contain"
-                              />
-                            </div>
-                          )}
-                        </div>
+                          <SearchableSelect
+                            {...selectProps}
+                            value={a.category_id ?? ''}
+                            onChange={(id: string) =>
+                              void updateAsset(a, { category_id: id || null })
+                            }
+                            options={[
+                              { value: '', label: w('uncategorized') },
+                              ...(product?.categories ?? []).map((c) => ({
+                                value: c.id,
+                                label: c.name,
+                              })),
+                            ]}
+                            ariaLabel={w('category') + ' ' + a.filename}
+                          />
+                          <SearchableSelect
+                            {...selectProps}
+                            value={a.video_type_id ?? ''}
+                            onChange={(id: string) => void updateAsset(a, { video_type_id: id })}
+                            options={(product?.video_types ?? []).map((v) => ({
+                              value: v.id,
+                              label: v.name,
+                            }))}
+                            placeholder={w('chooseVideoType')}
+                            ariaLabel={w('videoTypes') + ' ' + a.filename}
+                          />
+                          <SearchableSelect
+                            {...selectProps}
+                            value={roleOf(a)}
+                            onChange={(role: Role) => void updateAsset(a, { role })}
+                            options={roles.map((role) => ({
+                              value: role,
+                              label: w(roleKeys[role]),
+                            }))}
+                            ariaLabel={w('role') + ' ' + a.filename}
+                          />
+                        </article>
                       ))}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          setOpenLogs((current) =>
-                            current.includes(batch.id)
-                              ? current.filter((id) => id !== batch.id)
-                              : [...current, batch.id],
-                          )
-                        }
-                      >
-                        {t('production.batch.log')}
-                      </Button>
-                      {active ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={busy}
-                          onClick={() => void jobAction(batch.id, 'cancel')}
-                        >
-                          {t('common.cancel')}
-                        </Button>
-                      ) : done < batch.items.length ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={busy}
-                          onClick={() => void jobAction(batch.id, 'retry')}
-                        >
-                          {t('production.batch.retryFailed')}
-                        </Button>
-                      ) : null}
-                      {done > 0 && batch.request.options.workflow !== 'intake' && (
-                        <a
-                          className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1 text-sm"
-                          href={apiPath(base + '/batches/' + batch.id + '/download')}
-                        >
-                          <DownloadIcon className="size-4" />
-                          {t('production.download')}
-                        </a>
-                      )}
-                    </div>
-                    {openLogs.includes(batch.id) && (
-                      <div className="max-h-96 overflow-auto rounded-lg bg-muted/40 p-3" role="log">
-                        {batch.log.map((event, index) => (
-                          <p
-                            key={index}
-                            className="mb-2 whitespace-pre-wrap break-words font-mono text-xs"
-                          >
-                            [{event.kind}] {event.text}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </article>
-                );
-              })}
-            </section>
-          )}
+                    </section>
+                  );
+                })}
+            </div>
+          </aside>
         </div>
       </main>
       {editor && (
@@ -797,10 +1089,10 @@ export function ProductionPage() {
         >
           <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle>{t('production.batch.brands')}</DialogTitle>
+              <DialogTitle>{w(editor.id ? 'editProduct' : 'newProduct')}</DialogTitle>
             </DialogHeader>
             <label className="grid gap-2 text-sm">
-              {t('production.batch.brandName')}
+              {w('productName')}
               <Input
                 value={editor.name}
                 disabled={busy}
@@ -808,9 +1100,8 @@ export function ProductionPage() {
               />
             </label>
             <label className="grid gap-2 text-sm">
-              {t('production.batch.brandNotes')}
+              {w('productNotes')}
               <Textarea
-                rows={4}
                 value={editor.notes}
                 disabled={busy}
                 onChange={(e) => setEditor({ ...editor, notes: e.target.value })}
@@ -824,10 +1115,6 @@ export function ProductionPage() {
                 onChange={(e) => setEditor({ ...editor, pack_id: e.target.value })}
               />
             </label>
-            {uploadInput}
-            {pool('outro_ids', 'video', t('production.batch.outros'))}
-            {pool('material_ids', 'video', t('production.batch.materials'))}
-            {pool('sticker_ids', 'image', t('production.batch.stickers'))}
             <div className="grid gap-2 text-sm">
               <span>{t('production.batch.voice')}</span>
               <VoiceSelector
@@ -840,15 +1127,192 @@ export function ProductionPage() {
                 menuPortal
               />
             </div>
-            <Button variant="outline" disabled={busy} onClick={() => uploadRef.current?.click()}>
-              <UploadIcon />
-              {t('production.batch.upload')}
-            </Button>
+            <label className="grid gap-2 text-sm">
+              {t('avatar.engine')}
+              <Input
+                value={editor.tts_engine ?? ''}
+                disabled={busy}
+                onChange={(e) => setEditor({ ...editor, tts_engine: e.target.value || null })}
+              />
+            </label>
+            <section className="space-y-3">
+              <h3 className="font-medium">{w('categories')}</h3>
+              {editor.categories.map((category, index) => (
+                <div key={category.id} className="space-y-2 rounded-lg border border-border p-3">
+                  <Input
+                    aria-label={w('categoryName') + ' ' + (index + 1)}
+                    placeholder={w('categoryName')}
+                    value={category.name}
+                    disabled={busy}
+                    onChange={(e) =>
+                      setEditor({
+                        ...editor,
+                        categories: editor.categories.map((c) =>
+                          c.id === category.id ? { ...c, name: e.target.value } : c,
+                        ),
+                      })
+                    }
+                  />
+                  <Textarea
+                    aria-label={w('categoryDescription') + ' ' + (index + 1)}
+                    placeholder={w('categoryDescription')}
+                    value={category.description}
+                    disabled={busy}
+                    onChange={(e) =>
+                      setEditor({
+                        ...editor,
+                        categories: editor.categories.map((c) =>
+                          c.id === category.id ? { ...c, description: e.target.value } : c,
+                        ),
+                      })
+                    }
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() =>
+                      setEditor({
+                        ...editor,
+                        categories: editor.categories.filter((c) => c.id !== category.id),
+                      })
+                    }
+                  >
+                    {w('removeCategory')}
+                  </Button>
+                </div>
+              ))}
+              <Button
+                variant="outline"
+                disabled={busy}
+                onClick={() =>
+                  setEditor({
+                    ...editor,
+                    categories: [...editor.categories, { id: newId(), name: '', description: '' }],
+                  })
+                }
+              >
+                {w('addCategory')}
+              </Button>
+            </section>
+            <section className="space-y-3">
+              <h3 className="font-medium">{w('videoTypes')}</h3>
+              {editor.video_types.map((type, index) => (
+                <div key={type.id} className="space-y-2 rounded-lg border border-border p-3">
+                  <Input
+                    aria-label={w('videoTypeName') + ' ' + (index + 1)}
+                    placeholder={w('videoTypeName')}
+                    value={type.name}
+                    disabled={busy}
+                    onChange={(e) =>
+                      setEditor({
+                        ...editor,
+                        video_types: editor.video_types.map((v) =>
+                          v.id === type.id ? { ...v, name: e.target.value } : v,
+                        ),
+                      })
+                    }
+                  />
+                  <SearchableSelect
+                    {...selectProps}
+                    value={type.workflow}
+                    onChange={(workflow: Workflow) =>
+                      setEditor({
+                        ...editor,
+                        video_types: editor.video_types.map((v) =>
+                          v.id === type.id ? { ...v, workflow } : v,
+                        ),
+                      })
+                    }
+                    options={workflows.map((value) => ({ value, label: w(workflowKeys[value]) }))}
+                    ariaLabel={w('workflow') + ' ' + (index + 1)}
+                  />
+                  <Textarea
+                    aria-label={w('typeInstruction') + ' ' + (index + 1)}
+                    placeholder={w('typeInstruction')}
+                    value={type.instruction}
+                    disabled={busy}
+                    onChange={(e) =>
+                      setEditor({
+                        ...editor,
+                        video_types: editor.video_types.map((v) =>
+                          v.id === type.id ? { ...v, instruction: e.target.value } : v,
+                        ),
+                      })
+                    }
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() =>
+                      setEditor({
+                        ...editor,
+                        video_types: editor.video_types.filter((v) => v.id !== type.id),
+                      })
+                    }
+                  >
+                    {w('removeVideoType')}
+                  </Button>
+                </div>
+              ))}
+              <Button
+                variant="outline"
+                disabled={busy}
+                onClick={() =>
+                  setEditor({
+                    ...editor,
+                    video_types: [
+                      ...editor.video_types,
+                      { id: newId(), name: '', workflow: 'product', instruction: '' },
+                    ],
+                  })
+                }
+              >
+                {w('addVideoType')}
+              </Button>
+            </section>
+            {editor.id && (
+              <div className="space-y-2">
+                {deleting && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {w('deleteConfirm', { name: editor.name })}
+                  </p>
+                )}
+                <Button
+                  variant="destructive"
+                  disabled={busy}
+                  onClick={() => {
+                    if (!deleting) {
+                      setDeleting(true);
+                      return;
+                    }
+                    void action(async () => {
+                      await apiJson(base + '/products/' + editor.id, { method: 'DELETE' });
+                      setEditor(null);
+                      chooseProduct('');
+                      await refresh();
+                    });
+                  }}
+                >
+                  {w('deleteProduct')}
+                </Button>
+              </div>
+            )}
             <DialogFooter>
               <Button variant="outline" disabled={busy} onClick={() => setEditor(null)}>
                 {t('common.cancel')}
               </Button>
-              <Button disabled={busy || !editor.name.trim()} onClick={() => void saveBrand()}>
+              <Button
+                disabled={
+                  busy ||
+                  !editor.name.trim() ||
+                  !editor.pack_id.trim() ||
+                  editor.categories.some((c) => !c.name.trim()) ||
+                  editor.video_types.some((v) => !v.name.trim())
+                }
+                onClick={() => void saveProduct()}
+              >
                 {t('common.save')}
               </Button>
             </DialogFooter>
@@ -865,7 +1329,35 @@ export function ProductionPage() {
           <DialogHeader>
             <DialogTitle>{preview?.filename}</DialogTitle>
           </DialogHeader>
-          {preview && media(preview)}
+          {preview &&
+            (preview.kind === 'audio' ? (
+              <audio
+                src={apiPath(base + '/assets/' + preview.id + '/preview')}
+                controls
+                className="w-full"
+              />
+            ) : preview.kind === 'image' ? (
+              <img
+                src={apiPath(base + '/assets/' + preview.id + '/preview')}
+                alt={preview.filename}
+                className="max-h-96 max-w-full object-contain"
+              />
+            ) : preview.kind === 'text' ? (
+              <a
+                href={apiPath(base + '/assets/' + preview.id + '/preview')}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {preview.filename}
+              </a>
+            ) : (
+              <video
+                src={apiPath(base + '/assets/' + preview.id + '/preview')}
+                controls
+                playsInline
+                className="max-h-96 w-full"
+              />
+            ))}
         </DialogContent>
       </Dialog>
     </div>

@@ -15,9 +15,11 @@ from core.db import db_conn
 from production import agent, agent_runtime, batch_store, store, workspace
 from production.agent_gateway import router as gateway
 from production.batch_models import BatchRequest, Brand
+from api.routers.production_conversations import router as conversation_router
 
 router = APIRouter()
 router.include_router(gateway)
+router.include_router(conversation_router)
 
 
 @router.get('/brands')
@@ -156,12 +158,26 @@ async def retry_batch(batch_id: str):
     previous = get_batch(batch_id)
     if previous['status'] in ['pending', 'running']:
         raise HTTPException(409, 'This batch is still running.')
-    failed = [i['source_id'] for i in previous['items'] if i['status'] != 'done']
+    failed = [i['source_id'] for i in previous['items'] if i['status'] in {'failed', 'pending', 'running'}]
     if not failed:
         raise HTTPException(400, 'Every input in this batch already succeeded.')
     data = {**previous['request']['options'], 'source_ids': failed, 'retry_of': batch_id, 'request_id': None}
     try:
-        return await agent.submit(BatchRequest.model_validate(data), brand_snapshot=previous['request']['brand'])
+        options = BatchRequest.model_validate(data)
+        if options.product_id:
+            if options.conversation_id:
+                from production import conversations
+                async with conversations.lock(options.conversation_id):
+                    jid = uuid.uuid4().hex
+                    mid = conversations.append(options.conversation_id, 'user', options.instruction, batch_id=jid)
+                    try:
+                        return await agent.submit(options, product_snapshot=previous['request']['product'], batch_id=jid)
+                    except Exception:
+                        with db_conn() as db:
+                            db.execute('DELETE FROM production_messages WHERE id=?', (mid,))
+                        raise
+            return await agent.submit(options, product_snapshot=previous['request']['product'])
+        return await agent.submit(options, brand_snapshot=previous['request']['brand'])
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
 

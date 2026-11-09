@@ -22,6 +22,107 @@ from core.db import db_conn
 router = APIRouter()
 
 
+@router.post('/agent/{batch_id}/classify')
+async def classify_inputs(batch_id: str, request: Request):
+    ctx = context(batch_id, request)
+    if not ctx.get('product'):
+        raise HTTPException(400, 'Choose a product before classifying material.')
+    from production.classification import classify_sources
+    from production import product_store
+    failed, classified = [], []
+    inputs = {s['id'] for s in ctx['sources']}
+    sources = list(ctx['sources'])
+    sources.extend(product_store.get_asset(ctx['product']['id'], aid) for aid in ctx['product']['material_ids'] if aid not in inputs)
+    for source in sources:
+        try:
+            await classify_sources(ctx, ctx['request'], ctx['product'], [source])
+            classified.append(source['id'])
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            failed.append({'source_id': source['id'], 'error': str(exc)})
+            if source['id'] in inputs:
+                batch_store.update_item(batch_id, source['id'], {'status': 'failed', 'error': str(exc)[:4000]})
+            batch_store.log(batch_id, source['filename'] + ': classification failed: ' + str(exc), 'error')
+    return {'classified': classified, 'failed': failed,
+            'inputs': [product_store.get_asset(ctx['product']['id'], sid) for sid in classified]}
+
+
+@router.post('/agent/{batch_id}/select')
+async def select_inputs(batch_id: str, request: Request):
+    """The agent resolves revision requests without requiring another upload."""
+    ctx = context(batch_id, request)
+    if not ctx.get('product'):
+        raise HTTPException(400, 'Input selection requires a product conversation.')
+    from production import product_store, workspace
+    from production.batch_models import WORKFLOW_DIRS
+    from production.classification import classify_sources
+    data = await request.json()
+    ids = data.get('source_ids')
+    if not isinstance(ids, list) or not ids or len(ids) > 1000 or any(not isinstance(i, str) for i in ids):
+        raise HTTPException(400, 'Select product input IDs from the conversation history.')
+    options = ctx['request']
+    sources = []
+    try:
+        for aid in dict.fromkeys(ids):
+            asset = product_store.get_asset(options.product_id, aid)
+            if asset.get('video_type_id') != options.video_type_id or asset.get('role') != 'input':
+                raise ValueError('Inputs must belong to this product and video type.')
+            if aid not in {a['id'] for a in ctx['sources']}:
+                sources.append(asset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    root = ctx['root']
+    input_file = root / 'batch-inputs.json'
+    inputs = json.loads(input_file.read_text(encoding='utf-8'))
+    for asset in sources:
+        name = asset['id'][:10] + '-' + workspace.safe_name(asset['filename'])
+        target = root / WORKFLOW_DIRS[options.workflow] / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if not target.exists():
+            try:
+                target.symlink_to(store.asset_path(asset['id']))
+            except OSError:
+                await asyncio.to_thread(shutil.copyfile, store.asset_path(asset['id']), target)
+        inputs['inputs'].append({'id': asset['id'], 'file': str(target.relative_to(root)).replace('\\', '/'), 'filename': asset['filename'], 'metadata': asset})
+    input_file.write_text(json.dumps(inputs, ensure_ascii=False, indent=2), encoding='utf-8')
+    with db_conn() as db:
+        row = db.execute('SELECT request_json,items_json FROM production_batches WHERE id=?', (batch_id,)).fetchone()
+        snapshot, items = json.loads(row[0]), json.loads(row[1])
+        for asset in sources:
+            snapshot['options']['source_ids'].append(asset['id'])
+            snapshot['sources'].append(asset)
+            items.append({'source_id': asset['id'], 'filename': asset['filename'], 'status': 'pending', 'artifacts': {}, 'error': None})
+        db.execute('UPDATE production_batches SET request_json=?,items_json=? WHERE id=?', (json.dumps(snapshot, ensure_ascii=False), json.dumps(items, ensure_ascii=False), batch_id))
+    options.source_ids.extend(a['id'] for a in sources)
+    ctx['sources'].extend(sources)
+    await classify_sources(ctx, options, ctx['product'], sources)
+    return {'selected': [a['id'] for a in ctx['sources']]}
+
+
+@router.post('/agent/{batch_id}/respond')
+async def respond(batch_id: str, request: Request):
+    ctx = context(batch_id, request)
+    data = await request.json()
+    batch = batch_store.get_batch(batch_id)
+    cid = batch['request']['options'].get('conversation_id')
+    text, action = data.get('text'), data.get('action')
+    if not cid or not isinstance(text, str) or not text.strip() or len(text) > 40000 or action not in {'discuss', 'organize', 'produce'}:
+        raise HTTPException(400, 'Finish a conversation with an answer and a valid action.')
+    # A reply cannot relabel an attempted render as a discussion to hide failure.
+    ctx['turn_action'] = 'produce' if ctx.get('production_started') else action
+    with db_conn() as db:
+        row = db.execute('SELECT request_json FROM production_batches WHERE id=?', (batch_id,)).fetchone()
+        snapshot = json.loads(row[0])
+        snapshot['turn_action'] = ctx['turn_action']
+        db.execute('UPDATE production_batches SET request_json=? WHERE id=?', (json.dumps(snapshot, ensure_ascii=False), batch_id))
+    from production import conversations
+    import uuid
+    conversations.append(cid, 'assistant', text, batch_id=batch_id,
+                         message_id=uuid.uuid5(uuid.NAMESPACE_URL, batch_id + ':final').hex)
+    return {'saved': True, 'action': ctx['turn_action']}
+
+
 def context(batch_id, request):
     ctx = agent.contexts.get(batch_id)
     supplied = request.headers.get('Authorization', '').removeprefix('Bearer ')
@@ -151,7 +252,7 @@ async def tts(batch_id: str, request: Request):
     source = work_path(ctx, data['input']); output = work_path(ctx, data['output'], exists=False)
     brand = ctx['brand']
     if not brand.get('voice_profile'):
-        raise HTTPException(400, 'Configure a Studio voice once in this brand profile.')
+        raise HTTPException(400, 'Choose a saved Studio voice for this product.')
     batch_store.log(batch_id, 'Generating and saving the complete narration: ' + source.name, 'tts')
     form = {'text': source.read_text(encoding='utf-8-sig'), 'profile_id': brand['voice_profile'], 'stream': 'false'}
     if brand.get('tts_engine'):
@@ -172,6 +273,7 @@ async def tts(batch_id: str, request: Request):
 @router.post('/agent/{batch_id}/audit')
 async def audit(batch_id: str, request: Request):
     ctx = context(batch_id, request); data = await request.json()
+    ctx['production_started'] = True
     if data['source_id'] not in {s['id'] for s in ctx['sources']}:
         raise HTTPException(400, 'This input does not belong to the current batch.')
     video, cover = work_path(ctx, data['video']), work_path(ctx, data['cover'])
@@ -188,7 +290,7 @@ async def audit(batch_id: str, request: Request):
     sheet = records / (data['source_id'] + '.jpg')
     await contact_sheet(ctx, video, sheet)
     batch_store.log(batch_id, 'Inspecting finished video and cover: ' + video.name, 'audit')
-    prompt = 'Review the ACTUAL finished video contact sheet and separate cover against the brand/workflow. Check text readability, obvious overlays blocking the subject, framing, subtitle collisions, blank/unrelated scenes, visible residual watermarks and cover composition. Return JSON {"passed":true/false,"issues":[specific visible issues]}. Do not claim to have listened to audio. Brand context: ' + json.dumps(ctx['brand'], ensure_ascii=False)
+    prompt = 'Review the ACTUAL finished video contact sheet and separate cover against the product/workflow. Check text readability, obvious overlays blocking the subject, framing, subtitle collisions, blank/unrelated scenes, visible residual watermarks and cover composition. Return JSON {"passed":true/false,"issues":[specific visible issues]}. Do not claim to have listened to audio. Product context: ' + json.dumps(ctx['brand'], ensure_ascii=False)
     result = parse_json(await asyncio.to_thread(vision, [sheet, cover], prompt))
     if not isinstance(result.get('passed'), bool) or not isinstance(result.get('issues'), list):
         raise HTTPException(502, 'Vision audit returned an invalid result.')
@@ -200,12 +302,18 @@ async def audit(batch_id: str, request: Request):
 @router.post('/agent/{batch_id}/publish')
 async def publish(batch_id: str, request: Request):
     ctx = context(batch_id, request); data = await request.json()
+    ctx['production_started'] = True
     batch = batch_store.get_batch(batch_id)
     item = next((i for i in batch['items'] if i['source_id'] == data['source_id']), None)
     if item is None:
         raise HTTPException(400, 'This input does not belong to the current batch.')
     if item['status'] == 'done':
         return {'published': True, 'source_id': item['source_id'], 'existing': True}
+    if ctx.get('product'):
+        from production import product_store
+        classified = product_store.get_asset(ctx['product']['id'], item['source_id'])
+        if classified.get('classification_status') not in {'classified', 'unclassified'}:
+            raise HTTPException(400, 'Classify this input before editing and delivery.')
     paths = {kind: work_path(ctx, data[kind]) for kind in ['video', 'cover', 'publication', 'cover_title']}
     check_file = ctx['root'] / '.voxforma/audits' / (data['source_id'] + '.json')
     if not check_file.is_file():
@@ -226,7 +334,7 @@ async def publish(batch_id: str, request: Request):
         allowed = set(ctx['brand']['material_ids'])
         for used in data.get('used', []):
             if used not in allowed:
-                raise HTTPException(400, 'A used material ID is not in this brand library.')
+                raise HTTPException(400, 'A used material ID is not in this product library.')
             if batch['request']['options']['workflow'] != 'product':
                 db.execute('INSERT OR IGNORE INTO production_asset_usage(batch_id,source_id,asset_id) VALUES (?,?,?)', (batch_id, item['source_id'], used))
         latest = json.loads(db.execute('SELECT items_json FROM production_batches WHERE id=?', (batch_id,)).fetchone()[0])
@@ -257,7 +365,7 @@ async def ingest(batch_id: str, request: Request):
     ctx = context(batch_id, request); data = await request.json()
     batch = batch_store.get_batch(batch_id)
     item = next((i for i in batch['items'] if i['source_id'] == data['source_id']), None)
-    if item is None or batch['request']['options']['workflow'] != 'intake':
+    if item is None or (batch['request']['options']['workflow'] != 'intake' and not ctx.get('product')):
         raise HTTPException(400, 'This source is not an intake task.')
     index = json.loads(work_path(ctx, data['index']).read_text(encoding='utf-8'))
     if not index.get('items'):
@@ -276,18 +384,34 @@ async def ingest(batch_id: str, request: Request):
             for chunk in iter(lambda: stream.read(1024 * 1024), b''):
                 digest.update(chunk)
         asset_id = digest.hexdigest()
-        metadata.update(bytes=source.stat().st_size, scene=str(clip.get('scene', '')), description=str(clip.get('description', '')), tags=list(clip.get('trigger_keywords', [])))
+        metadata.update(bytes=source.stat().st_size)
+        if not ctx.get('product'):
+            metadata.update(scene=str(clip.get('scene', '')), description=str(clip.get('description', '')), tags=list(clip.get('trigger_keywords', [])))
         target = store.asset_path(asset_id); target.parent.mkdir(parents=True, exist_ok=True)
         if not target.exists():
             await asyncio.to_thread(shutil.copyfile, source, target)
         with db_conn() as db:
             db.execute('INSERT INTO media_assets(id,sha256,filename,metadata_json,created_at) VALUES (?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET metadata_json=excluded.metadata_json', (asset_id, asset_id, source.name, json.dumps(metadata, ensure_ascii=False), time.time()))
         ids.append(asset_id)
-    brand = batch_store.get_brand(batch['request']['options']['brand_id'])
-    from production.batch_models import Brand
-    brand['material_ids'] = list(dict.fromkeys(brand['material_ids'] + ids))
-    batch_store.save_brand(Brand.model_validate(brand), brand['id'])
-    item.update(status='done', artifacts={}, error=None, material_ids=ids)
-    batch_store.update_item(batch_id, item['source_id'], {'status': 'done', 'artifacts': {}, 'error': None, 'material_ids': ids})
+        if ctx.get('product'):
+            from production import product_store
+            pid = ctx['product']['id']
+            parent = product_store.get_asset(pid, item['source_id'])
+            category = clip.get('category_id', parent.get('category_id'))
+            product_store.attach_asset(pid, asset_id, category_id=category, role='material')
+            product_store.classify_asset(pid, asset_id, category, description=str(clip.get('description', '')), tags=list(clip.get('trigger_keywords', [])))
+    if ctx.get('product'):
+        ctx['brand']['material_ids'] = list(dict.fromkeys(ctx['brand']['material_ids'] + ids))
+        (ctx['root'] / 'product.json').write_text(json.dumps(ctx['brand'], ensure_ascii=False, indent=2), encoding='utf-8')
+        if batch['request']['options']['workflow'] == 'intake':
+            batch_store.update_item(batch_id, item['source_id'], {'status': 'done', 'artifacts': {}, 'error': None, 'material_ids': ids})
+        else:
+            batch_store.update_item(batch_id, item['source_id'], {'material_ids': ids})
+    else:
+        brand = batch_store.get_brand(batch['request']['options']['brand_id'])
+        from production.batch_models import Brand
+        brand['material_ids'] = list(dict.fromkeys(brand['material_ids'] + ids))
+        batch_store.save_brand(Brand.model_validate(brand), brand['id'])
+        batch_store.update_item(batch_id, item['source_id'], {'status': 'done', 'artifacts': {}, 'error': None, 'material_ids': ids})
     batch_store.log(batch_id, 'Indexed ' + str(len(ids)) + ' material clips from ' + item['filename'], 'intake')
     return {'indexed': ids}

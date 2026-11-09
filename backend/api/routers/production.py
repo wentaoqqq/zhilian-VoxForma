@@ -20,7 +20,7 @@ from api.dependencies import require_consumer
 from core import job_store
 from core.db import db_conn
 from core.job_queue import Job, JobQueue
-from production import store
+from production import product_store, store
 from production.models import ProductPlan
 from production.plugins import get_plugin, list_plugins
 from production.render import probe, render_product
@@ -58,14 +58,32 @@ def run_or_404(run_id: str) -> dict:
 
 
 @router.get("/assets")
-def list_assets():
+def list_assets(product_id: str | None = None, category_id: str | None = None, video_type_id: str | None = None):
+    if product_id is not None:
+        try:
+            return product_store.list_assets(product_id, category_id, video_type_id)
+        except ValueError as exc:
+            raise HTTPException(404, str(exc)) from exc
+    if category_id is not None or video_type_id is not None:
+        raise HTTPException(400, 'Product ID is required for scoped asset filters.')
     with db_conn() as conn:
         rows = conn.execute("SELECT * FROM media_assets ORDER BY created_at DESC").fetchall()
     return [{"id": r["id"], "filename": r["filename"], "created_at": r["created_at"], **json.loads(r["metadata_json"])} for r in rows]
 
 
 @router.post("/assets")
-async def upload_asset(request: Request, filename: str):
+async def upload_asset(request: Request, filename: str, product_id: str | None = None, video_type_id: str = ''):
+    if product_id is not None:
+        try:
+            product_store.get_product(product_id)
+        except ValueError as exc:
+            raise HTTPException(404, str(exc)) from exc
+        try:
+            product_store.validate_assignment(product_id, video_type_id)
+        except ValueError as exc:
+            raise HTTPException(400, str(exc)) from exc
+    elif video_type_id:
+        raise HTTPException(400, 'Product ID is required for a video type assignment.')
     suffix = Path(filename).suffix.lower()
     if suffix not in {'.mp4', '.mov', '.mkv', '.webm', '.avi', '.m4v', '.wav', '.mp3', '.m4a', '.flac', '.ogg', '.png', '.jpg', '.jpeg', '.webp', '.txt'}:
         raise HTTPException(400, 'Upload a video, audio file, image or UTF-8 text script.')
@@ -105,6 +123,8 @@ async def upload_asset(request: Request, filename: str):
                 "INSERT OR IGNORE INTO media_assets(id,sha256,filename,metadata_json,created_at) VALUES (?,?,?,?,?)",
                 (asset_id, asset_id, filename.replace("\\", "/").rsplit("/", 1)[-1][:255], json.dumps(metadata), time.time()),
             )
+        if product_id is not None:
+            return product_store.attach_asset(product_id, asset_id, video_type_id=video_type_id)
         return store.get_asset(asset_id)
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
@@ -275,3 +295,6 @@ def download_bundle(run_id: str):
 
 from api.routers.production_batches import router as batch_router
 router.include_router(batch_router)
+
+from api.routers.production_products import router as product_router
+router.include_router(product_router)

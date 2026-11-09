@@ -69,11 +69,16 @@ def main(argv=None):
     p = commands.add_parser('publish'); p.add_argument('source_id'); p.add_argument('video'); p.add_argument('cover'); p.add_argument('publication'); p.add_argument('cover_title'); p.add_argument('--used', nargs='*', default=[])
     p = commands.add_parser('fail'); p.add_argument('source_id'); p.add_argument('reason')
     p = commands.add_parser('ingest'); p.add_argument('source_id'); p.add_argument('index')
+    p = commands.add_parser('respond'); p.add_argument('input'); p.add_argument('--action', choices=['discuss', 'organize', 'produce'], required=True)
+    p = commands.add_parser('select'); p.add_argument('source_ids', nargs='+')
+    commands.add_parser('classify')
     args = parser.parse_args(argv)
     if args.command == 'asr':
         result = asr(path(args.input), path(args.output))
     elif args.command in ['tts', 'analyze']:
         result = call(args.command, {'input': str(path(args.input)), 'output': str(path(args.output))})
+    elif args.command == 'respond':
+        result = call('respond', {'text': path(args.input).read_text(encoding='utf-8-sig'), 'action': args.action})
     elif args.command == 'vision':
         result = call('vision', {'image': str(path(args.image)), 'prompt': args.prompt})
     else:

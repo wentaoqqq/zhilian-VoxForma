@@ -1,5 +1,5 @@
 from typing import Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class Brand(BaseModel):
@@ -16,11 +16,24 @@ class Brand(BaseModel):
 
 class BatchRequest(BaseModel):
     request_id: str | None = Field(default=None, max_length=100)
-    brand_id: str
+    brand_id: str | None = None  # Old batches retain their original meaning.
+    product_id: str | None = None
+    video_type_id: str | None = None
+    conversation_id: str | None = None
     workflow: Literal['product', 'talking_head', 'narration', 'intake'] = 'product'
-    source_ids: list[str] = Field(min_length=1, max_length=1000)
+    source_ids: list[str] = Field(default_factory=list, max_length=1000)
     instruction: str = Field(default='Start. Follow the configured workflow for every pending input.', max_length=20000)
     retry_of: str | None = Field(default=None, pattern=r'^[a-f0-9]{32}$')
+
+    @model_validator(mode='after')
+    def check_context(self):
+        if bool(self.product_id) == bool(self.brand_id):
+            raise ValueError('Choose a product. Legacy requests may supply a brand instead.')
+        if self.product_id and not self.video_type_id:
+            raise ValueError('Choose a video type for this product.')
+        if not self.source_ids and not self.conversation_id:
+            raise ValueError('Select at least one input outside a conversation.')
+        return self
 
 
 WORKFLOW_DIRS = {

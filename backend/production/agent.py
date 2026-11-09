@@ -34,35 +34,53 @@ def preflight(request, brand):
     workspace.pack_root(brand['pack_id'])
     if not agent_runtime.status()['installed']:
         raise ValueError('Install the production-agent runtime once in setup before starting.')
-    for skill in ['media_production', 'media_vision']:
+    for skill in (['media_production'] if request.conversation_id else ['media_production', 'media_vision']):
         if not llm_skills.resolve_skill(skill).ready:
             raise ValueError('Configure production planning and vision providers in AI settings first.')
     ids = list(dict.fromkeys(request.source_ids))
-    sources = [store.get_asset(asset_id) for asset_id in ids]
+    if request.product_id:
+        from production import product_store
+        video_type = next((t for t in brand['video_types'] if t['id'] == request.video_type_id), None)
+        if not video_type:
+            raise ValueError('This video type does not belong to the selected product.')
+        request.workflow = video_type['workflow']
+        sources = [product_store.get_asset(request.product_id, asset_id) for asset_id in ids]
+        if any(s.get('video_type_id') != request.video_type_id or s.get('role') != 'input' for s in sources):
+            raise ValueError('Inputs must belong to the selected product and video type.')
+        if sources and not brand['categories'] and not request.conversation_id:
+            raise ValueError('Add material categories to this product before processing uploaded inputs.')
+    else:
+        sources = [store.get_asset(asset_id) for asset_id in ids]
     allowed = {'product': {'video'}, 'talking_head': {'video'}, 'narration': {'audio', 'text'}, 'intake': {'video', 'image'}}[request.workflow]
-    if any(a.get('kind', 'video') not in allowed for a in sources):
+    if not request.product_id and any(a.get('kind', 'video') not in allowed for a in sources):
         raise ValueError('Some inputs do not match the chosen production line.')
     for asset_id in ids + brand['outro_ids'] + brand['material_ids'] + brand['sticker_ids']:
         if not store.asset_path(asset_id).is_file():
             raise ValueError('A configured media file is missing. Upload it again.')
-    if request.workflow == 'product' and not brand['outro_ids']:
+    if not request.product_id and request.workflow == 'product' and not brand['outro_ids']:
         raise ValueError('Add a brand-outro pool once in the brand settings.')
-    if request.workflow == 'narration' and any(a.get('kind') == 'text' for a in sources) and not brand.get('voice_profile'):
+    if not request.conversation_id and request.workflow == 'narration' and any(a.get('kind') == 'text' for a in sources) and not brand.get('voice_profile'):
         raise ValueError('Choose a saved Studio voice once in the brand settings for script narration.')
     return sources
 
 
-async def submit(request: BatchRequest, *, brand_snapshot=None):
+async def submit(request: BatchRequest, *, brand_snapshot=None, product_snapshot=None, batch_id=None):
     if request.request_id:
         with db_conn() as db:
             existing = db.execute('SELECT id FROM production_batches WHERE request_key=?', (request.request_id,)).fetchone()
         if existing:
             return batch_store.get_batch(existing[0])
-    brand = brand_snapshot or batch_store.get_brand(request.brand_id)
+    if request.product_id:
+        from production import product_store
+        brand = product_snapshot or product_store.get_product(request.product_id)
+    else:
+        brand = brand_snapshot or batch_store.get_brand(request.brand_id)
     sources = preflight(request, brand)
-    batch_id = uuid.uuid4().hex
+    batch_id = batch_id or uuid.uuid4().hex
     items = [{'source_id': a['id'], 'filename': a['filename'], 'status': 'pending', 'artifacts': {}, 'error': None} for a in sources]
     snapshot = {'options': request.model_dump(), 'brand': brand, 'sources': sources}
+    if request.product_id:
+        snapshot['product'] = brand
     with db_conn() as db:
         db.execute("INSERT INTO jobs(id,type,status,created_at,updated_at,meta_json) VALUES (?,'production-batch','pending',?,?,?)", (batch_id, time.time(), time.time(), json.dumps({'count': len(items), 'workflow': request.workflow})))
         db.execute('INSERT INTO production_batches(id,request_key,request_json,items_json) VALUES (?,?,?,?)', (batch_id, request.request_id, json.dumps(snapshot, ensure_ascii=False), json.dumps(items, ensure_ascii=False)))
@@ -125,9 +143,26 @@ async def execute(job, request, brand, sources):
     try:
         root = await asyncio.to_thread(workspace.prepare, job.id, request, brand, sources)
         token = secrets.token_urlsafe(32)
-        contexts[job.id] = {'token': token, 'root': root, 'brand': brand, 'sources': sources, 'job': job}
+        contexts[job.id] = {'token': token, 'root': root, 'brand': brand, 'sources': sources, 'job': job, 'request': request}
+        ctx = contexts[job.id]
+        if request.product_id:
+            from production.classification import classify_sources
+            ctx['product'] = brand
+            if not request.conversation_id:
+                await classify_sources(ctx, request, brand, sources)
+        args = []
+        if request.conversation_id:
+            from production import conversations
+            session = conversations.previous_session(request.conversation_id, job.id)
+            if session:
+                args = ['--session', session]
+        prompt = ('Read the CURRENT working directory AGENTS.md, conversation.json and batch-inputs.json. '
+                  'Answer the latest user message in context. Determine whether the user is discussing, organizing material or asking to produce videos. '
+                  'Do not start editing merely because pending files exist. When asked to start, execute the FULL original workflow for the selected video type, '
+                  'use real tools/visual verification, publish actual deliveries, and continue after individual failures. '
+                  'Call the respond tool with your final answer and action (discuss, organize or produce).') if request.conversation_id else 'Read AGENTS.md and batch-inputs.json. Execute the entire configured workflow for every input now. Use the tools, original engine and visual verification; publish actual deliveries and continue after individual failures.'
         batch_store.log(job.id, 'Starting the full editing agent for ' + str(len(sources)) + ' inputs.', 'stage')
-        proc = await spawn_subprocess(agent_runtime.binary('opencode'), 'run', '--format', 'json', '--agent', 'build', 'Read AGENTS.md and batch-inputs.json. Execute the entire configured workflow for every input now. Use the tools, original engine and visual verification; publish actual deliveries and continue after individual failures.', cwd=str(root), env=child_env(job.id, root, token), stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
+        proc = await spawn_subprocess(agent_runtime.binary('opencode'), 'run', '--format', 'json', '--agent', 'build', *args, prompt, cwd=str(root), env=child_env(job.id, root, token), stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
         async def event_lines():
             pending = b''
             while True:
@@ -158,6 +193,10 @@ async def execute(job, request, brand, sources):
                     message = part.get('text') or part.get('state', {}).get('title') or event.get('error', {}).get('message')
                     if message:
                         batch_store.log(job.id, message, event.get('type', 'agent'))
+                        if request.conversation_id and event.get('type') == 'text':
+                            from production import conversations
+                            mid = uuid.uuid5(uuid.NAMESPACE_URL, job.id + ':' + str(part.get('id') or event.get('timestamp') or message)).hex
+                            conversations.append(request.conversation_id, 'assistant', message, batch_id=job.id, message_id=mid)
                     state = part.get('state', {})
                     if event.get('type') == 'tool_use' and (state.get('error') or state.get('output')):
                         batch_store.log(job.id, str(state.get('error') or state['output'])[-10000:], 'tool_result')
@@ -174,16 +213,22 @@ async def execute(job, request, brand, sources):
                 raise RuntimeError('Agent execution exceeded the batch time limit.')
             code = await task
             batch = batch_store.get_batch(job.id)
+            action = ctx.get('turn_action', 'produce' if not request.conversation_id else None)
+            if request.conversation_id and not action:
+                raise RuntimeError('The agent did not finish its conversation turn with the respond tool. Review the execution log.')
             for item in batch['items']:
                 if item['status'] == 'pending':
-                    item.update(status='failed', error='The agent did not publish a delivery for this input. Review its execution log.')
+                    if action == 'produce':
+                        item.update(status='failed', error='The agent did not publish a delivery for this input. Review its execution log.')
+                    else:
+                        item.update(status='skipped', error=None)
             batch_store.update_items(job.id, batch['items'])
             succeeded = sum(item['status'] == 'done' for item in batch['items'])
-            if code or not succeeded:
+            if code or (action == 'produce' and not succeeded):
                 raise RuntimeError('Agent batch did not complete. See per-input results and the execution log.')
             ledger = root / '\u53f0\u8d26.md'
             if ledger.is_file():
-                saved = store.ROOT / 'brand-state' / brand['id'] / ledger.name
+                saved = store.ROOT / ('product-state' if request.product_id else 'brand-state') / brand['id'] / ledger.name
                 saved.parent.mkdir(parents=True, exist_ok=True)
                 await asyncio.to_thread(shutil.copyfile, ledger, saved)
             job_store.mark_done(job.id)
@@ -202,6 +247,9 @@ async def execute(job, request, brand, sources):
     except Exception as exc:
         batch_store.log(job.id, str(exc), 'error')
         job_store.mark_failed(job.id, str(exc))
+        if request.conversation_id:
+            from production import conversations
+            conversations.append(request.conversation_id, 'system', str(exc), batch_id=job.id)
         raise
     finally:
         if proc is not None and proc.returncode is None:
