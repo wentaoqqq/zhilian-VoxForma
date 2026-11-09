@@ -34,10 +34,12 @@ def test_current_version_is_in_lockstep_everywhere() -> None:
         assert match and Version(match.group(1)) == Version(CURRENT_VERSION), path
 
 
-def test_visible_brand_surfaces_say_voicestudio() -> None:
+def test_visible_brand_surfaces_use_the_configured_fork_identity() -> None:
     visible_files = ("electron/build/Info.plist", "electron/src/renderer/index.html")
     product_name = json.loads((ROOT / "config/app.json").read_text())["productName"]
-    assert product_name == "VoiceStudio"
+    assert product_name.strip()
+    for catalog in (ROOT / 'electron/src/renderer/src/i18n/locales').glob('*.json'):
+        assert json.loads(catalog.read_text(encoding='utf-8'))['app']['name'] == product_name
     for path in visible_files:
         text = (ROOT / path).read_text()
         assert "__APP_PRODUCT_NAME__" in text, path
@@ -62,7 +64,8 @@ def test_brand_mark_is_shared_and_fills_the_icon() -> None:
     favicon = (ROOT / "electron/public/favicon.svg").read_text()
 
     signature = "M6 34c4 0 5-7 9-7"
-    assert signature in mark
+    assert "favicon-zhilian.png" in mark
+    assert '<img' in mark
     assert signature in logo
     assert signature in favicon
     assert "<VoiceStudioMark" in header

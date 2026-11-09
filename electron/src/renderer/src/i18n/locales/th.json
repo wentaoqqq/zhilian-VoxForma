@@ -1774,7 +1774,7 @@
     "toast_flushed": "ฟลัช — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· โมเดลยกเลิกการโหลดแล้ว",
     "toast_flush_failed": "การฟลัชล้มเหลว: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · สำหรับพัฒนา",
     "tagline": "การโคลนเสียงท้องถิ่น ไม่มีอะไรเหลือจากเครื่องของคุณ",

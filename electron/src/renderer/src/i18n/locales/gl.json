@@ -310,7 +310,7 @@
     "entries_count_other": "{{count}} entradas"
   },
   "app": {
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "tagline": "Clonación de voz de código aberto e motor de fluxo de traballo. Construír local.",
     "coming_soon": "Próximamente",
     "version": "v{{version}}",

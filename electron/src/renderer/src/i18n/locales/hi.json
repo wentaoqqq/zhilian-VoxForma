@@ -1774,7 +1774,7 @@
     "toast_flushed": "फ्लश - RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· मॉडल उतार दिया गया",
     "toast_flush_failed": "फ्लश विफल: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · डेवलपमेंट",
     "tagline": "स्थानीय आवाज क्लोनिंग. आपकी मशीन से कुछ भी नहीं छूटता.",

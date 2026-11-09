@@ -1,4 +1,18 @@
-# VoiceStudio brand
+# Application branding
+
+## Zhilian workbench fork
+
+The application display name is **智链AI中央工作台**, configured in
+`config/app.json` and the active locale catalogs' `app.name` entries. The supplied
+logo is `electron/public/favicon-zhilian.png`; the browser favicon, sidebar,
+startup screens and shared React mark use that same local asset. The header's
+shared support shortcut renders no Pro or GitHub-star promotion.
+
+Upstream package IDs, storage keys, licence notices and attribution retain their
+existing identities. The platform installer artwork below documents the original
+upstream assets; this UI change does not regenerate native installer packages.
+
+## Upstream brand assets
 
 VoiceStudio uses a waveform-and-spark mark. The waveform identifies audio; the
 spark identifies creation. The product voice is clear, calm, and direct.

@@ -1776,7 +1776,7 @@
     "toast_flushed": "Vidé — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· modèle déchargé",
     "toast_flush_failed": "Échec du rinçage : {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · Développement",
     "tagline": "Clonage de voix locale. Rien ne quitte votre machine.",

@@ -1788,7 +1788,7 @@
     "toast_flushed": "Очищено — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· модель ненавантажена",
     "toast_flush_failed": "Помилка очищення: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · Розробка",
     "tagline": "Клонування локального голосу. Ніщо не покидає вашу машину.",

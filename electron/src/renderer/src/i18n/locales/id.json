@@ -1774,7 +1774,7 @@
     "toast_flushed": "Dibilas — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· model dibongkar",
     "toast_flush_failed": "Gagal menyiram: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · Pengembangan",
     "tagline": "Kloning suara lokal. Tidak ada yang meninggalkan mesin Anda.",

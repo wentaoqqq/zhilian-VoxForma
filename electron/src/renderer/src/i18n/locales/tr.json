@@ -1774,7 +1774,7 @@
     "toast_flushed": "Temizlenmiş — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· model boşaltıldı",
     "toast_flush_failed": "Temizleme başarısız oldu: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · Geliştirme",
     "tagline": "Yerel ses klonlama. Hiçbir şey makinenizden ayrılmaz.",

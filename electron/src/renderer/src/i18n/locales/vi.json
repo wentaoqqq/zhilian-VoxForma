@@ -1774,7 +1774,7 @@
     "toast_flushed": "Đã xóa — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· dỡ mô hình",
     "toast_flush_failed": "Xóa không thành công: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · Phát triển",
     "tagline": "Nhân bản giọng nói địa phương. Không có gì rời khỏi máy của bạn.",

@@ -310,7 +310,7 @@
     "entries_count_other": "{{count}} entries"
   },
   "app": {
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "tagline": "Open source voice cloning and workflow engine. Build local.",
     "coming_soon": "Coming soon",
     "version": "v{{version}}",

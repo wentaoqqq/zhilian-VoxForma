@@ -1774,7 +1774,7 @@
     "toast_flushed": "Spolat — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· modell avlastad",
     "toast_flush_failed": "Spolning misslyckades: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · Utveckling",
     "tagline": "Lokal röstkloning. Inget lämnar din maskin.",

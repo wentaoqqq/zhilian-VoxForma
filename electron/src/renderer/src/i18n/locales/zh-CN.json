@@ -1774,7 +1774,7 @@
     "toast_flushed": "刷新 — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· 模型卸载",
     "toast_flush_failed": "刷新失败：{{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · 开发版",
     "tagline": "本地语音克隆。没有任何东西离开你的机器。",

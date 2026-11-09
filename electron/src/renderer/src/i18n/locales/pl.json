@@ -1788,7 +1788,7 @@
     "toast_flushed": "Opróżniony — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· model rozładowany",
     "toast_flush_failed": "Spłukiwanie nie powiodło się: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · Deweloperska",
     "tagline": "Lokalne klonowanie głosu. Nic nie opuszcza Twojej maszyny.",

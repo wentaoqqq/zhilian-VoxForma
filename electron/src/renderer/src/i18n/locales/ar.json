@@ -1802,7 +1802,7 @@
     "toast_flushed": "متدفق — ذاكرة الوصول العشوائي {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· تم تفريغ النموذج",
     "toast_flush_failed": "فشل التدفق: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · تطوير",
     "tagline": "استنساخ الصوت المحلي. لا شيء يترك جهازك.",

@@ -1774,7 +1774,7 @@
     "toast_flushed": "플러시 — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· 모델 언로드됨",
     "toast_flush_failed": "플러시 실패: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · 개발",
     "tagline": "로컬 음성 복제. 당신의 기계에는 아무것도 남지 않습니다.",

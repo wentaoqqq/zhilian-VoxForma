@@ -1774,7 +1774,7 @@
     "toast_flushed": "フラッシュ — RAM {{ram}}G · VRAM {{vram}}G{{unloaded}}",
     "toast_model_unloaded": "· モデルがアンロードされました",
     "toast_flush_failed": "フラッシュに失敗しました: {{message}}",
-    "name": "VoiceStudio",
+    "name": "智链AI中央工作台",
     "version": "v{{version}}",
     "version_dev": "v{{version}} · 開発",
     "tagline": "ローカル音声のクローン作成。マシンからは何も残りません。",
