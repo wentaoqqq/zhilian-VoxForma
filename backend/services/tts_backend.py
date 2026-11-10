@@ -3784,6 +3784,7 @@ class SherpaOnnxBackend(TTSBackend):
 
 _LAZY_REGISTRY: dict[str, tuple[str, str]] = {
     "indextts2": ("engines.indextts", "IndexTTS2Backend"),
+    "indextts20": ("engines.indextts.v20", "IndexTTS20Backend"),
     # Phase 4 Plan 04-01 (GGUF-03): hardware-adaptive GGUF runtime wrapper.
     # Lazy so the import of services.tts_backend doesn't pull
     # huggingface_hub + soundfile transitively when callers only need
@@ -3919,6 +3920,7 @@ _LAST_ERRORS: dict[str, str] = {}
 # Short install hints surfaced as tooltips on the Model Catalogue UI.
 # Helps users understand what pip package to install and where.
 _INSTALL_HINTS: dict[str, str] = {
+    "indextts20": "Use an existing IndexTTS 2.0 clone with its .venv and checkpoints; set OMNIVOICE_INDEXTTS20_DIR. No automatic download.",
     "omnivoice":     "pip install omnivoice  (bundled — no extra install needed)",
     "omnivoice-subprocess": "No extra install; uses the host OmniVoice install. Opt in with OMNIVOICE_TTS_BACKEND=omnivoice-subprocess (same model in a killable sidecar, for unattended reliability).",
     "cosyvoice":     "git clone --recursive FunAudioLLM/CosyVoice + pip install -r requirements.txt + SoX",
@@ -3949,6 +3951,7 @@ _INSTALL_HINTS: dict[str, str] = {
 # var each engine's is_available() actually reads. bash/zsh form (the dominant
 # clone-and-run workflow for these engines; dots.tts is *nix-only anyway).
 _SETUP_SNIPPETS: dict[str, str] = {
+    "indextts20":     "export OMNIVOICE_INDEXTTS20_DIR=/path/to/index-tts-2.0",
     "indextts2":      "export OMNIVOICE_INDEXTTS_DIR=/path/to/index-tts",
     "moss-tts-v15":   "export OMNIVOICE_MOSS_TTS_V15_DIR=/path/to/MOSS-TTS",
     "dots-tts":       "export OMNIVOICE_DOTS_TTS_DIR=/path/to/dots.tts",
@@ -3968,6 +3971,7 @@ _SETUP_SNIPPETS: dict[str, str] = {
 # Keyed on the engine id, so it stays correct when the doc filename does not
 # match the id (indextts2 → indextts.md).
 _ENGINE_DOCS: dict[str, str] = {
+    "indextts20":           "docs/engines/indextts.md",
     "omnivoice":            "docs/engines/omnivoice.md",
     "omnivoice-subprocess": "docs/engines/omnivoice-subprocess.md",
     "omnivoice-gguf":       "docs/engines/omnivoice-gguf.md",

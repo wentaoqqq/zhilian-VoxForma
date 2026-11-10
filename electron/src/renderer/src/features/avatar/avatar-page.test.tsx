@@ -2,8 +2,9 @@ import type { ReactNode } from 'react';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { AvatarPage } from './avatar-page';
+import type { EngineBackend } from '@/lib/api/types';
 
-const mocks = vi.hoisted(() => ({ api: vi.fn() }));
+const mocks = vi.hoisted(() => ({ api: vi.fn(), form: vi.fn(), engine: null as EngineBackend | null }));
 vi.mock('@/lib/api/client', () => ({
   apiJson: mocks.api,
   apiPath: (path: string) => '/proxy' + path,
@@ -20,15 +21,15 @@ vi.mock('@/components/app-shell/workspace-header', () => ({
   WorkspaceHeader: ({ children }: { children: ReactNode }) => <header>{children}</header>,
 }));
 vi.mock('@/components/engine-notice', () => ({ EngineNotice: () => null }));
-vi.mock('@/hooks/use-engines', () => ({ useEngines: () => ({ activeTts: null }) }));
+vi.mock('@/hooks/use-engines', () => ({ useEngines: () => ({ activeTts: mocks.engine }) }));
 vi.mock('@/hooks/use-profiles', () => ({ useProfiles: () => ({ data: [] }) }));
-vi.mock('@/hooks/use-clone-readiness', () => ({ useCloneReadiness: () => 'engine' }));
+vi.mock('@/hooks/use-clone-readiness', () => ({ useCloneReadiness: () => mocks.engine ? null : 'engine' }));
 vi.mock('@/hooks/use-reference-transcript', () => ({ useReferenceTranscript: () => ({}) }));
 vi.mock('@/hooks/use-tts-readiness', () => ({ isPresetOnly: () => true }));
 vi.mock('@/hooks/use-generate', () => ({ manualProfileTranscript: vi.fn() }));
-vi.mock('@/lib/api/generate', () => ({ toGenerateForm: vi.fn() }));
+vi.mock('@/lib/api/generate', () => ({ toGenerateForm: mocks.form }));
 vi.mock('@/lib/store/clone-settings', () => ({
-  useCloneSettings: () => ({ selectedProfileId: null }),
+  useCloneSettings: () => ({ selectedProfileId: null, text: 'Emotion check.', instruct: '', direction: '' }),
   setCloneSetting: vi.fn(),
 }));
 vi.mock('@/lib/store/reference', () => ({ useReference: () => ({ file: null }) }));
@@ -80,6 +81,8 @@ const clickCancel = (id: string) =>
 
 beforeEach(() => {
   vi.useFakeTimers();
+  mocks.engine = null;
+  mocks.form.mockReset().mockReturnValue(new FormData());
   jobs = [
     { id: 'queued-1', status: 'queued' },
     { id: 'running-2', status: 'running', audio_output: 'audio.wav' },
@@ -97,6 +100,55 @@ afterEach(() => {
   cleanup();
   vi.useRealTimers();
 });
+
+it.each(['indextts2', 'indextts20'])(
+  'offers emotion audio for %s and preserves it when switching between IndexTTS versions',
+  async (id) => {
+    mocks.engine = { id } as EngineBackend;
+    let view!: ReturnType<typeof render>;
+    await act(async () => { view = render(<AvatarPage />); });
+    fireEvent.click(screen.getByLabelText('avatar.emotionEnabled'));
+    expect(screen.getByLabelText('avatar.emotionEnabled')).toBeChecked();
+    mocks.engine = { id: id === 'indextts2' ? 'indextts20' : 'indextts2' } as EngineBackend;
+    await act(async () => { view.rerender(<AvatarPage />); });
+    expect(screen.getByLabelText('avatar.emotionEnabled')).toBeChecked();
+    mocks.engine = { id: 'omnivoice' } as EngineBackend;
+    await act(async () => { view.rerender(<AvatarPage />); });
+    expect(screen.queryByLabelText('avatar.emotionEnabled')).toBeNull();
+    mocks.engine = { id } as EngineBackend;
+    await act(async () => { view.rerender(<AvatarPage />); });
+    expect(screen.getByLabelText('avatar.emotionEnabled')).not.toBeChecked();
+  },
+);
+
+it.each(['indextts2', 'indextts20', 'omnivoice'])(
+  'submits native generation with the dynamically selected %s engine',
+  async (id) => {
+    mocks.engine = { id, supports_emotion: true } as EngineBackend;
+    await mount();
+    const emotionToggle = screen.queryByLabelText('avatar.emotionEnabled');
+    if (emotionToggle) {
+      fireEvent.click(emotionToggle);
+      mocks.api.mockResolvedValueOnce({ id: 'emotion.wav' });
+      await act(async () => {
+        fireEvent.change(document.getElementById('avatar-emotion-upload')!, {
+          target: { files: [new File(['audio'], 'emotion.wav')] },
+        });
+      });
+    }
+    mocks.api.mockResolvedValueOnce({ id: 'new-job' });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'avatar.audioOnly' }));
+    });
+    const post = mocks.api.mock.calls.find(([path, init]) => path === '/api/avatar/jobs' && init?.method === 'POST');
+    expect(post).toBeDefined();
+    expect(JSON.parse(post![1].body)).toMatchObject({
+      tts_engine: id, native_form: {}, audio_only: true,
+      emotion_enabled: Boolean(emotionToggle), emotion: emotionToggle ? 'emotion.wav' : '',
+    });
+    expect(mocks.form).toHaveBeenCalledOnce();
+  },
+);
 
 it('posts the selected ID once and keeps each cancellation independent until the server settles', async () => {
   const first = pending<Job>();

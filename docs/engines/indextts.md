@@ -209,3 +209,24 @@ license before installing or using IndexTTS 2.5. Other engines remain available
 without enabling this optional sidecar.
 
 See [Engine venvs and disk usage](disk-usage.md) for storage details.
+
+## Selecting an existing IndexTTS 2.0 installation
+
+IndexTTS 2.0 is a separate engine (`indextts20`) alongside the existing
+IndexTTS 2.5 engine (`indextts2`). Set `OMNIVOICE_INDEXTTS20_DIR` to the 2.0
+repository containing `.venv`, `indextts/infer_v2.py`, and `checkpoints/`.
+Restart the backend, then choose **IndexTTS 2.0** in the model selector.
+The existing models and environment are reused without downloading or moving
+them. Windows uses `.venv/Scripts/python.exe`; Linux/macOS use `.venv/bin/python`.
+
+The 2.0 engine explicitly loads `infer_v2`, even if the repository also contains
+`infer_v2_5`. Its code, checkpoints and process remain separate from 2.5;
+`OMNIVOICE_INDEXTTS_DIR` continues to configure the existing engine.
+Optionally set `OMNIVOICE_INDEXTTS20_FP16=0` or `1` for 2.0 alone; otherwise it
+inherits the existing IndexTTS precision setting. Chinese/English, reference
+voice cloning, emotion audio/text/vector, audio-only output and the avatar
+queue use the same generation path and GPU scheduler. The model catalogue
+does not offer an automatic 2.0 download in this integration. Since the old
+2.0 inference API has no native rate parameter, speed/duration controls use
+the existing pitch-preserving audio stretch after synthesis; 2.5 keeps its
+native duration controls.

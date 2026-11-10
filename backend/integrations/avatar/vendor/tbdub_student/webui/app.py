@@ -366,7 +366,7 @@ class Handler(BaseHTTPRequestHandler):
             engine=data.get('tts_engine','indextts2')
             if provider not in ('legacy_indextts','voicestudio') or not isinstance(engine,str) or not re.fullmatch(r'[a-z0-9_-]{1,80}',engine) or (provider=='legacy_indextts' and engine!='indextts2'):
                 raise ValueError('Invalid TTS provider or engine')
-            if provider=='voicestudio' and data.get('emotion_enabled') is not False and data.get('emotion') and engine!='indextts2':
+            if provider=='voicestudio' and data.get('emotion_enabled') is not False and data.get('emotion') and engine not in ('indextts2','indextts20'):
                 raise ValueError('Emotion audio requires IndexTTS')
             if 'emotion_enabled' in data and type(data['emotion_enabled']) is not bool:
                 raise ValueError('emotion_enabled must be boolean')

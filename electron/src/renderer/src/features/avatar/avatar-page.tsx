@@ -87,7 +87,7 @@ export function AvatarPage() {
   async function refreshFiles(){setFiles(await apiJson<typeof files>(prefix+'files'));}
   async function refreshJobs(){const revision=jobsRevision.current;const result=await apiJson<Jobs>(prefix+'jobs');if(revision===jobsRevision.current)setJobs(result);setNetworkError('');}
   useEffect(()=>{let alive=true;void refreshFiles().catch(e=>alive&&setNetworkError(describeError(e)));const poll=()=>{if(alive)void refreshJobs().catch(e=>alive&&setNetworkError(describeError(e)));};poll();const timer=setInterval(poll,2500);return()=>{alive=false;clearInterval(timer);};},[]);
-  useEffect(()=>{if(activeTts?.id!=='indextts2')setEmotionEnabled(false);},[activeTts?.id]);
+  useEffect(()=>{if(!['indextts2','indextts20'].includes(activeTts?.id??''))setEmotionEnabled(false);},[activeTts?.id]);
   useEffect(()=>{if(selectedVoice||reference.file)setChoosingVoice(false);},[selectedVoice?.id,reference.file]);
   const media=(id:string)=>apiPath(prefix+'media?id='+encodeURIComponent(id)+'&preview=1');
   const options=(items:Media[])=>items.map(f=>({value:f.id,label:f.name}));
@@ -123,7 +123,7 @@ export function AvatarPage() {
     const engine=activeTts;
     const caps=expressionCaps(engine);
     const rawRef=presetOnly||settings.selectedProfileId?null:reference.file;
-    const useEmotion=emotionEnabled&&engine.id==='indextts2';
+    const useEmotion=emotionEnabled&&['indextts2','indextts20'].includes(engine.id);
     const form=toGenerateForm({
       ...settings,steps:effectiveSamplingSteps(settings.steps,engine.id),
       profileId:presetOnly?null:settings.selectedProfileId,
@@ -165,7 +165,7 @@ export function AvatarPage() {
             </>:<PresetVoicePicker disabled={busy}/>}
             <ScriptPanel voiceName={selectedVoice?.name}/>
             <div className="flex flex-wrap items-center gap-2"><EngineLanguagePicker value={settings.language} onValueChange={v=>setCloneSetting('language',v)}/><QualityControls disabled={busy}/><VoiceControls/><EmotionControls disabled={busy||emotionEnabled}/></div>
-            {activeTts?.id==='indextts2'&&<details className="grid gap-2"><summary className="cursor-pointer text-sm text-muted-foreground">{t('avatar.emotion')} · {t('avatar.audio')}</summary>
+            {['indextts2','indextts20'].includes(activeTts?.id??'')&&<details className="grid gap-2"><summary className="cursor-pointer text-sm text-muted-foreground">{t('avatar.emotion')} · {t('avatar.audio')}</summary>
               <label className="my-3 flex items-center gap-2"><input id="avatar-emotion-enabled" type="checkbox" checked={emotionEnabled} onChange={e=>setEmotionEnabled(e.target.checked)}/>{t('avatar.emotionEnabled')}</label>
               {emotionEnabled&&<fieldset className={fieldClass}>
                 <p className="text-xs text-muted-foreground">{t('avatar.emotionOverride')}</p>

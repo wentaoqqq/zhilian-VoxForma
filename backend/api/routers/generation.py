@@ -1949,7 +1949,7 @@ async def generate_speech(
         _avatar_emotion = None
     else:
         _avatar_emotion = _avatar_emotion_audio.get()
-    if _avatar_emotion and (engine_id != 'indextts2' or emotion_text or emotion_vector is not None):
+    if _avatar_emotion and (engine_id not in ('indextts2', 'indextts20') or emotion_text or emotion_vector is not None):
         raise HTTPException(status_code=422, detail='Emotion recording requires IndexTTS2 and no text/vector emotion.')
     emotion_kwargs = {}
     if _avatar_emotion:

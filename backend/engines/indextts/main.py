@@ -403,14 +403,19 @@ def _load_model(stdout) -> object:
     # Imported lazily so a missing dep doesn't block the ready handshake.
     # A user-managed IndexTTS-2 checkout remains supported; app-managed
     # installs use the reviewed 2.5 branch and take this first path.
-    try:
-        from indextts.infer_v2_5 import IndexTTS2  # type: ignore[import-not-found]
-        _model_version = "2.5"
-    except ModuleNotFoundError as exc:
-        if exc.name != "indextts.infer_v2_5":
-            raise
-        from indextts.infer_v2 import IndexTTS2  # type: ignore[import-not-found,no-redef]
+    requested_version = os.environ.get("OMNIVOICE_INDEXTTS_VERSION", "auto")
+    if requested_version == "2":
+        from indextts.infer_v2 import IndexTTS2
         _model_version = "2"
+    else:
+        try:
+            from indextts.infer_v2_5 import IndexTTS2  # type: ignore[import-not-found]
+            _model_version = "2.5"
+        except ModuleNotFoundError as exc:
+            if exc.name != "indextts.infer_v2_5":
+                raise
+            from indextts.infer_v2 import IndexTTS2  # type: ignore[import-not-found,no-redef]
+            _model_version = "2"
 
     _send(stdout, {"op": "progress", "stage": "loading_model", "percent": 50})
 
@@ -565,7 +570,7 @@ def main() -> int:
     # cold filesystem because nothing above this line touches indextts.
     _send(stdout, {
         "op": "ready",
-        "engine": "indextts2",
+        "engine": "indextts20" if os.environ.get("OMNIVOICE_INDEXTTS_VERSION") == "2" else "indextts2",
         "sample_rate": INDEXTTS_SAMPLE_RATE,
     })
 

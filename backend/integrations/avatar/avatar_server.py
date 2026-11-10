@@ -143,7 +143,7 @@ async def internal_speech(request:Request):
     try:get_backend_class(engine)
     except ValueError:raise HTTPException(422,'Unknown VoiceStudio TTS engine')
     emotion=speech_reference(params.get('emotion'))
-    if emotion and engine!='indextts2':raise HTTPException(422,'Emotion audio requires IndexTTS')
+    if emotion and engine not in ('indextts2','indextts20'):raise HTTPException(422,'Emotion audio requires IndexTTS')
     token=gpu_client.current_lease.set(lease)
     try:
         if params.get('native_form') is not None:
