@@ -262,7 +262,7 @@ async def proxy(path:str,request:Request):
     except RuntimeError as exc:raise HTTPException(503,str(exc))
     target='/api/'+path
     headers={k:v for k,v in request.headers.items() if k.lower() in ('content-type','content-length','range')}
-    content=request.stream()
+    content=None if request.method in ('GET','HEAD') else request.stream()
     if path=='jobs' and request.method=='POST':
         data=await request.json()
         if data.get('character_id') and not data.get('audio_only'):
@@ -334,6 +334,13 @@ def prepare_native_job(data):
         if not row or row['kind']!='clone':raise HTTPException(422,'Choose a saved cloning voice')
         cond=_resolve_profile_conditioning(row,ref_text=form.get('ref_text'),instruct=form.get('instruct'),seed=int(form['seed']) if form.get('seed') else None,language=form.get('language'),engine_id=engine)
         data['reference'],_=snapshot_voice(data['voice_profile'])
+        # A stored full-clip transcript is not a user-supplied correction.
+        # Preserve best-window selection when this engine trims a long clip.
+        if not form.get('ref_text') and getattr(cls,'ref_strategy',None)=='best_window' and getattr(cls,'max_ref_seconds',None):
+            from services.tts_backend import reference_duration_s
+            seconds=reference_duration_s(str(ASSETS/data['reference']))
+            if seconds is not None and seconds>cls.max_ref_seconds:
+                cond['ref_text']=None
         for key in ('ref_text','instruct','seed','language'):
             if cond.get(key) is not None:form[key]=str(cond[key])
     elif not data.get('reference'):raise HTTPException(422,'Choose a voice or upload a voice recording')

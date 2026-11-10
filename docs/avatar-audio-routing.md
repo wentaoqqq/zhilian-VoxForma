@@ -13,6 +13,14 @@ would otherwise permanently block every queued request. Student still checks
 its unchanged 13000 MiB budget immediately before video inference. Audio-only
 jobs ignore unused character/video selections.
 
+Saved-profile snapshots preserve engine reference-window semantics: for an
+engine with `best_window`, do not promote the stored full-clip transcript into
+an explicit request transcript when the reference exceeds `max_ref_seconds`.
+Explicit user corrections remain explicit; short references retain their
+stored transcript. Media GET/HEAD proxy requests must have no request body:
+forwarding an empty async stream adds chunked transfer encoding that the
+HTTP/1.0 queue does not consume, which can truncate the response on close.
+
 Before deployment, keep the old files, check both queues are idle, and update
 both the managed engine's `webui` files and the matching repository vendor
 files. Restart the idle queue to load the new request routing. Verify a real
