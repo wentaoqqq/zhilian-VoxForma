@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "참조 오디오",
+    "audioHelp": "저장된 목소리의 오디오를 참고해 화자의 목소리는 유지하면서 감정을 조절합니다.",
+    "audioPlaceholder": "오디오가 있는 저장된 목소리 선택",
     "title": "감정",
     "off": "끄기",
     "text": "설명",

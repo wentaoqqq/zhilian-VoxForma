@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "Audioreferenz",
+    "audioHelp": "Nutze die Aufnahme einer gespeicherten Stimme als Emotionsvorlage, ohne die Sprecherstimme zu ändern.",
+    "audioPlaceholder": "Gespeicherte Stimme mit Audio wählen",
     "title": "Emotion",
     "off": "Aus",
     "text": "Beschreibung",

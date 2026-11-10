@@ -86,6 +86,33 @@ describe('sanitizeInstruct', () => {
 });
 
 describe('toGenerateForm', () => {
+  it.each([0, 1])(
+    'serializes an independent saved emotion reference with strength %s and excludes other emotion sources',
+    (emoAlpha) => {
+      const form = toGenerateForm({
+        ...BASE_INPUT,
+        profileId: 'speaker',
+        emoProfileId: 'emotion',
+        emoAlpha,
+        emoText: 'stale text',
+        emoVector: [1, 0, 0, 0, 0, 0, 0, 0],
+      });
+      expect(form.get('profile_id')).toBe('speaker');
+      expect(form.get('emo_profile_id')).toBe('emotion');
+      expect(form.get('emo_alpha')).toBe(String(emoAlpha));
+      expect(form.has('emo_text')).toBe(false);
+      expect(form.has('emo_vector')).toBe(false);
+      const off = toGenerateForm({ ...BASE_INPUT, emoProfileId: '', emoAlpha });
+      expect(off.has('emo_profile_id')).toBe(false);
+      expect(off.has('emo_alpha')).toBe(false);
+    },
+  );
+
+  it('caps text strength after restoring audio strength', () => {
+    expect(toGenerateForm({ ...BASE_INPUT, emoText: 'gentle', emoAlpha: 1 }).get('emo_alpha')).toBe(
+      '0.6',
+    );
+  });
   it('sends a manually supplied reference transcript with a saved voice (#3192)', () => {
     const transcript = ' These are the words spoken in the reference. ';
     const form = toGenerateForm({

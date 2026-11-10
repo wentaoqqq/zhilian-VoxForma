@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "Ses referansı",
+    "audioHelp": "Konuşmacının sesini değiştirmeden duyguya yön vermek için kayıtlı bir sesin ses kaydını kullanın.",
+    "audioPlaceholder": "Ses kaydı olan kayıtlı bir ses seçin",
     "title": "Duygu",
     "off": "Kapalı",
     "text": "Açıklama",

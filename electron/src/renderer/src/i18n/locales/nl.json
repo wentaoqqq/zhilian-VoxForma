@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "Audioreferentie",
+    "audioHelp": "Gebruik de audio van een opgeslagen stem als emotievoorbeeld zonder de stem van de spreker te wijzigen.",
+    "audioPlaceholder": "Kies een opgeslagen stem met audio",
     "title": "Emotie",
     "off": "Uit",
     "text": "Beschrijving",

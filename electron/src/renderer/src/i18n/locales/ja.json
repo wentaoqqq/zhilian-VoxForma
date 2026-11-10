@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "音声リファレンス",
+    "audioHelp": "保存済みの音声を参考にして、話者の声を変えずに感情を調整します。",
+    "audioPlaceholder": "音声のある保存済みボイスを選択",
     "title": "感情",
     "off": "オフ",
     "text": "文章で指定",

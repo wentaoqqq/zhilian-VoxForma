@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "Wzorzec audio",
+    "audioHelp": "Użyj nagrania zapisanego głosu jako wzorca emocji bez zmiany głosu mówcy.",
+    "audioPlaceholder": "Wybierz zapisany głos z nagraniem",
     "title": "Emocje",
     "off": "Wyłączone",
     "text": "Opis",

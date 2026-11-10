@@ -230,3 +230,10 @@ does not offer an automatic 2.0 download in this integration. Since the old
 2.0 inference API has no native rate parameter, speed/duration controls use
 the existing pitch-preserving audio stretch after synthesis; 2.5 keeps its
 native duration controls.
+
+In the composer's **Emotion → Audio reference** mode, choose a saved voice
+sample to supply emotion independently of the speaker voice, preview it, and
+adjust strength. **Off** stops sending this reference. Native requests use
+`emo_profile_id` and optional `emo_alpha`; the avatar queue snapshots the
+selected sample at submission so later voice edits cannot change queued jobs.
+Audio, text and vector emotion sources are mutually exclusive.

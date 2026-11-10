@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "Referensi audio",
+    "audioHelp": "Gunakan audio suara tersimpan untuk mengarahkan emosi tanpa mengubah suara pembicara.",
+    "audioPlaceholder": "Pilih suara tersimpan yang memiliki audio",
     "title": "Emosi",
     "off": "Nonaktif",
     "text": "Deskripsi",

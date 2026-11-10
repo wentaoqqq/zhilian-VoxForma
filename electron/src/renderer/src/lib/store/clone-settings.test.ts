@@ -46,7 +46,7 @@ describe('parsePersistedCloneSettings', () => {
         JSON.stringify({
           emotionMode: 'wrong',
           emotionVector: [3, 0],
-          emotionAlpha: 1,
+          emotionAlpha: 1.1,
           emotionText: 'x'.repeat(501),
         }),
       ),
@@ -90,6 +90,43 @@ describe('parsePersistedCloneSettings', () => {
 });
 
 describe('cloneSettingsStore persistence', () => {
+  it.each([0, 1])(
+    'persists audio reference strength %s and resets independently of the speaker',
+    async (emotionAlpha) => {
+      const {
+        cloneSettingsStore,
+        patchCloneSettings,
+        resetVoiceControls,
+        resetOverrides,
+        parsePersistedCloneSettings,
+      } = await loadModule();
+      patchCloneSettings({
+        emotionMode: 'audio',
+        emotionProfileId: 'emotion',
+        emotionAlpha,
+        selectedProfileId: 'speaker',
+      });
+      await vi.advanceTimersByTimeAsync(300);
+      const persisted = localStorage.getItem(KEY);
+      expect(parsePersistedCloneSettings(persisted)).toMatchObject({
+        emotionMode: 'audio',
+        emotionProfileId: 'emotion',
+        emotionAlpha,
+        selectedProfileId: 'speaker',
+      });
+      for (const reset of [resetVoiceControls, resetOverrides]) {
+        patchCloneSettings({ emotionMode: 'audio', emotionProfileId: 'emotion', emotionAlpha });
+        reset();
+        expect(cloneSettingsStore.state).toMatchObject({
+          emotionMode: 'none',
+          emotionProfileId: null,
+          emotionAlpha: 0.6,
+          selectedProfileId: 'speaker',
+        });
+      }
+      expect(parsePersistedCloneSettings('{"emotionProfileId":42}').emotionProfileId).toBeNull();
+    },
+  );
   it('hydrates from localStorage on module init', async () => {
     localStorage.setItem(KEY, JSON.stringify({ language: 'French', showOverrides: true }));
     const { cloneSettingsStore } = await loadModule();

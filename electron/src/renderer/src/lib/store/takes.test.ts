@@ -37,6 +37,7 @@ describe('take metadata', () => {
       refText: '',
       emotionMode: 'none',
       emotionText: '',
+      emotionProfileId: null,
       emotionAlpha: 0.6,
       emotionVector: [0, 0, 0, 0, 0, 0, 0, 0],
       direction: '',
@@ -125,6 +126,9 @@ describe('take metadata', () => {
   });
   it.each([
     ['missing text', { emotionMode: 'text' }],
+    ['missing audio reference', { emotionMode: 'audio' }],
+    ['empty audio reference', { emotionMode: 'audio', emotionProfileId: '' }],
+    ['invalid audio reference', { emotionMode: 'audio', emotionProfileId: 42 }],
     ['blank text', { emotionMode: 'text', emotionText: '   ' }],
     ['invalid text type', { emotionMode: 'text', emotionText: 99 }],
     ['oversized text', { emotionMode: 'text', emotionText: 'x'.repeat(501) }],
@@ -183,6 +187,7 @@ describe('take metadata', () => {
       instruct: 'ignored',
       emotionMode: 'text',
       emotionText: 'quietly relieved',
+      emotionProfileId: null,
       emotionAlpha: 0.4,
       emotionVector: [0.2, 0, 0, 0, 0, 0, 0, 0],
       direction: 'nervous, then bold',
@@ -209,6 +214,28 @@ describe('take metadata', () => {
       if (key === 'autoPlay' || key === 'showOverrides') expect(restored).not.toHaveProperty(key);
       else expect(restored, key).toHaveProperty(key);
     }
+  });
+  it('restores saved audio emotion independently of the speaker', async () => {
+    rememberTake('take', {
+      ...DEFAULT_CLONE_SETTINGS,
+      emotionMode: 'audio',
+      emotionProfileId: 'emotion',
+      emotionAlpha: 1,
+    });
+    await reuseTake(item);
+    expect(cloneSettingsStore.state).toMatchObject({
+      emotionMode: 'audio',
+      emotionProfileId: 'emotion',
+      emotionAlpha: 1,
+      selectedProfileId: 'voice',
+    });
+    localStorage.clear();
+    await reuseTake(item);
+    expect(cloneSettingsStore.state).toMatchObject({
+      emotionMode: 'none',
+      emotionProfileId: null,
+      emotionAlpha: 0.6,
+    });
   });
   it('ignores malformed stored quality values', () => {
     localStorage.setItem(

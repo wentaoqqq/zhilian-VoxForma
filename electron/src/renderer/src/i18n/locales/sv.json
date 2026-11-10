@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "Ljudreferens",
+    "audioHelp": "Använd ljudet från en sparad röst som känsloförebild utan att ändra talarens röst.",
+    "audioPlaceholder": "Välj en sparad röst med ljud",
     "title": "Känsla",
     "off": "Av",
     "text": "Beskrivning",

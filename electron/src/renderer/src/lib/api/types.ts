@@ -190,7 +190,8 @@ export interface CloneGenerateInput {
   instructVocabulary?: InstructVocabulary;
   /** Draft recorded next to a design take for later reopening; has no effect on the audio. */
   designRecipe?: DesignRecipe;
-  /** IndexTTS2 independent emotion conditioning (text or eight weights). */
+  /** IndexTTS2 independent emotion conditioning (saved audio, text or eight weights). */
+  emoProfileId?: string;
   emoText?: string;
   emoAlpha?: number;
   emoVector?: number[];

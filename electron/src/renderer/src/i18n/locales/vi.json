@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "Âm thanh tham chiếu",
+    "audioHelp": "Dùng âm thanh của giọng đã lưu để định hướng cảm xúc mà không thay đổi giọng người nói.",
+    "audioPlaceholder": "Chọn giọng đã lưu có âm thanh",
     "title": "Cảm xúc",
     "off": "Tắt",
     "text": "Mô tả",

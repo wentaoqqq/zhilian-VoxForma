@@ -3,8 +3,9 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { AvatarPage } from './avatar-page';
 import type { EngineBackend } from '@/lib/api/types';
+import type { CloneSettings } from '@/lib/store/clone-settings';
 
-const mocks = vi.hoisted(() => ({ api: vi.fn(), form: vi.fn(), engine: null as EngineBackend | null }));
+const mocks = vi.hoisted(() => ({ api: vi.fn(), form: vi.fn(), engine: null as EngineBackend | null, settings: {} as CloneSettings, presetOnly: true }));
 vi.mock('@/lib/api/client', () => ({
   apiJson: mocks.api,
   apiPath: (path: string) => '/proxy' + path,
@@ -25,11 +26,11 @@ vi.mock('@/hooks/use-engines', () => ({ useEngines: () => ({ activeTts: mocks.en
 vi.mock('@/hooks/use-profiles', () => ({ useProfiles: () => ({ data: [] }) }));
 vi.mock('@/hooks/use-clone-readiness', () => ({ useCloneReadiness: () => mocks.engine ? null : 'engine' }));
 vi.mock('@/hooks/use-reference-transcript', () => ({ useReferenceTranscript: () => ({}) }));
-vi.mock('@/hooks/use-tts-readiness', () => ({ isPresetOnly: () => true }));
+vi.mock('@/hooks/use-tts-readiness', () => ({ isPresetOnly: () => mocks.presetOnly }));
 vi.mock('@/hooks/use-generate', () => ({ manualProfileTranscript: vi.fn() }));
 vi.mock('@/lib/api/generate', () => ({ toGenerateForm: mocks.form }));
 vi.mock('@/lib/store/clone-settings', () => ({
-  useCloneSettings: () => ({ selectedProfileId: null, text: 'Emotion check.', instruct: '', direction: '' }),
+  useCloneSettings: () => mocks.settings,
   setCloneSetting: vi.fn(),
 }));
 vi.mock('@/lib/store/reference', () => ({ useReference: () => ({ file: null }) }));
@@ -82,6 +83,15 @@ const clickCancel = (id: string) =>
 beforeEach(() => {
   vi.useFakeTimers();
   mocks.engine = null;
+  mocks.presetOnly = true;
+  mocks.settings = {
+    selectedProfileId: null, text: 'Emotion check.', instruct: '', direction: '',
+    emotionMode: 'none', emotionProfileId: null, emotionText: '', emotionAlpha: 0.6,
+    emotionVector: [0, 0, 0, 0, 0, 0, 0, 0],
+    steps: 16, cfg: 2, speed: 1, denoise: true, tShift: 0.1, posTemp: 5,
+    classTemp: 0, layerPenalty: 5, postprocess: true, duration: '', wavBits: 16,
+    effectPreset: 'broadcast',
+  } as CloneSettings;
   mocks.form.mockReset().mockReturnValue(new FormData());
   jobs = [
     { id: 'queued-1', status: 'queued' },
@@ -99,6 +109,77 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
+});
+
+it.each([
+  ['indextts20', 0, 'avatar.generateVideo', false],
+  ['indextts20', 1, 'avatar.audioOnly', true],
+  ['indextts2', 1, 'avatar.generateVideo', false],
+  ['indextts2', 0, 'avatar.audioOnly', true],
+] as const)('serializes shared emotion audio for %s at strength %s (%s)', async (id, emotionAlpha, action, audioOnly) => {
+  const { toGenerateForm } = await vi.importActual<typeof import('@/lib/api/generate')>('@/lib/api/generate');
+  mocks.form.mockImplementation(toGenerateForm);
+  mocks.engine = { id, supports_emotion: true } as EngineBackend;
+  mocks.presetOnly = false;
+  Object.assign(mocks.settings, { selectedProfileId: 'speaker', emotionMode: 'audio', emotionProfileId: 'emotion-profile', emotionAlpha, emotionText: 'stale text' });
+  await mount();
+  mocks.api.mockResolvedValueOnce({ id: 'shared-job' });
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: action })));
+  const post = mocks.api.mock.calls.find(([path, init]) => path === '/api/avatar/jobs' && init?.method === 'POST');
+  const snapshot = JSON.parse(post![1].body);
+  expect(snapshot).toMatchObject({
+    voice_profile: 'speaker', tts_engine: id, audio_only: audioOnly, emotion_enabled: false,
+    emotion: '', native_form: { emo_profile_id: 'emotion-profile', emo_alpha: String(emotionAlpha) },
+  });
+  expect(snapshot.native_form).not.toHaveProperty('emo_text');
+  expect(snapshot.native_form).not.toHaveProperty('emo_vector');
+  expect(mocks.settings.selectedProfileId).toBe('speaker');
+});
+
+it('gives explicit avatar audio priority over shared audio and its strength', async () => {
+  const { toGenerateForm } = await vi.importActual<typeof import('@/lib/api/generate')>('@/lib/api/generate');
+  mocks.form.mockImplementation(toGenerateForm);
+  mocks.engine = { id: 'indextts20', supports_emotion: true } as EngineBackend;
+  Object.assign(mocks.settings, { emotionMode: 'audio', emotionProfileId: 'shared-emotion', emotionAlpha: 0.2 });
+  await mount();
+  fireEvent.click(screen.getByLabelText('avatar.emotionEnabled'));
+  expect(screen.getByRole('button', { name: 'avatar.audioOnly' })).toBeDisabled();
+  mocks.api.mockResolvedValueOnce({ id: 'explicit.wav' });
+  await act(async () => fireEvent.change(document.getElementById('avatar-emotion-upload')!, { target: { files: [new File(['audio'], 'explicit.wav')] } }));
+  mocks.api.mockResolvedValueOnce({ id: 'override-job' });
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'avatar.audioOnly' })));
+  const post = mocks.api.mock.calls.find(([path, init]) => path === '/api/avatar/jobs' && init?.method === 'POST');
+  const snapshot = JSON.parse(post![1].body);
+  expect(snapshot).toMatchObject({ emotion_enabled: true, emotion: 'explicit.wav', emotion_weight: 1 });
+  for (const key of ['emo_profile_id', 'emo_alpha', 'emo_text', 'emo_vector']) expect(snapshot.native_form).not.toHaveProperty(key);
+});
+
+it.each([
+  ['indextts20', 'audio', null, true],
+  ['indextts2', 'audio', '', true],
+  ['indextts20', 'none', null, false],
+  ['omnivoice', 'audio', null, false],
+  ['other-emotion-engine', 'audio', 'stale-emotion', false],
+] as const)('handles empty or stale shared reference for %s in %s mode', async (id, emotionMode, emotionProfileId, disabled) => {
+  const { toGenerateForm } = await vi.importActual<typeof import('@/lib/api/generate')>('@/lib/api/generate');
+  mocks.form.mockImplementation(toGenerateForm);
+  mocks.engine = { id, supports_emotion: true } as EngineBackend;
+  Object.assign(mocks.settings, { emotionMode, emotionProfileId });
+  await mount();
+  for (const action of ['avatar.audioOnly', 'avatar.generateVideo']) {
+    const button = screen.getByRole('button', { name: action });
+    expect(button).toHaveProperty('disabled', disabled);
+  }
+  mocks.api.mockResolvedValueOnce({ id: 'neutral-job' });
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'avatar.audioOnly' })));
+  if (disabled) expect(mocks.form).not.toHaveBeenCalled();
+  else {
+    const post = mocks.api.mock.calls.find(([path, init]) => path === '/api/avatar/jobs' && init?.method === 'POST');
+    const snapshot = JSON.parse(post![1].body);
+    expect(snapshot.emotion_enabled).toBe(false);
+    expect(snapshot.native_form).not.toHaveProperty('emo_profile_id');
+    expect(snapshot.native_form).not.toHaveProperty('emo_alpha');
+  }
 });
 
 it.each(['indextts2', 'indextts20'])(

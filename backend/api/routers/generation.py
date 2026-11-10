@@ -1822,6 +1822,24 @@ def _parse_emotion_vector(raw: Optional[str]) -> Optional[list[float]]:
     return [float(item) for item in value]
 
 
+def _emotion_profile_audio(profile_id: str) -> str:
+    """Read the saved sample without changing the speaker's conditioning."""
+    with db_conn() as conn:
+        row = conn.execute(
+            'SELECT locked_audio_path, ref_audio_path FROM voice_profiles WHERE id=?',
+            (profile_id,),
+        ).fetchone()
+    if not row:
+        raise HTTPException(422, 'Emotion voice profile not found.')
+    filename = row['locked_audio_path'] or row['ref_audio_path']
+    if not filename:
+        raise HTTPException(422, 'Choose an emotion voice with a saved audio sample.')
+    path = contained_join(VOICES_DIR, filename)
+    if not path or not Path(path).is_file():
+        raise HTTPException(422, 'Emotion voice audio sample is missing.')
+    return str(path)
+
+
 @router.post("/generate")
 async def generate_speech(
     text: str = Form(...),
@@ -1847,6 +1865,7 @@ async def generate_speech(
     emo_text: Optional[str] = Form(None, max_length=500),
     emo_alpha: Optional[float] = Form(None, ge=0.0, le=1.0),
     emo_vector: Optional[str] = Form(None),
+    emo_profile_id: Optional[str] = Form(None, max_length=128),
     profile_id: Optional[str] = Form(None),
     seed: Optional[int] = Form(None),
     effect_preset: str = Form("broadcast"),
@@ -1923,13 +1942,14 @@ async def generate_speech(
 
     emotion_vector = _parse_emotion_vector(emo_vector)
     emotion_text = (emo_text or "").strip() or None
+    emotion_profile = (emo_profile_id or "").strip() or None
     if emo_alpha is not None and not math.isfinite(emo_alpha):
         raise HTTPException(status_code=422, detail="Emotion strength must be finite.")
     if emotion_text and emotion_vector is not None:
         raise HTTPException(
             status_code=422, detail="Choose an emotion description OR an emotion vector."
         )
-    if emo_alpha is not None and not emotion_text:
+    if emo_alpha is not None and not (emotion_text or emotion_profile):
         raise HTTPException(
             status_code=422, detail="Emotion strength requires an emotion description."
         )
@@ -1940,15 +1960,21 @@ async def generate_speech(
             status_code=422,
             detail=f"{engine_id} does not support emotion controls. Choose IndexTTS2.",
         )
-    # The avatar queue may supply an independently uploaded emotion clip.
-    # Request-local context is set only after the private endpoint validates
-    # the GPU lease and the job-owned file; normal /generate is unchanged.
+    # The avatar queue supplies its immutable emotion snapshot through a
+    # request-local context; the native composer can instead select a saved
+    # voice sample. Neither changes the speaker reference.
     try:
         from avatar_conditioning import emotion_audio as _avatar_emotion_audio
     except ImportError:
         _avatar_emotion = None
     else:
         _avatar_emotion = _avatar_emotion_audio.get()
+    if emotion_profile:
+        if engine_id not in ('indextts2', 'indextts20'):
+            raise HTTPException(422, 'Emotion audio requires IndexTTS.')
+        if _avatar_emotion or emotion_text or emotion_vector is not None:
+            raise HTTPException(422, 'Choose only one emotion audio, description or vector.')
+        _avatar_emotion = (_emotion_profile_audio(emotion_profile), emo_alpha if emo_alpha is not None else 1.0)
     if _avatar_emotion and (engine_id not in ('indextts2', 'indextts20') or emotion_text or emotion_vector is not None):
         raise HTTPException(status_code=422, detail='Emotion recording requires IndexTTS2 and no text/vector emotion.')
     emotion_kwargs = {}

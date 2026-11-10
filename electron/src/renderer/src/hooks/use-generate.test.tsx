@@ -29,6 +29,7 @@ vi.mock('./use-tts-readiness', async (importOriginal) => ({
   useTtsReadiness: () => null,
 }));
 const engine = vi.hoisted(() => ({
+  id: 'indextts2',
   vocabulary: undefined as 'tags' | 'freeform' | undefined,
   design: undefined as boolean | null | undefined,
   cloning: undefined as boolean | null | undefined,
@@ -39,6 +40,7 @@ const engine = vi.hoisted(() => ({
 vi.mock('./use-engines', () => ({
   useEngines: () => ({
     activeTts: {
+      id: engine.id,
       instruct_vocabulary: engine.vocabulary,
       supports_voice_design: engine.design,
       supports_cloning: engine.cloning,
@@ -48,6 +50,10 @@ vi.mock('./use-engines', () => ({
     },
   }),
 }));
+beforeEach(() => {
+  engine.id = 'indextts2';
+  patchCloneSettings({ emotionMode: 'none', emotionProfileId: null, emotionAlpha: 0.6 });
+});
 vi.mock('@/lib/api/generate', () => ({
   generateClone: vi.fn(),
   sanitizeInstruct: () => ({ instruct: '', unsupported: [], duplicates: [], conflicts: [] }),
@@ -598,6 +604,114 @@ it.each([
     }
     engine.emotion = undefined;
     engine.design = undefined;
+  },
+);
+
+it.each([
+  ['indextts20', 'audio', 'emotion', false, true],
+  ['indextts2', 'audio', 'emotion', false, true],
+  ['indextts20', 'none', 'emotion', false, false],
+  ['omnivoice', 'audio', 'emotion', false, false],
+  ['other-emotion-engine', 'audio', 'emotion', false, false],
+  ['omnivoice', 'audio', null, false, false],
+  ['indextts20', 'audio', 'emotion', true, false],
+] as const)(
+  'routes saved emotion audio only to native IndexTTS clone requests (%s, %s, %s, design=%s)',
+  async (id, emotionMode, emotionProfileId, design, sendsAudio) => {
+    engine.id = id;
+    engine.emotion = true;
+    engine.design = true;
+    patchCloneSettings({
+      text: 'Audio emotion test',
+      selectedProfileId: 'speaker',
+      emotionMode,
+      emotionProfileId,
+      emotionAlpha: 1,
+      emotionText: 'stale text',
+      emotionVector: [1, 0, 0, 0, 0, 0, 0, 0],
+    });
+    vi.mocked(generateClone).mockReset().mockRejectedValue(new Error('audio request captured'));
+    function AudioConsumer() {
+      const state = useGenerateClone();
+      return (
+        <>
+          <button
+            onClick={() =>
+              void (design
+                ? state.generateDesign({ text: 'Designed', instruct: 'male' })
+                : state.generate())
+            }
+          >
+            audio render
+          </button>
+          <span>{state.error}</span>
+          <span>{String(state.canGenerate)}</span>
+        </>
+      );
+    }
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <GenerationProvider>
+          <AudioConsumer />
+        </GenerationProvider>
+      </QueryClientProvider>,
+    );
+    expect(screen.getByText('true')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('audio render'));
+    await screen.findByText('audio request captured');
+    const input = vi.mocked(generateClone).mock.calls[0][0];
+    expect(input.profileId).toBe(design ? null : 'speaker');
+    expect(input.emoProfileId).toBe(sendsAudio ? 'emotion' : undefined);
+    expect(input.emoAlpha).toBe(sendsAudio ? 1 : undefined);
+    expect(input.emoText).toBeUndefined();
+    expect(input.emoVector).toBeUndefined();
+    const { toGenerateForm } =
+      await vi.importActual<typeof import('@/lib/api/generate')>('@/lib/api/generate');
+    const form = toGenerateForm(input);
+    expect(form.get('emo_profile_id')).toBe(sendsAudio ? 'emotion' : null);
+    expect(form.get('emo_alpha')).toBe(sendsAudio ? '1' : null);
+    if (!design) expect(form.get('profile_id')).toBe('speaker');
+    engine.emotion = undefined;
+    engine.design = undefined;
+  },
+);
+
+it.each([null, ''])(
+  'blocks audio mode without an emotion profile (%s), while Off remains usable',
+  async (emotionProfileId) => {
+    engine.id = 'indextts20';
+    patchCloneSettings({
+      text: 'Audio test',
+      selectedProfileId: 'speaker',
+      emotionMode: 'audio',
+      emotionProfileId,
+    });
+    vi.mocked(generateClone).mockReset().mockRejectedValue(new Error('off request captured'));
+    function AudioConsumer() {
+      const state = useGenerateClone();
+      return (
+        <>
+          <button onClick={() => void state.generate()}>empty audio render</button>
+          <span>{String(state.canGenerate)}</span>
+          <span>{state.error}</span>
+        </>
+      );
+    }
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <GenerationProvider>
+          <AudioConsumer />
+        </GenerationProvider>
+      </QueryClientProvider>,
+    );
+    expect(screen.getByText('false')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('empty audio render'));
+    expect(generateClone).not.toHaveBeenCalled();
+    act(() => patchCloneSettings({ emotionMode: 'none' }));
+    expect(screen.getByText('true')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('empty audio render'));
+    await screen.findByText('off request captured');
+    expect(vi.mocked(generateClone).mock.calls[0][0].emoProfileId).toBeUndefined();
   },
 );
 

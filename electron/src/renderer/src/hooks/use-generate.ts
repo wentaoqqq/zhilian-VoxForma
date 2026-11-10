@@ -31,7 +31,11 @@ import { effectiveSamplingSteps } from '@/lib/audio/quality';
 import { cachedTtsLanguagesSupported } from '@/lib/language-options';
 import { tr } from '@/lib/i18n-text';
 import { queryKeys } from '@/lib/query';
-import { cloneSettingsStore, DEFAULT_CLONE_SETTINGS } from '@/lib/store/clone-settings';
+import {
+  cloneSettingsStore,
+  DEFAULT_CLONE_SETTINGS,
+  useCloneSetting,
+} from '@/lib/store/clone-settings';
 import { setLatestOutput } from '@/lib/store/output';
 import { referenceStore } from '@/lib/store/reference';
 import { beginAppActivity } from '@/lib/app-activity';
@@ -162,7 +166,7 @@ function announceResultNotices(result: GenerateResult): void {
 
 /** Drive a single synthesis lifecycle and forward per-take engine capabilities.
  *
- * Cloning may include IndexTTS2 text or vector emotion; unsupporting engines
+ * Cloning may include IndexTTS2 audio, text or vector emotion; unsupporting engines
  * and the independent Voice Design workspace never inherit those controls.
  */
 function useGenerateController(): UseGenerateClone {
@@ -172,6 +176,11 @@ function useGenerateController(): UseGenerateClone {
   const cloneEngineBlocker = useTtsReadiness('clone');
   const blocker = cloneEngineBlocker ?? inputBlocker;
   const activeTts = useEngines().activeTts;
+  const emotionMode = useCloneSetting('emotionMode');
+  const emotionProfileId = useCloneSetting('emotionProfileId');
+  const supportsEmotionAudio = ['indextts2', 'indextts20'].includes(activeTts?.id ?? '');
+  const missingEmotionProfile =
+    supportsEmotionAudio && emotionMode === 'audio' && !emotionProfileId;
   const instructVocabulary = activeTts?.instruct_vocabulary ?? 'tags';
   const sendsDirection = expressionCaps(activeTts).emotion === 'direction';
   // An engine that declares it can't design would only fail inside the
@@ -301,6 +310,9 @@ function useGenerateController(): UseGenerateClone {
                 : null,
             ) || !design.text.trim()
           : blocker ||
+            (supportsEmotionAudio &&
+              settings.emotionMode === 'audio' &&
+              !settings.emotionProfileId) ||
             !settings.text.trim() ||
             // A preset-only engine speaks its preset voice: no clip or profile.
             (!presetOnly && !settings.selectedProfileId && !reference.file?.size)
@@ -379,13 +391,18 @@ function useGenerateController(): UseGenerateClone {
           // IndexTTS2's emotion controls affect the performance, not the
           // reference voice. Never leak stale emotion options to other engines
           // or to the separate Voice Design workspace.
-          ...(!design && activeTts?.supports_emotion
-            ? settings.emotionMode === 'vector'
-              ? { emoVector: [...settings.emotionVector] }
-              : settings.emotionMode === 'text' && settings.emotionText.trim()
-                ? { emoText: settings.emotionText.trim(), emoAlpha: settings.emotionAlpha }
-                : {}
-            : {}),
+          ...(!design &&
+          supportsEmotionAudio &&
+          settings.emotionMode === 'audio' &&
+          settings.emotionProfileId
+            ? { emoProfileId: settings.emotionProfileId, emoAlpha: settings.emotionAlpha }
+            : !design && activeTts?.supports_emotion
+              ? settings.emotionMode === 'vector'
+                ? { emoVector: [...settings.emotionVector] }
+                : settings.emotionMode === 'text' && settings.emotionText.trim()
+                  ? { emoText: settings.emotionText.trim(), emoAlpha: settings.emotionAlpha }
+                  : {}
+              : {}),
           steps: effectiveSamplingSteps(
             settings.steps,
             queryClient.getQueryData<EnginesResponse>(queryKeys.engines)?.tts?.active,
@@ -421,11 +438,12 @@ function useGenerateController(): UseGenerateClone {
           rememberTake(result.id, {
             ...settings,
             direction,
-            ...('emoText' in input || 'emoVector' in input
+            ...('emoProfileId' in input || 'emoText' in input || 'emoVector' in input
               ? {}
               : {
                   emotionMode: DEFAULT_CLONE_SETTINGS.emotionMode,
                   emotionText: DEFAULT_CLONE_SETTINGS.emotionText,
+                  emotionProfileId: DEFAULT_CLONE_SETTINGS.emotionProfileId,
                   emotionAlpha: DEFAULT_CLONE_SETTINGS.emotionAlpha,
                   emotionVector: [...DEFAULT_CLONE_SETTINGS.emotionVector],
                 }),
@@ -475,6 +493,7 @@ function useGenerateController(): UseGenerateClone {
       activeTts,
       presetOnly,
       sendsDirection,
+      supportsEmotionAudio,
     ],
   );
 
@@ -502,7 +521,7 @@ function useGenerateController(): UseGenerateClone {
       setError(null);
       setErrorTopic(null);
     },
-    canGenerate: blocker === null && !isGenerating,
+    canGenerate: blocker === null && !isGenerating && !missingEmotionProfile,
     canGenerateDesign: designBlocker === null && !isGenerating,
     designBlocker,
     designBlockerFor,

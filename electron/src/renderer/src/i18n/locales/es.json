@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "Referencia de audio",
+    "audioHelp": "Usa el audio de una voz guardada para guiar la emoción sin cambiar la voz del hablante.",
+    "audioPlaceholder": "Elige una voz guardada con audio",
     "title": "Emoción",
     "off": "Desactivado",
     "text": "Descripción",

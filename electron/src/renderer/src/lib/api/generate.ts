@@ -179,11 +179,14 @@ export function toGenerateForm(input: CloneGenerateInput): FormData {
   if (input.designRecipe !== undefined) {
     form.append('design_recipe', JSON.stringify(input.designRecipe));
   }
-  if (input.emoVector) {
+  if (input.emoProfileId) {
+    form.append('emo_profile_id', input.emoProfileId);
+    if (input.emoAlpha !== undefined) form.append('emo_alpha', String(input.emoAlpha));
+  } else if (input.emoVector) {
     form.append('emo_vector', JSON.stringify(input.emoVector));
   } else if (input.emoText?.trim()) {
     form.append('emo_text', input.emoText.trim());
-    if (input.emoAlpha !== undefined) form.append('emo_alpha', String(input.emoAlpha));
+    if (input.emoAlpha !== undefined) form.append('emo_alpha', String(Math.min(0.6, input.emoAlpha)));
   }
   return form;
 }

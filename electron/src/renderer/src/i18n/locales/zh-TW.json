@@ -1,5 +1,8 @@
 {
   "cloneEmotion": {
+    "audio": "音訊參考",
+    "audioHelp": "使用已儲存音色的音訊引導情感，保持目前說話人的音色不變。",
+    "audioPlaceholder": "選擇含有音訊的已儲存音色",
     "title": "情緒",
     "off": "關閉",
     "text": "文字描述",

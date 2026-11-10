@@ -3,6 +3,10 @@ import { Link } from '@tanstack/react-router';
 import { AudioLinesIcon, HeartPulseIcon, RotateCcwIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useEngines } from '@/hooks/use-engines';
+import { useProfiles } from '@/hooks/use-profiles';
+// @ts-expect-error Shared JSX control has no declaration file.
+import VoiceSelector from '@shared/components/VoiceSelector';
+import { apiPath } from '@/lib/api/client';
 import { ExternalLink } from '@/components/external-link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/popover';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -36,6 +40,7 @@ function resetEmotion() {
   patchCloneSettings({
     emotionMode: DEFAULT_CLONE_SETTINGS.emotionMode,
     emotionText: DEFAULT_CLONE_SETTINGS.emotionText,
+    emotionProfileId: DEFAULT_CLONE_SETTINGS.emotionProfileId,
     emotionAlpha: DEFAULT_CLONE_SETTINGS.emotionAlpha,
     emotionVector: [...DEFAULT_CLONE_SETTINGS.emotionVector],
   });
@@ -50,6 +55,10 @@ function resetEmotion() {
 export function EmotionControls({ disabled = false }: { disabled?: boolean }) {
   const { t } = useTranslation();
   const { activeTts } = useEngines();
+  const profiles = useProfiles();
+  const audioProfiles = (profiles.data ?? []).filter(
+    (profile) => profile.ref_audio_path || profile.locked_audio_path,
+  );
   const settings = useCloneSettings();
   const [open, setOpen] = useState(false);
   const id = useId();
@@ -64,6 +73,9 @@ export function EmotionControls({ disabled = false }: { disabled?: boolean }) {
     { mode: 'none', label: t('cloneEmotion.off') },
     { mode: 'text', label: t('cloneEmotion.text') },
     { mode: 'vector', label: t('cloneEmotion.vector') },
+    ...(['indextts2', 'indextts20'].includes(activeTts?.id ?? '')
+      ? [{ mode: 'audio' as const, label: t('cloneEmotion.audio') }]
+      : []),
   ];
 
   return (
@@ -159,7 +171,7 @@ export function EmotionControls({ disabled = false }: { disabled?: boolean }) {
             </p>
           )}
           {caps.emotion === 'graded' && (
-            <div className="grid grid-cols-3 gap-1 rounded-lg bg-muted/40 p-1">
+            <div className="grid grid-cols-2 gap-1 rounded-lg bg-muted/40 p-1">
               {modes.map(({ mode, label }) => (
                 <Button
                   key={mode}
@@ -168,13 +180,69 @@ export function EmotionControls({ disabled = false }: { disabled?: boolean }) {
                   variant={settings.emotionMode === mode ? 'secondary' : 'ghost'}
                   disabled={disabled}
                   aria-pressed={settings.emotionMode === mode}
-                  onClick={() => setCloneSetting('emotionMode', mode)}
+                  onClick={() =>
+                    patchCloneSettings({
+                      emotionMode: mode,
+                      ...(mode === 'text'
+                        ? { emotionAlpha: Math.min(0.6, settings.emotionAlpha) }
+                        : {}),
+                    })
+                  }
                 >
                   {label}
                 </Button>
               ))}
             </div>
           )}
+          {caps.emotion === 'graded' &&
+            settings.emotionMode === 'audio' &&
+            ['indextts2', 'indextts20'].includes(activeTts?.id ?? '') && (
+              <div className="space-y-3">
+                <p className="text-xs text-muted-foreground">{t('cloneEmotion.audioHelp')}</p>
+                <VoiceSelector
+                  value={settings.emotionProfileId ?? ''}
+                  onChange={(value: string) => setCloneSetting('emotionProfileId', value || null)}
+                  profiles={audioProfiles}
+                  gallery={false}
+                  presets={false}
+                  engineDefault={false}
+                  menuPortal
+                  disabled={disabled || audioProfiles.length === 0}
+                  ariaLabel={t('cloneEmotion.audio')}
+                  placeholder={t('cloneEmotion.audioPlaceholder')}
+                />
+                {audioProfiles.some((profile) => profile.id === settings.emotionProfileId) && (
+                  <audio
+                    key={settings.emotionProfileId}
+                    controls
+                    preload="none"
+                    src={apiPath(
+                      '/profiles/' + encodeURIComponent(settings.emotionProfileId!) + '/audio',
+                    )}
+                    className="w-full"
+                  />
+                )}
+                <div className="space-y-2">
+                  <div className="flex justify-between gap-2 text-xs">
+                    <span id={id + '-audio-strength'} className="font-medium">
+                      {t('audiobook.emotion_alpha')}
+                    </span>
+                    <output className="tabular-nums">{settings.emotionAlpha.toFixed(2)}</output>
+                  </div>
+                  <Slider
+                    thumbProps={{ 'aria-labelledby': id + '-audio-strength' }}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    value={[settings.emotionAlpha]}
+                    disabled={disabled}
+                    onValueChange={(value) =>
+                      setCloneSetting('emotionAlpha', Array.isArray(value) ? value[0] : value)
+                    }
+                  />
+                </div>
+              </div>
+            )}
           {caps.emotion === 'graded' && settings.emotionMode === 'text' && (
             <div className="space-y-3">
               <label htmlFor={id + '-text'} className="block text-xs font-medium">

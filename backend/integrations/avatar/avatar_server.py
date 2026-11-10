@@ -301,7 +301,7 @@ router.include_router(public)
 app.include_router(router)
 
 
-NATIVE_FIELDS=frozenset(('language','ref_text','instruct','duration','num_step','guidance_scale','speed','t_shift','denoise','postprocess_output','layer_penalty_factor','position_temperature','class_temperature','emo_text','emo_alpha','emo_vector','seed','effect_preset','wav_bits','preset_voice','max_chunk_chars','crossfade_ms','pronounce'))
+NATIVE_FIELDS=frozenset(('language','ref_text','instruct','duration','num_step','guidance_scale','speed','t_shift','denoise','postprocess_output','layer_penalty_factor','position_temperature','class_temperature','emo_text','emo_alpha','emo_vector','emo_profile_id','seed','effect_preset','wav_bits','preset_voice','max_chunk_chars','crossfade_ms','pronounce'))
 
 def prepare_native_job(data):
     from services.tts_backend import active_backend_id, get_backend_class, list_backends
@@ -313,6 +313,18 @@ def prepare_native_job(data):
     except ValueError:raise HTTPException(422,'Unknown VoiceStudio TTS engine')
     if not any(b['id']==engine and b.get('available') for b in list_backends()):raise HTTPException(422,'TTS engine is not installed; configure it in VoiceStudio Models')
     data['tts_engine']=engine
+    if form.get('emo_profile_id'):
+        import math
+        if engine not in ('indextts2','indextts20'):
+            raise HTTPException(422,'Emotion audio requires IndexTTS')
+        if form.get('emo_text') or form.get('emo_vector') or (data.get('emotion_enabled') and data.get('emotion')):
+            raise HTTPException(422,'Choose only one emotion source')
+        try:weight=float(form.get('emo_alpha','1'))
+        except (TypeError,ValueError):raise HTTPException(422,'Invalid emotion strength')
+        if not math.isfinite(weight) or not 0<=weight<=1:raise HTTPException(422,'Invalid emotion strength')
+        data['emotion'],_=snapshot_voice(form['emo_profile_id'])
+        data.update(emotion_enabled=True,emotion_weight=weight)
+        form=dict(form);form.pop('emo_profile_id');form.pop('emo_alpha',None)
     if getattr(cls,'supports_cloning',True) is False:
         data['reference']=None;data.pop('voice_profile',None)
     elif data.get('voice_profile'):

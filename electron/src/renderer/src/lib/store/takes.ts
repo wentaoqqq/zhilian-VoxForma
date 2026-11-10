@@ -43,7 +43,7 @@ export function rememberTake(id: string | null, settings: CloneSettings) {
 /** Restore saved take parameters without carrying emotion over from another take.
  *
  * Older history has no emotion fields. Treat missing (or corrupt) emotion
- * settings as Off, while preserving correctly saved text/vector controls.
+ * settings as Off, while preserving correctly saved audio/text/vector controls.
  * Script, voice identity, and language always come from the history entry.
  */
 export function takeSettings(item: HistoryItem): Partial<TakeSettings> {
@@ -59,6 +59,7 @@ export function takeSettings(item: HistoryItem): Partial<TakeSettings> {
   const neutralEmotion = {
     emotionMode: DEFAULT_CLONE_SETTINGS.emotionMode,
     emotionText: DEFAULT_CLONE_SETTINGS.emotionText,
+    emotionProfileId: DEFAULT_CLONE_SETTINGS.emotionProfileId,
     emotionAlpha: DEFAULT_CLONE_SETTINGS.emotionAlpha,
     emotionVector: [...DEFAULT_CLONE_SETTINGS.emotionVector],
     direction: DEFAULT_CLONE_SETTINGS.direction,
@@ -82,10 +83,14 @@ export function takeSettings(item: HistoryItem): Partial<TakeSettings> {
       (safe.emotionMode === 'text' &&
         typeof safe.emotionText === 'string' &&
         Boolean(safe.emotionText.trim())) ||
+      (safe.emotionMode === 'audio' &&
+        typeof safe.emotionProfileId === 'string' &&
+        Boolean(safe.emotionProfileId.trim())) ||
       (safe.emotionMode === 'vector' && Array.isArray(safe.emotionVector));
     if (!validEmotion) {
       delete safe.emotionMode;
       delete safe.emotionText;
+      delete safe.emotionProfileId;
       delete safe.emotionAlpha;
       delete safe.emotionVector;
     }

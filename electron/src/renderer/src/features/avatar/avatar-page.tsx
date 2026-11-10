@@ -72,6 +72,8 @@ export function AvatarPage() {
   const [mode,setMode]=useState('tts');
   const [emotion,setEmotion]=useState('');
   const [emotionEnabled,setEmotionEnabled]=useState(false);
+  const supportsEmotionAudio=['indextts2','indextts20'].includes(activeTts?.id??'');
+  const missingEmotion=supportsEmotionAudio&&(emotionEnabled?!emotion:settings.emotionMode==='audio'&&!settings.emotionProfileId);
   const [strength,setStrength]=useState(1);
   const [fps,setFps]=useState(25);
   const [busy,setBusy]=useState(false);
@@ -119,7 +121,7 @@ export function AvatarPage() {
     // Freeze the same native controls and serialize with VoiceStudio's own
     // multipart builder. The server queues this snapshot, not mutable prefs.
     if(mode==='audio'){void send({mode,character_id:characterId,audio,fps},requestId());return;}
-    if(blocker||!activeTts)return;
+    if(blocker||!activeTts||missingEmotion)return;
     const engine=activeTts;
     const caps=expressionCaps(engine);
     const rawRef=presetOnly||settings.selectedProfileId?null:reference.file;
@@ -132,7 +134,7 @@ export function AvatarPage() {
       instruct:[presetOnly&&engine.supports_voice_design===false?'':settings.instruct,caps.emotion==='direction'?settings.direction.trim():''].filter(Boolean).join(', '),
       instructVocabulary:engine.instruct_vocabulary??'tags',
       presetVoice:engine.preset_voices?.includes(settings.presetVoice)?settings.presetVoice:undefined,
-      ...(!useEmotion&&engine.supports_emotion?(settings.emotionMode==='vector'?{emoVector:[...settings.emotionVector]}:settings.emotionMode==='text'&&settings.emotionText.trim()?{emoText:settings.emotionText.trim(),emoAlpha:settings.emotionAlpha}:{}):{}),
+      ...(!useEmotion&&supportsEmotionAudio&&settings.emotionMode==='audio'&&settings.emotionProfileId?{emoProfileId:settings.emotionProfileId,emoAlpha:settings.emotionAlpha}:!useEmotion&&engine.supports_emotion?(settings.emotionMode==='vector'?{emoVector:[...settings.emotionVector]}:settings.emotionMode==='text'&&settings.emotionText.trim()?{emoText:settings.emotionText.trim(),emoAlpha:settings.emotionAlpha}:{}):{}),
     });
     const nativeForm:Record<string,string>={};for(const [key,value] of form.entries())if(typeof value==='string'&&key!=='text'&&key!=='profile_id')nativeForm[key]=value;
     const snapshot={mode,character_id:characterId,fps,text:settings.text,voice_profile:presetOnly?undefined:settings.selectedProfileId||undefined,tts_engine:engine.id,native_form:nativeForm,audio_only:audioOnly,
@@ -179,8 +181,8 @@ export function AvatarPage() {
           <div className={fieldClass}><span>{t('avatar.fps')}</span><SearchableSelect value={String(fps)} onChange={(v:string)=>setFps(Number(v))} options={['25','60']} ariaLabel={t('avatar.fps')} menuPortal buttonClassName={pickerClass}/></div>
           {uploading&&<p role="status" className="break-all text-sm">{t('common.loading')} · {uploading}</p>}
           <div className="flex flex-wrap gap-3">
-            <Button id="avatar-generate" disabled={disabled||!video||(mode==='audio'?!audio:!!blocker)||(mode==='tts'&&emotionEnabled&&!emotion)} onClick={()=>void submit(false)}>{t('avatar.generateVideo')}</Button>
-            {mode==='tts'&&<Button id="avatar-audio-only" variant="outline" disabled={disabled||!!blocker||(emotionEnabled&&!emotion)} onClick={()=>void submit(true)}>{t('avatar.audioOnly')}</Button>}
+            <Button id="avatar-generate" disabled={disabled||!video||(mode==='audio'?!audio:!!blocker||missingEmotion)} onClick={()=>void submit(false)}>{t('avatar.generateVideo')}</Button>
+            {mode==='tts'&&<Button id="avatar-audio-only" variant="outline" disabled={disabled||!!blocker||missingEmotion} onClick={()=>void submit(true)}>{t('avatar.audioOnly')}</Button>}
           </div>
           {(error||networkError)&&<div role="alert" className="break-words text-sm text-destructive">{error||networkError}{error&&retryRequest&&<Button variant="outline" onClick={()=>void send(retryRequest.body,retryRequest.id)} disabled={busy}>{t('common.retry')}</Button>}</div>}
           {lastId&&<p className="break-all text-xs text-muted-foreground">{lastId}</p>}

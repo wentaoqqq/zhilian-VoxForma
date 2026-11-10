@@ -13,9 +13,11 @@ export interface CloneSettings {
   refText: string;
   instruct: string;
   /** Optional IndexTTS2 emotion direction, separate from voice identity. */
-  emotionMode: 'none' | 'text' | 'vector';
+  emotionMode: 'none' | 'text' | 'vector' | 'audio';
   emotionText: string;
-  /** Recommended 0..0.6 strength for IndexTTS2 text emotion. */
+  /** Saved emotion reference, independent of the speaker profile. */
+  emotionProfileId: string | null;
+  /** 0..1 for audio emotion; text emotion is limited to 0..0.6. */
   emotionAlpha: number;
   /** Eight weights: happy, angry, sad, afraid, disgusted, melancholic, surprised, calm. */
   emotionVector: number[];
@@ -48,6 +50,7 @@ export const DEFAULT_CLONE_SETTINGS: CloneSettings = {
   instruct: '',
   emotionMode: 'none',
   emotionText: '',
+  emotionProfileId: null,
   emotionAlpha: 0.6,
   emotionVector: [0, 0, 0, 0, 0, 0, 0, 0],
   direction: '',
@@ -71,7 +74,8 @@ export const DEFAULT_CLONE_SETTINGS: CloneSettings = {
 
 /** Whether `value` is a valid stored value for the clone setting `key`. */
 export function acceptsCloneSetting(key: keyof CloneSettings, value: unknown): boolean {
-  if (key === 'emotionMode') return value === 'none' || value === 'text' || value === 'vector';
+  if (key === 'emotionMode')
+    return value === 'none' || value === 'text' || value === 'vector' || value === 'audio';
   if (key === 'emotionText' || key === 'direction')
     return typeof value === 'string' && value.length <= 500;
   if (key === 'emotionVector')
@@ -81,10 +85,11 @@ export function acceptsCloneSetting(key: keyof CloneSettings, value: unknown): b
       value.every((v) => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 1)
     );
   if (key === 'emotionAlpha')
-    return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 0.6;
+    return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1;
   if (key === 'wavBits') return value === 16 || value === 24 || value === 32;
   if (key === 'effectPreset') return value === 'broadcast' || value === 'raw';
-  if (key === 'selectedProfileId') return value === null || typeof value === 'string';
+  if (key === 'selectedProfileId' || key === 'emotionProfileId')
+    return value === null || typeof value === 'string';
   const expected = typeof DEFAULT_CLONE_SETTINGS[key];
   if (typeof value !== expected) return false;
   return expected !== 'number' || Number.isFinite(value);
@@ -189,6 +194,7 @@ export function resetVoiceControls(): void {
     duration,
     emotionMode,
     emotionText,
+    emotionProfileId,
     emotionAlpha,
     emotionVector,
   } = DEFAULT_CLONE_SETTINGS;
@@ -204,6 +210,7 @@ export function resetVoiceControls(): void {
     duration,
     emotionMode,
     emotionText,
+    emotionProfileId,
     emotionAlpha,
     emotionVector: [...emotionVector],
   });
@@ -228,6 +235,7 @@ export function resetOverrides(): void {
     duration: DEFAULT_CLONE_SETTINGS.duration,
     emotionMode: DEFAULT_CLONE_SETTINGS.emotionMode,
     emotionText: DEFAULT_CLONE_SETTINGS.emotionText,
+    emotionProfileId: DEFAULT_CLONE_SETTINGS.emotionProfileId,
     emotionAlpha: DEFAULT_CLONE_SETTINGS.emotionAlpha,
     emotionVector: [...DEFAULT_CLONE_SETTINGS.emotionVector],
   });
