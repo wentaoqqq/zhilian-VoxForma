@@ -4610,7 +4610,8 @@
     "recordedAudio": "既存のナレーション音声",
     "serverVideo": "サーバーの人物動画を選択",
     "serverAudio": "サーバーの音声を選択",
-    "emotionOverride": "このタスクでは感情録音がテキストとベクトルの感情設定に優先します。"
+    "emotionOverride": "このタスクでは感情録音がテキストとベクトルの感情設定に優先します。",
+    "cancelling": "キャンセル中…"
   },
   "characters": {
     "library": "アバターライブラリ",

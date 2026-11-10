@@ -52,10 +52,11 @@ def async_job(fn):
     return wrapped
 
 class Lease:
-    def __init__(self, owner, kind='voice'):
-        self.owner=owner;self.kind=kind;self.value=None
+    def __init__(self, owner, kind='voice', cancel_path=None):
+        self.owner=owner;self.kind=kind;self.value=None;self.cancel_path=cancel_path
     def __enter__(self):
-        self.value=rpc('acquire',timeout=21660,owner=self.owner,kind=self.kind,pid=os.getpid(),request_id=uuid.uuid4().hex)
+        extra={'cancel_path':self.cancel_path} if self.cancel_path else {}
+        self.value=rpc('acquire',timeout=21660,owner=self.owner,kind=self.kind,pid=os.getpid(),request_id=uuid.uuid4().hex,**extra)
         self.context=current_lease.set(self.value)
         return self
     def __exit__(self,*exc):

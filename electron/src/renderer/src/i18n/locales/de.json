@@ -4610,7 +4610,8 @@
     "recordedAudio": "Vorhandene Vertonung",
     "serverVideo": "Servervideo wählen",
     "serverAudio": "Serververtonung wählen",
-    "emotionOverride": "Diese Aufnahme ersetzt Text- und Vektoremotion für diesen Auftrag."
+    "emotionOverride": "Diese Aufnahme ersetzt Text- und Vektoremotion für diesen Auftrag.",
+    "cancelling": "Wird abgebrochen…"
   },
   "characters": {
     "library": "Figurenbibliothek",

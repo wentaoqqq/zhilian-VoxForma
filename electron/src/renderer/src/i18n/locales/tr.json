@@ -4610,7 +4610,8 @@
     "recordedAudio": "Hazır seslendirme",
     "serverVideo": "Sunucu videosu seç",
     "serverAudio": "Sunucu seslendirmesi seç",
-    "emotionOverride": "Bu kayıt, bu görev için metin ve vektör duygusunun yerini alır."
+    "emotionOverride": "Bu kayıt, bu görev için metin ve vektör duygusunun yerini alır.",
+    "cancelling": "İptal ediliyor…"
   },
   "characters": {
     "library": "Karakter kitaplığı",

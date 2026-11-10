@@ -85,7 +85,30 @@ The ordinary VoiceStudio backend leaves avatar GPU hooks disabled. The
 integration entrypoint enables them explicitly, so standalone imports and
 non-avatar deployments do not require the Unix-socket scheduler.
 
-## Model behavior and maintenance
+## Cancelling queued and running jobs
+
+The digital-human task list offers Cancel for queued and running items. The
+request is `POST /api/avatar/jobs/{id}/cancel`; repeated requests are idempotent
+and completed jobs retain their existing result. Queue cancellation skips the
+item before model execution. An active task stays `cancelling` until its own
+process group has exited and its GPU lease is no longer owned by that task.
+Video preparation, Student inference and interpolation terminate only that
+task's subprocess group. Waiting for the shared GPU or legacy lock is also
+cancellable.
+
+VoiceStudio speech requests watch the same job-local cancellation marker and
+use the existing inference-cancellation mechanism. Killable speech sidecars
+stop early; native engines without cooperative cancellation may have to finish
+their current native call. The UI keeps showing cancellation in progress until
+resource cleanup is confirmed, rather than claiming that GPU memory is free.
+Already saved audio stays available for preview/download and video-only retry.
+
+Deployment updates both bundled queue sources and an already-installed engine's
+`webui` copy, plus the shared scheduler/client and speech bridge. Restart those
+services only after existing jobs are idle. Back up the prior files for rollback;
+no model download, checkpoint change or inference-setting change is needed.
+
+## Model behavior
 
 Student uses the original BF16 checkpoint, two inference steps and a 512x512
 face crop. Existing streaming VAE/video handling, source timebase conversion,

@@ -4610,7 +4610,8 @@
     "recordedAudio": "Existing narration",
     "serverVideo": "Select a server video",
     "serverAudio": "Select server narration",
-    "emotionOverride": "This recording replaces text and vector emotion for this task."
+    "emotionOverride": "This recording replaces text and vector emotion for this task.",
+    "cancelling": "Cancelling…"
   },
   "characters": {
     "library": "Character library",

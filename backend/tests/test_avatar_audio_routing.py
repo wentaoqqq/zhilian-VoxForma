@@ -88,3 +88,19 @@ def test_audio_only_ignores_an_unused_character_selection(legacy_api,monkeypatch
     assert response.status_code==202,response.text
     assert 'character_id' not in requests[0]
     assert requests[0]['video'] is None and requests[0]['tts_provider']=='voicestudio'
+
+
+def test_cancel_endpoint_routes_the_exact_job_and_unknown_jobs_are_404(legacy_api, monkeypatch):
+    client, _, _, app = legacy_api
+    calls = []
+    def cancel(jid):
+        calls.append(jid)
+        if jid == 'missing':
+            raise KeyError(jid)
+        return {'id': jid, 'status': 'cancelling', 'audio_output': 'saved.wav'}
+    monkeypatch.setattr(app.MANAGER, 'cancel', cancel, raising=False)
+    response = client.post('/api/jobs/exact-job/cancel')
+    assert response.status_code == 200 and response.json()['id'] == 'exact-job'
+    assert response.json()['audio_output'] == 'saved.wav'
+    assert client.post('/api/jobs/missing/cancel').status_code == 404
+    assert calls == ['exact-job', 'missing']

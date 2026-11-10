@@ -4610,7 +4610,8 @@
     "recordedAudio": "Narasi yang sudah ada",
     "serverVideo": "Pilih video server",
     "serverAudio": "Pilih narasi server",
-    "emotionOverride": "Rekaman ini menggantikan emosi teks dan vektor untuk tugas ini."
+    "emotionOverride": "Rekaman ini menggantikan emosi teks dan vektor untuk tugas ini.",
+    "cancelling": "Membatalkan…"
   },
   "characters": {
     "library": "Pustaka karakter",

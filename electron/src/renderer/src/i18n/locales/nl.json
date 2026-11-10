@@ -4610,7 +4610,8 @@
     "recordedAudio": "Bestaande vertelling",
     "serverVideo": "Servervideo kiezen",
     "serverAudio": "Serververtelling kiezen",
-    "emotionOverride": "Deze opname vervangt tekst- en vectoremotie voor deze taak."
+    "emotionOverride": "Deze opname vervangt tekst- en vectoremotie voor deze taak.",
+    "cancelling": "Bezig met annuleren…"
   },
   "characters": {
     "library": "Personagebibliotheek",

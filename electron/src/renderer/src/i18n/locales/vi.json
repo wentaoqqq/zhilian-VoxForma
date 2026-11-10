@@ -4610,7 +4610,8 @@
     "recordedAudio": "Lời thoại có sẵn",
     "serverVideo": "Chọn video trên máy chủ",
     "serverAudio": "Chọn lời thoại trên máy chủ",
-    "emotionOverride": "Bản ghi này thay thế cảm xúc dạng văn bản và vectơ cho tác vụ này."
+    "emotionOverride": "Bản ghi này thay thế cảm xúc dạng văn bản và vectơ cho tác vụ này.",
+    "cancelling": "Đang hủy…"
   },
   "characters": {
     "library": "Thư viện nhân vật",

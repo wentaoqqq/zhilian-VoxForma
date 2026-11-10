@@ -4610,7 +4610,8 @@
     "recordedAudio": "기존 내레이션",
     "serverVideo": "서버 영상 선택",
     "serverAudio": "서버 내레이션 선택",
-    "emotionOverride": "이 작업에서는 녹음이 텍스트 및 벡터 감정 설정을 대체합니다."
+    "emotionOverride": "이 작업에서는 녹음이 텍스트 및 벡터 감정 설정을 대체합니다.",
+    "cancelling": "취소 중…"
   },
   "characters": {
     "library": "아바타 라이브러리",

@@ -4612,7 +4612,8 @@
     "recordedAudio": "Narrazione esistente",
     "serverVideo": "Scegli un video dal server",
     "serverAudio": "Scegli una narrazione dal server",
-    "emotionOverride": "Questa registrazione sostituisce le emozioni testuali e vettoriali per questa attività."
+    "emotionOverride": "Questa registrazione sostituisce le emozioni testuali e vettoriali per questa attività.",
+    "cancelling": "Annullamento…"
   },
   "characters": {
     "library": "Libreria personaggi",

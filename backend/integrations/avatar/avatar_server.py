@@ -12,6 +12,7 @@ from core.path_security import contained_path, UnsafePath
 from services import model_manager as mm
 import gpu_client
 from services import avatar_gpu
+from avatar_cancellation import speech_until_cancelled
 avatar_gpu.enable(gpu_client)
 
 from services import video_backend
@@ -146,7 +147,7 @@ async def internal_speech(request:Request):
     token=gpu_client.current_lease.set(lease)
     try:
         if params.get('native_form') is not None:
-            return await native_speech(params, reference, emotion, output)
+            return await speech_until_cancelled(request, reqpath, native_speech(params, reference, emotion, output))
         from services.tts_backend import get_engine_instance_for, engine_in_use
         from services import gpu_gateway
         from services.watermark import mark_synthetic
@@ -169,9 +170,11 @@ async def internal_speech(request:Request):
             if info.duration<=0:raise ValueError('Invalid speech output')
             temp.replace(output)
             return {'saved':True,'engine':engine,'sample_rate':sr,'duration':info.duration}
-        with engine_in_use(backend):
-            await gpu_gateway.prewarm(backend=backend,engine=engine)
-            return await mm.run_on_gpu_pool_guarded(synth,what='Avatar speech',timeout=3600)
+        async def generate_speech():
+            with engine_in_use(backend):
+                await gpu_gateway.prewarm(backend=backend,engine=engine)
+                return await mm.run_on_gpu_pool_guarded(synth,what='Avatar speech',timeout=3600)
+        return await speech_until_cancelled(request, reqpath, generate_speech())
     finally:gpu_client.current_lease.reset(token)
 
 

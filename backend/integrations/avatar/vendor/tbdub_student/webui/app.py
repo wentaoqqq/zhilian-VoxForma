@@ -257,7 +257,7 @@ class Handler(BaseHTTPRequestHandler):
         parts = path.strip("/").split("/")
         if path == "/api/jobs":
             with JOBS_LOCK:
-                running = sum(j["status"] == "running" for j in JOBS.values())
+                running = sum(j["status"] in ('running', 'cancelling') for j in JOBS.values())
                 waiting = sum(j["status"] == "queued" for j in JOBS.values())
                 requested = parse_qs(parsed.query).get('request_id', [None])[0]
                 matching = [j for j in JOBS.values() if requested is None or j.get('request_id') == requested]
@@ -289,6 +289,13 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         global ACTIVE_JOB
         parsed = urlparse(self.path)
+        parts = parsed.path.strip('/').split('/')
+        if len(parts) == 4 and parts[:2] == ['api', 'jobs'] and parts[3] == 'cancel':
+            try:
+                self.send_json(200, MANAGER.cancel(parts[2]))
+            except KeyError:
+                self.send_json(404, {'error': 'Task not found'})
+            return
         if parsed.path == "/api/upload":
             self.handle_upload(parsed)
             return

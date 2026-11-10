@@ -23,6 +23,25 @@ def default_tts_provider():
 class QueueFullError(ValueError):
     pass
 
+class JobCancelled(Exception):
+    pass
+
+
+def process_group_running(pgid):
+    try: os.killpg(pgid, 0)
+    except ProcessLookupError: return False
+    proc = Path('/proc')
+    if proc.is_dir():
+        for status in proc.glob('[0-9]*/stat'):
+            try:
+                fields = status.read_text().rsplit(')', 1)[1].split()
+                if int(fields[2]) == pgid and fields[0] not in ('Z', 'X'):
+                    return True
+            except (OSError, ValueError, IndexError):
+                continue
+        return False  # Zombies have already closed model/device descriptors.
+    return True
+
 class JobManager:
     capacity = 16
     def __init__(self, root: Path, assets: Path, python: Path):
@@ -37,6 +56,11 @@ class JobManager:
 
     def save(self, jid, **changes):
         with self.lock:
+            if self.jobs[jid].get('cancel_requested'):
+                if changes.get('status') in ('running', 'succeeded'):
+                    raise JobCancelled()
+                if changes.get('status') not in ('cancelling', 'cancelled'):
+                    changes.pop('stage', None); changes.pop('message', None)
             self.jobs[jid].update(changes, updated=time.time())
             folder=self.out/jid; folder.mkdir(parents=True,exist_ok=True)
             temp=folder/'job.json.tmp'
@@ -47,6 +71,55 @@ class JobManager:
         with self.lock:
             return dict(self.jobs.get(jid,{}))
 
+    def check_cancelled(self, jid):
+        if self.get(jid).get('cancel_requested'):
+            raise JobCancelled()
+
+    def cancel(self, jid):
+        with self.lock:
+            job = self.jobs.get(jid)
+            if job is None:
+                raise KeyError(jid)
+            if job['status'] in ('succeeded', 'failed', 'cancelled'):
+                return dict(job)
+            flag = self.out/jid/'.cancel'
+            flag.parent.mkdir(parents=True, exist_ok=True); flag.touch()
+            queued = job['status'] == 'queued' and self.active != jid
+            state = 'cancelled' if queued else 'cancelling'
+            self.save(jid, cancel_requested=True, status=state, stage=state,
+                      cancel_requested_at=job.get('cancel_requested_at', time.time()),
+                      finished=time.time() if queued else job.get('finished'),
+                      message='已取消，不再执行。' if queued else '正在取消，等待本任务进程退出并释放资源…', error=None)
+            return self.get(jid)
+
+    def finish_cancelled(self, jid):
+        # Lease cleanup can outlive the HTTP speech worker. Never advertise a
+        # free GPU or start the next item while this job still owns the lease.
+        if os.environ.get('AVATAR_GPU_COORDINATION_ENABLED') == '1':
+            from gpu_client import rpc
+            while True:
+                try:
+                    state = rpc('status', timeout=5)
+                    if state.get('owner', {}).get('owner') != jid:
+                        break
+                except (OSError, RuntimeError):
+                    pass
+                self.save(jid, status='cancelling', stage='releasing',
+                          message='正在取消，等待本任务释放推理资源…')
+                time.sleep(0.25)
+        audio = self.out/jid/'speech.wav'
+        if audio.is_file() and not self.get(jid).get('audio_output'):
+            try:
+                result = subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','json',str(audio)],
+                                        capture_output=True,text=True,timeout=15,check=True)
+                duration = float(json.loads(result.stdout)['format']['duration'])
+                if duration > 0:
+                    self.save(jid, audio_output=str(audio), audio_duration=duration)
+            except (OSError, ValueError, KeyError, subprocess.SubprocessError):
+                pass
+        self.save(jid, status='cancelled', stage='cancelled', pid=None, error=None,
+                  finished=time.time(), message='任务已取消；已保存的配音仍可下载或复用。')
+
     def start(self):
         with self.lock:
             if self.started: return
@@ -55,7 +128,9 @@ class JobManager:
                 try:
                     j=json.loads(state.read_text()); jid=j['id']
                     self.jobs[jid]=j
-                    if j['status'] in ('queued','running'):
+                    if j['status'] == 'cancelling':
+                        self.pending.put(jid)
+                    elif j['status'] in ('queued','running'):
                         self.save(jid,status='failed',message='服务重启，任务已中断；已保存的配音仍可下载或复用。',error='interrupted by service restart')
                 except (OSError, ValueError, KeyError): pass
             self.started=True
@@ -71,7 +146,7 @@ class JobManager:
                         if previous.get('request_fingerprint')!=payload.get('request_fingerprint'):
                             raise ValueError('request_id already belongs to another payload')
                         return self.get(previous['id'])
-            if sum(j['status'] in ('queued','running') for j in self.jobs.values()) >= self.capacity:
+            if sum(j['status'] in ('queued','running','cancelling') for j in self.jobs.values()) >= self.capacity:
                 raise QueueFullError('队列已满，请等任务完成后再提交，本条尚未入队。')
             jid=time.strftime('student_%Y%m%d_%H%M%S')+'_'+uuid.uuid4().hex[:6]
             self.jobs[jid]=dict(payload,id=jid,status='queued',message='排队中…',created=time.time())
@@ -88,12 +163,14 @@ class JobManager:
 
     def command(self,jid,cmd,cwd,log,timeout,status_file=None):
         """Wait for process exit (CUDA context gone), never just an HTTP result."""
+        self.check_cancelled(jid)
         proc=subprocess.Popen([str(x) for x in cmd],cwd=cwd,stdout=log,stderr=subprocess.STDOUT,
                               start_new_session=True,env={**os.environ,**delegate_env(),'PYTHONUNBUFFERED':'1'})
         self.save(jid,pid=proc.pid)
         start=time.monotonic(); last_stage=None
         try:
             while proc.poll() is None:
+                self.check_cancelled(jid)
                 if time.monotonic()-start>timeout: raise TimeoutError('本阶段运行超时。')
                 if status_file and status_file.exists():
                     try:
@@ -104,24 +181,41 @@ class JobManager:
                             self.save(jid,stage='tts_'+stage,message=message)
                             last_stage=stage
                     except (ValueError,KeyError,OSError): pass
-                time.sleep(0.5)
+                time.sleep(0.2)
+            self.check_cancelled(jid)
             return proc.returncode
         finally:
             # On failure/timeout, do not leave an orphan model using GPU memory.
-            if proc.poll() is None:
-                os.killpg(proc.pid,signal.SIGTERM)
-                try: proc.wait(timeout=10)
+            if proc.poll() is None or self.get(jid).get('cancel_requested'):
+                try: os.killpg(proc.pid,signal.SIGTERM)
+                except ProcessLookupError: pass
+                try: proc.wait(timeout=3)
                 except subprocess.TimeoutExpired:
-                    os.killpg(proc.pid,signal.SIGKILL); proc.wait()
+                    try: os.killpg(proc.pid,signal.SIGKILL)
+                    except ProcessLookupError: pass
+                    proc.wait()
+                # A launcher can exit before its ffmpeg/landmark children. Kill
+                # the same session's remaining descendants, never another job.
+                try: os.killpg(proc.pid,signal.SIGKILL)
+                except ProcessLookupError: pass
+                while process_group_running(proc.pid):
+                    time.sleep(0.05)
             self.save(jid,pid=None)
 
     def worker(self):
         while True:
             jid=self.pending.get()
             try:
-                self.active=jid
+                with self.lock:
+                    if self.jobs[jid]['status'] == 'cancelled':
+                        continue
+                    self.active=jid
+                self.check_cancelled(jid)
                 self.execute(jid)
             except Exception as exc:
+                if isinstance(exc, JobCancelled) or self.get(jid).get('cancel_requested'):
+                    self.finish_cancelled(jid)
+                    continue
                 path=self.out/jid/'run.log'
                 tail=''
                 if path.exists():
@@ -133,8 +227,10 @@ class JobManager:
 
     def execute(self,jid):
         job=self.get(jid); folder=self.out/jid
+        self.check_cancelled(jid)
+        self.save(jid,status='running',stage='waiting_resource',message='等待推理资源…')
         with execution_lease(self.root,jid) as lease:
-            self.save(jid,status='running',stage='waiting_resource',message='等待推理资源…')
+            self.check_cancelled(jid)
             with (folder/'run.log').open('a',buffering=1) as log:
                 log.write(f'JOB_START={time.time()}\n')
                 if job['mode']=='tts':
@@ -161,6 +257,7 @@ class JobManager:
                     if duration<=0: raise RuntimeError('配音为空。')
                     self.save(jid,audio_output=str(audio),audio_duration=duration,stage='tts_releasing')
                     lease.clear_voice()
+                    self.check_cancelled(jid)
                     self.save(jid,audio_output=str(audio),audio_duration=duration,tts_released=True,
                               stage='tts_released',message='配音已保存，语音进程已退出。')
                 else:
@@ -169,6 +266,7 @@ class JobManager:
                 if job.get('audio_only'):
                     self.save(jid,status='succeeded',stage='complete',message='配音完成，模型进程已退出。')
                     log.write('RUN_EXIT=0\n'); return
+                self.check_cancelled(jid)
                 video=self.assets/job['video']; fps=job['fps']; output=folder/f'{jid}_tbdub.mp4'
                 with tempfile.TemporaryDirectory(prefix='timebase_',dir=folder) as work:
                     prepared=Path(work)/'source_25fps.mkv'

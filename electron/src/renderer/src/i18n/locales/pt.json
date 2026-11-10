@@ -4612,7 +4612,8 @@
     "recordedAudio": "Narração existente",
     "serverVideo": "Selecionar vídeo do servidor",
     "serverAudio": "Selecionar narração do servidor",
-    "emotionOverride": "Esta gravação substitui a emoção por texto e vetor nesta tarefa."
+    "emotionOverride": "Esta gravação substitui a emoção por texto e vetor nesta tarefa.",
+    "cancelling": "A cancelar…"
   },
   "characters": {
     "library": "Biblioteca de personagens",

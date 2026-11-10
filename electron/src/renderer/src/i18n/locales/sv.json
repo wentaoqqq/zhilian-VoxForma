@@ -4610,7 +4610,8 @@
     "recordedAudio": "Befintlig berättarröst",
     "serverVideo": "Välj servervideo",
     "serverAudio": "Välj berättarröst på servern",
-    "emotionOverride": "Denna inspelning ersätter text- och vektorkänslor för uppgiften."
+    "emotionOverride": "Denna inspelning ersätter text- och vektorkänslor för uppgiften.",
+    "cancelling": "Avbryter…"
   },
   "characters": {
     "library": "Karaktärsbibliotek",

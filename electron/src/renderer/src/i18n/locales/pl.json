@@ -4638,7 +4638,8 @@
     "recordedAudio": "Gotowa narracja",
     "serverVideo": "Wybierz film z serwera",
     "serverAudio": "Wybierz narrację z serwera",
-    "emotionOverride": "To nagranie zastępuje emocje tekstowe i wektorowe w tym zadaniu."
+    "emotionOverride": "To nagranie zastępuje emocje tekstowe i wektorowe w tym zadaniu.",
+    "cancelling": "Anulowanie…"
   },
   "characters": {
     "library": "Biblioteka postaci",

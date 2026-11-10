@@ -5,15 +5,24 @@ from gpu_client import Lease,current_lease
 
 @contextmanager
 def execution_lease(root,jid):
+    flag = root/'results/webui'/jid/'.cancel'
+    def check():
+        if flag.exists():raise RuntimeError('GPU acquisition cancelled')
+    check()
     if os.environ.get('AVATAR_GPU_COORDINATION_ENABLED')=='1':
-        with Lease(jid,'avatar') as lease:
+        with Lease(jid,'avatar',cancel_path=str(flag)) as lease:
+            check()
             lease.clear_voice()
+            check()
             yield lease
     else:
         class Legacy:
             def clear_voice(self):pass
         with (root/'.run.lock').open('a') as lock:
-            fcntl.flock(lock,fcntl.LOCK_EX)
+            while True:
+                check()
+                try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);break
+                except BlockingIOError:time.sleep(0.2)
             yield Legacy()
 
 def delegate_env():

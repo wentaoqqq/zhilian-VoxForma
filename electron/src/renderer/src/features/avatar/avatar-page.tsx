@@ -75,6 +75,9 @@ export function AvatarPage() {
   const [strength,setStrength]=useState(1);
   const [fps,setFps]=useState(25);
   const [busy,setBusy]=useState(false);
+  const cancellingJobs=useRef(new Set<string>());
+  const [cancelBusy,setCancelBusy]=useState(new Set<string>());
+  const jobsRevision=useRef(0);
   const [uploading,setUploading]=useState('');
   const [error,setError]=useState('');
   const [networkError,setNetworkError]=useState('');
@@ -82,7 +85,7 @@ export function AvatarPage() {
   const [visibleJobs,setVisibleJobs]=useState(8);
   const [retryRequest,setRetryRequest]=useState<{id:string;body:object}|null>(null);
   async function refreshFiles(){setFiles(await apiJson<typeof files>(prefix+'files'));}
-  async function refreshJobs(){setJobs(await apiJson<Jobs>(prefix+'jobs'));setNetworkError('');}
+  async function refreshJobs(){const revision=jobsRevision.current;const result=await apiJson<Jobs>(prefix+'jobs');if(revision===jobsRevision.current)setJobs(result);setNetworkError('');}
   useEffect(()=>{let alive=true;void refreshFiles().catch(e=>alive&&setNetworkError(describeError(e)));const poll=()=>{if(alive)void refreshJobs().catch(e=>alive&&setNetworkError(describeError(e)));};poll();const timer=setInterval(poll,2500);return()=>{alive=false;clearInterval(timer);};},[]);
   useEffect(()=>{if(activeTts?.id!=='indextts2')setEmotionEnabled(false);},[activeTts?.id]);
   useEffect(()=>{if(selectedVoice||reference.file)setChoosingVoice(false);},[selectedVoice?.id,reference.file]);
@@ -101,6 +104,16 @@ export function AvatarPage() {
     setBusy(true);setError('');
     try{const result=await apiJson<{id:string}>(prefix+'jobs',{method:'POST',body:JSON.stringify({...body,request_id:id})});setLastId(result.id);setRetryRequest(null);await refreshJobs();}
     catch(e){setError(describeError(e));setRetryRequest({id,body});}finally{setBusy(false);}
+  }
+  async function cancelJob(id:string){
+    if(cancellingJobs.current.has(id))return;
+    cancellingJobs.current.add(id);setCancelBusy(new Set(cancellingJobs.current));
+    try{
+      const result=await apiJson<Job>(prefix+'jobs/'+encodeURIComponent(id)+'/cancel',{method:'POST'});
+      jobsRevision.current++;
+      setJobs(current=>({...current,jobs:current.jobs.map(job=>job.id===id?{...job,...result,audio_output:result.audio_output||job.audio_output,output:result.output||job.output}:job)}));
+    }catch(e){setError(describeError(e));}
+    finally{cancellingJobs.current.delete(id);setCancelBusy(new Set(cancellingJobs.current));}
   }
   async function submit(audioOnly:boolean){
     // Freeze the same native controls and serialize with VoiceStudio's own
@@ -175,14 +188,15 @@ export function AvatarPage() {
         <section className="grid content-start gap-4">
           <div className="rounded-xl border border-border p-4"><h2 className="font-medium">{t('avatar.queue')}</h2><p className="text-sm text-muted-foreground">{jobs.queue.running} / {jobs.queue.waiting} / {jobs.queue.capacity}</p></div>
           {jobs.jobs.slice(0, visibleJobs).map(job => <article key={job.id} data-job-id={job.id} className="grid gap-3 rounded-xl border border-border p-4">
-            <div className="flex justify-between gap-3"><code className="break-all text-xs">{job.id}</code><span className="text-xs">{t('batch.status_' + (job.status === 'succeeded' ? 'done' : job.status))}</span></div>
+            <div className="flex justify-between gap-3"><code className="break-all text-xs">{job.id}</code><span className="text-xs">{job.status === 'cancelling' ? t('avatar.cancelling') : t('batch.status_' + (job.status === 'succeeded' ? 'done' : job.status))}</span></div>
             {(job.character_name || job.video) && <p className="break-all text-sm">{job.character_name || job.video}</p>}
             {job.reference && <p className="break-all text-xs text-muted-foreground">{job.reference}</p>}
             {job.text && <p className="line-clamp-2 text-sm text-muted-foreground">{job.text}</p>}
             <p className="text-sm">{job.message}</p>
             {job.audio_output && <><audio controls preload="none" src={apiPath(prefix + 'jobs/' + job.id + '/audio')} className="w-full" /><a href={apiPath(prefix + 'jobs/' + job.id + '/audio-download')} className="text-sm underline">{t('avatar.download')} · {t('avatar.audio')}</a></>}
             {job.status === 'succeeded' && job.output && <><video controls preload="none" src={apiPath(prefix + 'jobs/' + job.id + '/video')} className={previewClass + ' max-h-96'} /><a href={apiPath(prefix + 'jobs/' + job.id + '/download')} className="text-sm underline">{t('avatar.download')} · {t('avatar.video')}</a></>}
-            {job.audio_output && <Button variant="outline" size="sm" disabled={busy || jobs.queue.full || !video} onClick={() => void send({mode: 'audio', character_id: characterId, fps, reuse_audio_job: job.id}, requestId())}>{t('avatar.retryVideo')}</Button>}
+            {['queued','running','cancelling'].includes(job.status) && <Button variant="outline" size="sm" disabled={cancelBusy.has(job.id) || job.status === 'cancelling'} onClick={() => void cancelJob(job.id)}>{cancelBusy.has(job.id) || job.status === 'cancelling' ? t('avatar.cancelling') : t('common.cancel')}</Button>}
+            {job.audio_output && ['succeeded','failed','cancelled'].includes(job.status) && <Button variant="outline" size="sm" disabled={busy || jobs.queue.full || !video} onClick={() => void send({mode: 'audio', character_id: characterId, fps, reuse_audio_job: job.id}, requestId())}>{t('avatar.retryVideo')}</Button>}
             {job.error && <details className="text-xs text-destructive"><summary>{t('common.error')}</summary><pre className="whitespace-pre-wrap break-all">{job.error}</pre></details>}
           </article>)}
           {jobs.jobs.length > visibleJobs && <Button variant="outline" onClick={() => setVisibleJobs(n => n + 8)}>{t('gallery.load_more')}</Button>}

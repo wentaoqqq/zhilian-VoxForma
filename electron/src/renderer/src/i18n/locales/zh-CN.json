@@ -4610,7 +4610,8 @@
     "recordedAudio": "已有配音音频",
     "serverVideo": "选择服务器形象视频",
     "serverAudio": "选择服务器配音音频",
-    "emotionOverride": "此任务使用情绪录音，替代原生的文字和向量情绪。"
+    "emotionOverride": "此任务使用情绪录音，替代原生的文字和向量情绪。",
+    "cancelling": "正在取消…"
   },
   "characters": {
     "library": "形象库",

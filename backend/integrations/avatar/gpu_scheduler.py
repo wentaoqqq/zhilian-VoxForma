@@ -71,12 +71,17 @@ class Arbiter:
     def acquire(self,request):
         ticket=request['request_id'];pid=int(request['pid'])
         identity=start_id(pid)
+        def check_cancelled():
+            if request.get('cancel_path') and Path(request['cancel_path']).exists():
+                raise RuntimeError('GPU acquisition cancelled')
+        check_cancelled()
         if identity is None:raise RuntimeError('GPU requester is no longer running')
         with self.condition:
             self.pending.append(ticket)
             try:
                 deadline=time.monotonic()+21600
                 while self.owner or self.pending[0]!=ticket or self.blocked:
+                    check_cancelled()
                     if self.blocked:raise RuntimeError(self.blocked)
                     if start_id(pid)!=identity:raise RuntimeError('Queued GPU requester exited')
                     if time.monotonic()>deadline:raise RuntimeError('GPU queue wait timed out')
@@ -85,11 +90,13 @@ class Arbiter:
                 # mutually exclusive without introducing a second lock order.
                 self.fd=LOCK.open('a')
                 while True:
+                    check_cancelled()
                     if start_id(pid)!=identity:raise RuntimeError('Queued GPU requester exited')
                     try:fcntl.flock(self.fd,fcntl.LOCK_EX|fcntl.LOCK_NB);break
                     except BlockingIOError:
                         if time.monotonic()>deadline:raise RuntimeError('Legacy GPU lock is busy')
                         self.condition.wait(1)
+                check_cancelled()
                 self.owner={'owner':str(request['owner'])[:180],'kind':request.get('kind','voice'),'pid':pid,'start_id':start_id(pid),'token':secrets.token_urlsafe(32),'since':time.time()}
                 self.persist()
                 return dict(self.owner)
