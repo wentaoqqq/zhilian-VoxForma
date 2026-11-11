@@ -190,6 +190,15 @@ async def native_speech(params, reference, emotion, output):
     speech_app=FastAPI()
     speech_app.include_router(generation_router)
     data=dict(params['native_form'])
+    if reference and params['engine'] in ('omnivoice','omnivoice-subprocess') and not data.get('ref_text'):
+        from services.tts_backend import get_backend_class, reference_duration_s
+        cls=get_backend_class(params['engine'])
+        if getattr(cls,'ref_strategy',None)=='best_window':
+            seconds=await asyncio.to_thread(reference_duration_s,str(reference))
+            if seconds is not None and seconds>75:
+                from reference_windows import prepare_reference_windows
+                from services.ffmpeg_utils import find_ffmpeg
+                reference=await asyncio.to_thread(prepare_reference_windows,reference,seconds,output.parent/'reference-windowed.wav',find_ffmpeg())
     data.update(text=params['text'],engine=params['engine'],stream='false')
     data.pop('profile_id',None)  # the queue owns an immutable reference snapshot
     marker=emotion_audio.set((str(emotion),params.get('emotion_weight',1.0)) if emotion else None)

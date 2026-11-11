@@ -21,6 +21,13 @@ stored transcript. Media GET/HEAD proxy requests must have no request body:
 forwarding an empty async stream adds chunked transfer encoding that the
 HTTP/1.0 queue does not consume, which can truncate the response on close.
 
+OmniVoice's automatic reference selector also caps input at 75 seconds. For
+longer transcript-free references in avatar speech jobs, prepare four 15-second
+windows distributed over the original recording into a job-owned 60-second WAV.
+The model then applies its normal best-window recognizer and pause alignment.
+The source voice file remains intact; manually supplied transcripts retain the
+native validation path. IndexTTS references are unchanged.
+
 Before deployment, keep the old files, check both queues are idle, and update
 both the managed engine's `webui` files and the matching repository vendor
 files. Restart the idle queue to load the new request routing. Verify a real
