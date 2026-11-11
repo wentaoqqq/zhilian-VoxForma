@@ -76,7 +76,7 @@ def _mux_audio(video_path: Path, final_path: Path, audio_path: str):
     subprocess.run([
         "ffmpeg", "-y", "-loglevel", "error", "-i", str(video_path),
         "-i", str(audio_path), "-map", "0:v:0", "-map", "1:a:0?",
-        "-c:v", "copy", "-c:a", "aac", "-shortest", str(tmp),
+        "-c:v", "copy", "-c:a", "aac", "-shortest", "-movflags", "+faststart", str(tmp),
     ], check=True)
     tmp.replace(final_path)
 
