@@ -28,6 +28,13 @@ The model then applies its normal best-window recognizer and pause alignment.
 The source voice file remains intact; manually supplied transcripts retain the
 native validation path. IndexTTS references are unchanged.
 
+Native-form avatar speech runs the original native generation implementation inside a
+job-owned disposable process. The web service awaits its exit before returning
+the speech result, so compiler graphs and CUDA contexts cannot outlive the
+speech stage. Cancellation terminates that worker's own descendants. The UI,
+saved voices, native controls, history and existing GPU lease remain shared;
+the Student memory budget check remains unchanged.
+
 Before deployment, keep the old files, check both queues are idle, and update
 both the managed engine's `webui` files and the matching repository vendor
 files. Restart the idle queue to load the new request routing. Verify a real

@@ -8,10 +8,10 @@ import gpu_client
 from avatar_conditioning import emotion_audio
 
 source=ast.parse(Path(__file__).with_name('avatar_server.py').read_text())
-fn=next(n for n in source.body if isinstance(n,ast.AsyncFunctionDef) and n.name=='native_speech')
+fn=next(n for n in source.body if isinstance(n,ast.AsyncFunctionDef) and n.name=='native_speech_in_process')
 scope=dict(FastAPI=FastAPI,HTTPException=HTTPException,httpx=httpx)
 exec(compile(ast.Module(body=[fn],type_ignores=[]),'<native_speech>','exec'),scope)
-native_speech=scope['native_speech']
+native_speech=scope['native_speech_in_process']
 
 class NativeSpeechTests(unittest.IsolatedAsyncioTestCase):
     async def test_native_controls_reference_and_lease_survive_transport(self):

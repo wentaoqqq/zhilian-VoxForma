@@ -179,6 +179,11 @@ async def internal_speech(request:Request):
 
 
 async def native_speech(params, reference, emotion, output):
+    from isolated_speech import run_isolated_speech
+    return await run_isolated_speech(params,reference,emotion,output)
+
+
+async def native_speech_in_process(params, reference, emotion, output):
     """Use the original /generate validation, conditioning, mastering and history.
 
     The private ASGI app has no GPU admission middleware: its caller already
