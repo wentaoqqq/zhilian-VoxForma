@@ -16,7 +16,7 @@ export function ProductionPage() {
   return (
     <div className="flex h-full min-h-0 flex-col" data-testid="production-page">
       <WorkspaceHeader>
-        <h1>{t('production.title')} · DeepSeek Harness</h1>
+        <h1>{t('production.title')} · {t('production.harnessBrand')}</h1>
         <Button variant="ghost" size="sm" onClick={() => void entry.refetch()}>
           {t('common.refresh')}
         </Button>
@@ -27,7 +27,7 @@ export function ProductionPage() {
       {entry.data && (
         <iframe
           key={entry.dataUpdatedAt}
-          title="DeepSeek Harness"
+          title={t('production.harnessBrand')}
           src={apiPath(entry.data.url)}
           className="min-h-0 w-full flex-1 border-0"
           allow="clipboard-read; clipboard-write"

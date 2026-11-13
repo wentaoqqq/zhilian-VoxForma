@@ -4797,6 +4797,7 @@
       "assignToProduct": "현재 제품에 추가",
       "unassignedAssets": "소속이 지정되지 않은 소재",
       "noUnassigned": "소속이 지정되지 않은 소재가 없습니다"
-    }
+    },
+    "harnessBrand": "智链AI"
   }
 }

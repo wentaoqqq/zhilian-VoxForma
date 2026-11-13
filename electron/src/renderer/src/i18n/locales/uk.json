@@ -4825,6 +4825,7 @@
       "assignToProduct": "Додати до поточного продукту",
       "unassignedAssets": "Матеріали без продукту",
       "noUnassigned": "Немає матеріалів без продукту"
-    }
+    },
+    "harnessBrand": "智链AI"
   }
 }

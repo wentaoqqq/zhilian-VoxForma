@@ -46,7 +46,7 @@ class NativeHarnessProxy:
             response = await client.send(client.build_request(request.method, target, headers=headers, content=request.stream()), stream=True)
         except httpx.RequestError:
             await client.aclose()
-            return await JSONResponse({'detail': 'DeepSeek Harness is unavailable.'}, status_code=503)(scope, receive, send)
+            return await JSONResponse({'detail': 'Editing assistant is unavailable.'}, status_code=503)(scope, receive, send)
         async def body():
             try:
                 async for chunk in response.aiter_raw():

@@ -1,4 +1,4 @@
-# 原生 DeepSeek Harness 剪辑页面
+# 智链AI剪辑页面
 
 视频生产页面直接内嵌 DeepSeek Harness 原生 Web UI。项目选择、模型设置、会话、文件读取和命令执行均由 Harness 负责；不经过自定义产品表单、分类数据库或 production agent 批次执行器。
 
@@ -16,3 +16,19 @@ Harness 启动配置：`web --no-open --port 3080 --public-url http://HOST:3900/
 页面通过 `/production/harness` 获取原生入口，沿用现有应用消费者鉴权；其余 Harness 请求由 Harness 原生认证。该前缀从外层转发，不进入语音/数字人 GPU 租约或应用业务 CSRF 检查。
 
 `legacy-production-page.tsx` 与旧后端数据保留作为回退记录，不作为新页面的入口。部署前保留旧 release、服务配置和 Git 标签；回退切换 release 并撤销本次服务配置即可，原目录及既有素材不会被迁移或删除。
+
+## 页面品牌
+
+页面对外显示“智链AI”，复用工作台 Logo。`backend/integrations/harness-brand/` 为独立原生客户端品牌插件，通过 sidebar/hero 官方插槽替换品牌图形；展示文字在浏览器内替换，模型提供商标识、保存的数据及原生授权信息不变。配置读取工作台静态资源 `harness-brand.json`。原生依赖及许可证保留。
+
+将插件目录安装为 Web profile 的依赖后，在该 profile 的 `cordis.patch.yml` 中停用官方品牌行，再插入自定义插件行（仅覆盖旧行的 `name` 不会替换插件）：
+
+```yaml
+- id: ui-brand-official
+  disabled: true
+- insert:
+    - id: ui-brand-zhilian
+      name: "@zhilian/harness-brand"
+```
+
+重启原生服务后，用浏览器检查侧栏、欢迎页 Logo 和页面名称；工作台需同时提供 `/harness-brand.json` 和 `/favicon-zhilian.png`。

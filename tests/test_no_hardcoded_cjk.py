@@ -42,6 +42,8 @@ _ALLOWED_PREFIXES = (
 _ALLOWED_FILES = {
     "config/app.json",  # Canonical fork identity shared by native and web chrome.
     "docs/branding.md",  # Documents the customer-provided proper product name.
+    "docs/native-harness.md",  # Chinese deployment guide, not runtime UI copy.
+    "electron/public/harness-brand.json",  # Customer proper brand identity consumed by the native UI plugin.
     "docs/media-production.md",  # Chinese workflow guide for this customer deployment, not runtime UI.
     "docs/plans/media-workbench-integration-plan.zh-CN.md",  # Chinese integration design for owner review, not runtime UI.
     "docs/install/voxforma-wsl.md",  # Chinese customer installation guide, not runtime UI copy.

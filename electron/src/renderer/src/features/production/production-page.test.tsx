@@ -7,9 +7,9 @@ vi.mock('@/lib/api/client', () => ({ apiPath: (path: string) => '/api' + path, a
 vi.mock('@/components/app-shell/workspace-header', () => ({ WorkspaceHeader: ({children}: {children: React.ReactNode}) => <header>{children}</header> }));
 it('embeds the native page and refreshes without custom product/chat forms', async () => {
  render(<QueryClientProvider client={new QueryClient()}><ProductionPage /></QueryClientProvider>);
- const frame = await screen.findByTitle('DeepSeek Harness');
+ const frame = await screen.findByTitle('production.harnessBrand');
  expect(frame.getAttribute('src')).toBe('/api/native-harness/?token=fixture');
  expect(screen.queryByRole('textbox')).toBeNull();
  fireEvent.click(screen.getByRole('button', {name:'common.refresh'}));
- await waitFor(() => expect(screen.getByTitle('DeepSeek Harness')).not.toBe(frame));
+ await waitFor(() => expect(screen.getByTitle('production.harnessBrand')).not.toBe(frame));
 });

@@ -84,7 +84,7 @@ def native_harness_entry():
     from fastapi.responses import JSONResponse
     url = entry_url()
     if not url:
-        raise HTTPException(503, 'DeepSeek Harness is not running.')
+        raise HTTPException(503, 'Editing assistant is not running.')
     query = urlsplit(url).query
     return JSONResponse({'url': PREFIX + '/' + ('?' + query if query else '')}, headers={'Cache-Control': 'no-store'})
 
