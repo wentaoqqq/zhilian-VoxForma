@@ -2027,6 +2027,8 @@ app.add_middleware(
 # preflights and gate-generated 401s retain the browser contract. The marker's
 # absence lets a client conclude that the responder is not VoiceStudio (#1385).
 app.add_middleware(BackendMarkerMiddleware)
+from production.harness_proxy import NativeHarnessProxy
+app.add_middleware(NativeHarnessProxy)
 
 # Register canonical audio MIME types before any StaticFiles mount.
 # Python's `mimetypes.guess_type()` returns `audio/x-wav` for `.wav` and

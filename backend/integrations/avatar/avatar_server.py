@@ -47,6 +47,8 @@ class Admission:
         if scope['type'] not in ('http','websocket'):
             return await self.app(scope,receive,send)
         path=scope['path'];headers=dict(scope.get('headers',[]))
+        if path == '/native-harness' or path.startswith('/native-harness/'):
+            return await self.app(scope,receive,send)
         # Avatar bridge only submits/polls CPU-side work. Its queue executor
         # obtains the lease; holding one while submitting would deadlock.
         passive=path.startswith(('/api/avatar/','/auth/','/batch/','/engines/video/'))

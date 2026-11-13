@@ -77,6 +77,18 @@ def list_assets(product_id: str | None = None, category_id: str | None = None, v
     return [{"id": r["id"], "filename": r["filename"], "created_at": r["created_at"], **json.loads(r["metadata_json"])} for r in rows]
 
 
+@router.get('/harness')
+def native_harness_entry():
+    from production.harness_proxy import entry_url, PREFIX
+    from urllib.parse import urlsplit
+    from fastapi.responses import JSONResponse
+    url = entry_url()
+    if not url:
+        raise HTTPException(503, 'DeepSeek Harness is not running.')
+    query = urlsplit(url).query
+    return JSONResponse({'url': PREFIX + '/' + ('?' + query if query else '')}, headers={'Cache-Control': 'no-store'})
+
+
 @router.post("/assets")
 async def upload_asset(request: Request, filename: str, product_id: str | None = None, video_type_id: str = ''):
     if product_id is not None:
