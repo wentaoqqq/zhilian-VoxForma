@@ -4,7 +4,7 @@ window.__ModuleLoader__.load({
     const { jsx } = require('react/jsx-runtime');
     const sourceName = /DeepSeek[\s-]*Harness/gi;
     async function apply(ctx) {
-      const response = await fetch('/harness-brand.json');
+      const response = await fetch('/harness-brand.json', { cache: 'no-store' });
       if (!response.ok) throw new Error('Workbench branding is unavailable.');
       const brand = await response.json();
       function Mark({ size }) {
@@ -28,7 +28,10 @@ window.__ModuleLoader__.load({
       function update(node) {
         if (node.nodeType === Node.TEXT_NODE) {
           if (!node.parentElement?.closest('script,style,pre,code')) {
-            const next = node.nodeValue.replace(sourceName, brand.name);
+            const isHeroHeadline = node.nodeValue === '\u63a2\u7d22\u672a\u81f3\u4e4b\u5883'
+              && node.parentElement?.closest('[class*="titleGroup"]');
+            const next = isHeroHeadline && brand.welcome
+              ? brand.welcome : node.nodeValue.replace(sourceName, brand.name);
             if (next !== node.nodeValue) node.nodeValue = next;
           }
           return;

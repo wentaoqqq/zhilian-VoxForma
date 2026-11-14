@@ -1,6 +1,6 @@
 {
   "name": "@zhilian/harness-brand",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "exports": { ".": "./index.js", "./client": "./client.js" },
   "engines": { "dsh": "^0.2.2-rc.1" },
