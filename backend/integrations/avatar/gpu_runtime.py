@@ -1,4 +1,4 @@
-from avatar_paths import smi_path
+from avatar_paths import smi_path, data_dir
 from contextlib import contextmanager
 import fcntl,os,subprocess,json,time
 from gpu_client import Lease,current_lease
@@ -29,9 +29,23 @@ def delegate_env():
     lease=current_lease.get()
     return {'AVATAR_GPU_DELEGATE':lease['token']} if lease else {}
 
-def check_gpu_for_video():
+def _gpu_memory():
     result=subprocess.run([smi_path(),'--query-gpu=memory.free,memory.used','--format=csv,noheader,nounits'],capture_output=True,text=True,errors='replace',check=True,timeout=8)
     free,used=map(lambda x:int(x.strip()),result.stdout.splitlines()[0].split(','))
+    return free,used
+
+
+def check_gpu_for_video():
+    free,used=_gpu_memory()
     minimum=int(os.environ.get('AVATAR_STUDENT_MIN_FREE_MIB','13000'))
     print(json.dumps({'gpu_before_video':{'free_mib':free,'used_mib':used,'minimum_free_mib':minimum}}),flush=True)
+    enabled=data_dir()/'avatar-runtime'/'temporary-comfy-reclaim.enabled'
+    if free<minimum and enabled.is_file():
+        from gpu_reclaim import reclaim_approved_comfyui
+        reclaimed=reclaim_approved_comfyui()
+        deadline=time.monotonic()+20
+        while reclaimed and free<minimum and time.monotonic()<deadline:
+            time.sleep(.5)
+            free,used=_gpu_memory()
+        print(json.dumps({'gpu_after_temporary_reclaim':{'free_mib':free,'used_mib':used,'pids':reclaimed}}),flush=True)
     if free<minimum:raise RuntimeError(f'GPU memory remains occupied: free {free} MiB, need at least {minimum} MiB before Student')
