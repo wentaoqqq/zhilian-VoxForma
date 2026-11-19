@@ -22,12 +22,11 @@ def test_image_jobs_pass_input_to_worker_and_deliver_png(tmp_path, monkeypatch):
 
     submitted = []
 
-    async def generate(job_id, directory, *, prompt, size, reference, set_stage):
+    async def generate(job_id, directory, *, prompt, size, references, mode, set_stage):
         assert directory.name == job_id
-        if reference:
-            assert reference == "reference.png"
-            assert (directory / reference).read_bytes() == png.getvalue()
-        submitted.append((prompt, size, reference))
+        for name, expected in zip(references, (png, second_png)):
+            assert (directory / name).read_bytes() == expected.getvalue()
+        submitted.append((mode, size, references))
         set_stage("generating")
         Image.new("RGB", (32, 32)).save(directory / "result.png")
 
@@ -44,17 +43,34 @@ def test_image_jobs_pass_input_to_worker_and_deliver_png(tmp_path, monkeypatch):
     app.dependency_overrides[require_admin] = lambda: None
     png = io.BytesIO()
     Image.new("RGB", (32, 32)).save(png, "PNG")
+    second_png = io.BytesIO()
+    Image.new("RGB", (32, 48), "red").save(second_png, "PNG")
 
     with TestClient(app) as client:
-        data = {"prompt": "An architectural model", "model": install.MODEL_ID, "size": "2048x1152"}
+        data = {"prompt": "An architectural model", "size": "2048x1152"}
         first = client.post("/image-generation/jobs", data=data)
         assert first.status_code == 202, first.text
+        assert first.json()["model"] == install.MODEL_ID
         second = client.post(
             "/image-generation/jobs",
-            data={**data, "size": "reference"},
+            data={**data, "size": "reference", "model": install.MODEL_ID},
             files={"reference": ("model.png", png.getvalue(), "image/png")},
         )
         assert second.status_code == 202, second.text
+        third = client.post(
+            "/image-generation/jobs", data={**data, "mode": "image-to-image"},
+            files=[
+                ("reference", ("first.png", png.getvalue(), "image/png")),
+                ("reference", ("second.png", second_png.getvalue(), "image/png")),
+            ],
+        )
+        assert third.status_code == 202, third.text
+        assert third.json()["mode"] == "image-to-image" and third.json()["size"] == "2048x1152"
+        assert client.post("/image-generation/jobs", data={**data, "mode": "image-to-image"}).status_code == 422
+        assert client.post(
+            "/image-generation/jobs", data={**data, "mode": "image-to-image"},
+            files=[("reference", ("model.png", png.getvalue(), "image/png"))] * 5,
+        ).status_code == 422
         rejected = client.post(
             "/image-generation/jobs", data={**data, "size": "reference"},
             files={"reference": ("broken.png", b"not an image", "image/png")},
@@ -65,15 +81,16 @@ def test_image_jobs_pass_input_to_worker_and_deliver_png(tmp_path, monkeypatch):
             if all(job["state"] == "done" for job in jobs):
                 break
             time.sleep(0.01)
-        assert len(jobs) == 2 and all(job["state"] == "done" for job in jobs)
+        assert len(jobs) == 3 and all(job["state"] == "done" for job in jobs)
         response = client.get(f"/image-generation/jobs/{second.json()['id']}/image")
         assert response.status_code == 200 and response.headers["content-type"] == "image/png"
         assert Image.open(io.BytesIO(response.content)).size == (32, 32)
-        assert not (tmp_path / "jobs" / second.json()["id"] / "reference.png").exists()
+        assert not list((tmp_path / "jobs" / third.json()["id"]).glob("reference-*"))
 
     assert submitted == [
-        ("An architectural model", "2048x1152", None),
-        ("An architectural model", "reference", "reference.png"),
+        ("text-to-image", "2048x1152", []),
+        ("edit", "reference", ["reference-1.png"]),
+        ("image-to-image", "2048x1152", ["reference-1.png", "reference-2.png"]),
     ]
 
 
@@ -153,7 +170,7 @@ def test_diffusers_child_exits_before_gpu_release(tmp_path, monkeypatch):
         request = Path(args[-1])
         payload = json.loads(request.read_text(encoding="utf-8"))
         assert payload["dimensions"] == [1024, 1024]
-        assert payload["reference"] is None
+        assert payload["references"] == []
         (tmp_path / ".running").touch()
         Image.new("RGBA", (32, 32)).save(tmp_path / "result.png")
         return Child()
@@ -164,7 +181,7 @@ def test_diffusers_child_exits_before_gpu_release(tmp_path, monkeypatch):
     monkeypatch.setattr(qwen_image.avatar_gpu, "release", release)
     asyncio.run(qwen_image.generate(
         "job", tmp_path, prompt="An architectural model",
-        size="1024x1024", reference=None, set_stage=events.append,
+        size="1024x1024", references=[], mode="text-to-image", set_stage=events.append,
     ))
 
     assert events == ["acquire-gpu", "starting", "clear-voice", "generating", "reap-child", "release-gpu"]
@@ -200,6 +217,7 @@ def test_worker_preserves_reference_alpha_and_passes_fixed_size_for_text(tmp_pat
         is_available=lambda: True, is_bf16_supported=lambda **kwargs: True,
         reset_peak_memory_stats=lambda: None, max_memory_allocated=lambda: 0,
         max_memory_reserved=lambda: 0,
+        mem_get_info=lambda device: (15 * 1024**3, 16 * 1024**3),
     )
     monkeypatch.setitem(sys.modules, "torch", SimpleNamespace(
         bfloat16="bf16", device=str, cuda=fake_cuda,
@@ -211,20 +229,37 @@ def test_worker_preserves_reference_alpha_and_passes_fixed_size_for_text(tmp_pat
     ))
 
     request = tmp_path / "request.json"
-    task = {"prompt": "Change the color", "seed": 42, "reference": None, "dimensions": [2048, 1152]}
+    task = {"prompt": "Change the color", "seed": 42, "references": [], "dimensions": [2048, 1152]}
     request.write_text(json.dumps(task), encoding="utf-8")
     qwen_image_worker.run(tmp_path / "models", request)
     assert (options["width"], options["height"]) == (2048, 1152)
     assert options["tiling"] is True
+    assert options["transformer"]["num_blocks_per_group"] == 4
+    assert not options["transformer"]["use_stream"]
 
     options.clear()
     Image.new("RGBA", (64, 48), (0, 0, 0, 20)).save(tmp_path / "reference.png")
-    request.write_text(json.dumps({**task, "reference": "reference.png", "dimensions": None}), encoding="utf-8")
+    request.write_text(json.dumps({**task, "references": ["reference.png"], "dimensions": None}), encoding="utf-8")
     qwen_image_worker.run(tmp_path / "models", request)
-    assert options["image"].getpixel((0, 0))[3] == 20
+    assert options["image"][0].getpixel((0, 0))[3] == 20
     assert options["output_resolution"] == 1024 and "width" not in options
     assert options["num_inference_steps"] == 40
     assert options["encoder"]["offload_type"] == "leaf_level"
     assert options["transformer"]["offload_type"] == "block_level"
+    assert options["transformer"]["num_blocks_per_group"] == 1
+    assert options["transformer"]["use_stream"] and options["transformer"]["low_cpu_mem_usage"]
     with Image.open(tmp_path / "result.png") as result:
         assert result.getpixel((0, 0))[3] == 12
+
+    options.clear()
+    Image.new("RGBA", (48, 64)).save(tmp_path / "reference-2.png")
+    task["references"] = ["reference.png", "reference-2.png"]
+    request.write_text(json.dumps(task), encoding="utf-8")
+    qwen_image_worker.run(tmp_path / "models", request)
+    assert [image.size for image in options["image"]] == [(64, 48), (48, 64)]
+    assert (options["width"], options["height"]) == (2048, 1152)
+
+    options.clear()
+    request.write_text(json.dumps({**task, "dimensions": None}), encoding="utf-8")
+    qwen_image_worker.run(tmp_path / "models", request)
+    assert (options["width"], options["height"]) == (1184, 896)

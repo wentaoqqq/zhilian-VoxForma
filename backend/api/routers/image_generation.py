@@ -6,6 +6,7 @@ import io
 import json
 import time
 from pathlib import Path
+from typing import Literal
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
@@ -19,6 +20,7 @@ from services import qwen_image, qwen_image_install as install
 router = APIRouter(prefix="/image-generation", tags=["image-generation"])
 queue = JobQueue(name="image-generation")
 MAX_REFERENCE = 20 * 1024**2
+MAX_REFERENCES = 4
 MAX_QUEUED = 16
 FORMATS = {"PNG": "png", "JPEG": "jpg", "WEBP": "webp"}
 
@@ -29,7 +31,7 @@ def _job_dir(id: str) -> Path:
 
 @router.get("/models", dependencies=[Depends(require_consumer)])
 def available_models() -> dict:
-    return install.status()
+    return {**install.status(), "max_references": MAX_REFERENCES}
 
 
 @router.get("/install", dependencies=[Depends(require_admin)])
@@ -45,14 +47,14 @@ def start_install() -> dict:
         raise HTTPException(409, str(exc)) from exc
 
 
-def _reference_name(content: bytes) -> str:
+def _reference_extension(content: bytes) -> str:
     try:
         with Image.open(io.BytesIO(content), formats=list(FORMATS)) as image:
             if image.width * image.height > 24_000_000:
                 raise HTTPException(422, "The reference image exceeds 24 megapixels.")
-            name = f"reference.{FORMATS[image.format]}"
+            extension = FORMATS[image.format]
             image.verify()
-            return name
+            return extension
     except (UnidentifiedImageError, Image.DecompressionBombError, OSError, SyntaxError, ValueError) as exc:
         raise HTTPException(422, "Upload a valid PNG, JPEG or WebP reference image.") from exc
 
@@ -60,42 +62,51 @@ def _reference_name(content: bytes) -> str:
 @router.post("/jobs", status_code=202, dependencies=[Depends(require_consumer)])
 async def create_job(
     prompt: str = Form(min_length=1, max_length=8000),
-    model: str = Form(),
+    model: str = Form(default=install.MODEL_ID),
     size: str = Form(),
-    reference: UploadFile | None = File(default=None),
+    reference: list[UploadFile] | None = File(default=None),
+    mode: Literal["text-to-image", "image-to-image", "edit"] | None = Form(default=None),
 ) -> dict:
     prompt = prompt.strip()
     if not prompt or model != install.MODEL_ID or size not in qwen_image.SIZES:
         raise HTTPException(422, "Choose a valid model and size and enter a prompt.")
-    if (size == "reference") != (reference is not None):
-        raise HTTPException(422, "Choose the reference size when uploading an image.")
+    mode = mode or ("edit" if size == "reference" else "text-to-image")
+    uploads = reference or []
+    if (mode != "text-to-image") != bool(uploads):
+        raise HTTPException(422, "Upload reference images for image-to-image or editing only.")
+    if len(uploads) > MAX_REFERENCES:
+        raise HTTPException(422, f"Upload up to {MAX_REFERENCES} reference images.")
+    if (mode == "edit") != (size == "reference"):
+        raise HTTPException(422, "Editing follows the input image's aspect ratio. Choose an output size for generation.")
     if not install.installed():
         raise HTTPException(409, "Install the image generation module in Settings first.")
     if len(queue.list_jobs()) >= MAX_QUEUED:
         raise HTTPException(429, "The image queue is full. Wait for a task to finish.")
-    content = None
-    reference_name = None
-    if reference is not None:
+    images = {}
+    for index, upload in enumerate(uploads, 1):
         try:
-            content = await reference.read(MAX_REFERENCE + 1)
+            content = await upload.read(MAX_REFERENCE + 1)
         finally:
-            await reference.close()
+            await upload.close()
         if len(content) > MAX_REFERENCE:
-            raise HTTPException(413, "The reference image exceeds 20 MiB.")
-        reference_name = await asyncio.to_thread(_reference_name, content)
+            raise HTTPException(413, f"Reference image {index} exceeds 20 MiB.")
+        extension = await asyncio.to_thread(_reference_extension, content)
+        images[f"reference-{index}.{extension}"] = content
     if len(queue.list_jobs()) >= MAX_QUEUED:
         raise HTTPException(429, "The image queue is full. Wait for a task to finish.")
 
     identifier = uuid4().hex
     directory = _job_dir(identifier)
     record = {
-        "id": identifier, "prompt": prompt, "model": model, "size": size,
+        "id": identifier, "prompt": prompt, "model": model, "size": size, "mode": mode,
         "created_at": time.time(), "state": "queued", "error": None,
     }
     record_path = directory / "job.json"
     directory.mkdir(parents=True)
-    if reference_name is not None:
-        (directory / reference_name).write_bytes(content)
+    for name, content in images.items():
+        (directory / name).write_bytes(content)
+    references = list(images)
+    images.clear()
     install.write_json(record_path, record)
 
     async def run(_: Job) -> None:
@@ -105,7 +116,7 @@ async def create_job(
         try:
             stage("waiting")
             await qwen_image.generate(
-                identifier, directory, prompt=prompt, size=size, reference=reference_name, set_stage=stage,
+                identifier, directory, prompt=prompt, size=size, references=references, mode=mode, set_stage=stage,
             )
         except asyncio.CancelledError:
             stage("interrupted")
@@ -116,8 +127,8 @@ async def create_job(
         else:
             stage("done")
         finally:
-            if reference_name is not None:
-                (directory / reference_name).unlink(missing_ok=True)
+            for name in references:
+                (directory / name).unlink(missing_ok=True)
 
     queue.purge_finished()
     await queue.start()

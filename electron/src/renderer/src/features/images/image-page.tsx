@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,9 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { apiFetch, apiJson, describeError } from '@/lib/api/client';
 import { saveLocalFile } from '@/lib/local-export';
 import { cn } from '@/lib/utils';
-import { currentImageJob, imageJobsKey, imageModelsKey, loadImageJobs, loadImageModels, type ImageJob } from './image-api';
+import { currentImageJob, imageJobsKey, imageModelsKey, loadImageJobs, loadImageModels, type ImageJob, type ImageMode } from './image-api';
+
+const modes = ['text-to-image', 'image-to-image', 'edit'] as const;
 
 const sizes = [
   '1024x1024', '1024x576', '576x1024', '2048x2048', '2048x1152', '1152x2048',
@@ -30,22 +32,36 @@ function usePreview(blob: Blob | undefined) {
   return url;
 }
 
+function ReferenceImage({ file, index, onRemove }: { file: File; index: number; onRemove: () => void }) {
+  const { t } = useTranslation();
+  const url = usePreview(file);
+  return (
+    <div className="flex items-center gap-3">
+      {url && <img src={url} alt="" className="size-12 rounded-md border object-contain" />}
+      <p className="min-w-0 flex-1 break-all text-sm">{index + 1}. {file.name}</p>
+      <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
+        {t('imageGeneration.removeReference')}
+      </Button>
+    </div>
+  );
+}
+
 export function ImagePage() {
   const { t } = useTranslation();
   const client = useQueryClient();
+  const [mode, setMode] = useState<ImageMode>('text-to-image');
   const [prompt, setPrompt] = useState('');
-  const [model, setModel] = useState('');
   const [size, setSize] = useState('1024x1024');
-  const [reference, setReference] = useState<File>();
-  const referenceInput = useRef<HTMLInputElement>(null);
+  const [references, setReferences] = useState<File[]>([]);
   const [selectedId, setSelectedId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [resultError, setResultError] = useState('');
-  const referenceUrl = usePreview(reference);
+  const needsReference = mode !== 'text-to-image';
   const models = useQuery({ queryKey: imageModelsKey, queryFn: loadImageModels, refetchInterval: 5000 });
+  const maxReferences = models.data?.max_references ?? 1;
   const jobs = useQuery({ queryKey: imageJobsKey, queryFn: loadImageJobs, refetchInterval: 2000 });
-  const selectedModel = model || models.data?.models[0]?.id || '';
+  const canSubmit = models.data?.installed && !submitting && !!prompt.trim() && (!needsReference || references.length > 0);
   const rows = jobs.data?.jobs ?? [];
   const selected = rows.find((job) => job.id === selectedId) ?? rows[0];
   const result = useQuery({
@@ -58,15 +74,18 @@ export function ImagePage() {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (!canSubmit) return;
     setSubmitting(true);
     setError('');
     setResultError('');
     try {
       const data = new FormData();
       data.set('prompt', prompt.trim());
-      data.set('model', selectedModel);
-      data.set('size', reference ? 'reference' : size);
-      if (reference) data.set('reference', reference);
+      data.set('mode', mode);
+      data.set('size', mode === 'edit' ? 'reference' : size);
+      if (needsReference) {
+        for (const file of references) data.append('reference', file);
+      }
       const job = await apiJson<ImageJob>('/image-generation/jobs', { method: 'POST', body: data });
       client.setQueryData<{ jobs: ImageJob[] }>(imageJobsKey, (old) => ({
         jobs: [job, ...(old?.jobs ?? []).filter((existing) => job.id !== existing.id)],
@@ -104,43 +123,52 @@ export function ImagePage() {
                 </Link>
               </div>
             )}
+            <div className="grid grid-cols-3 gap-1 rounded-lg border bg-muted/30 p-1">
+              {modes.map((entry) => (
+                <Button key={entry} type="button" size="sm" variant={entry === mode ? 'secondary' : 'ghost'}
+                  aria-pressed={entry === mode} onClick={() => { setMode(entry); setError(''); }}
+                  className="h-auto min-h-8 whitespace-normal px-2">
+                  {t('imageGeneration.modes.' + entry)}
+                </Button>
+              ))}
+            </div>
             <div className="grid gap-2">
               <label htmlFor="image-prompt" className="font-medium">{t('imageGeneration.prompt')}</label>
               <textarea id="image-prompt" value={prompt} onChange={(e) => setPrompt(e.target.value)}
                 maxLength={8000} required className="min-h-32 resize-y rounded-md border bg-background p-3 text-sm" />
             </div>
-            <div className="grid gap-2">
-              <span className="text-sm font-medium">{t('imageGeneration.reference')}</span>
-              <input ref={referenceInput} type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
-                aria-label={t('imageGeneration.reference')} onChange={(e) => setReference(e.target.files?.[0])}
+            {needsReference && <div className="grid gap-2">
+              <label htmlFor="image-references" className="flex justify-between text-sm font-medium">
+                {t('imageGeneration.reference')} <span className="text-muted-foreground">{references.length} / {maxReferences}</span>
+              </label>
+              <input id="image-references" type="file" multiple={maxReferences > 1}
+                disabled={references.length >= maxReferences}
+                accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files ?? []);
+                  e.target.value = '';
+                  if (references.length + files.length > maxReferences) {
+                    setError(t('imageGeneration.referenceLimit', { count: maxReferences }));
+                    return;
+                  }
+                  setError('');
+                  setReferences((current) => [...current, ...files]);
+                }}
                 className="w-full text-sm" />
-              {reference && (
-                <div className="flex items-start gap-3">
-                  {referenceUrl && <img src={referenceUrl} alt="" className="size-20 rounded-md border object-contain" />}
-                  <div className="min-w-0">
-                    <p className="break-all text-sm">{reference.name}</p>
-                    <Button type="button" variant="ghost" size="sm" onClick={() => {
-                      if (referenceInput.current) referenceInput.current.value = '';
-                      setReference(undefined);
-                    }}>{t('imageGeneration.removeReference')}</Button>
-                  </div>
-                </div>
-              )}
+              {references.map((file, index) => (
+                <ReferenceImage key={file.name + file.lastModified + index} file={file} index={index} onRemove={() => {
+                  setReferences((current) => current.filter((_, position) => position !== index));
+                  setError('');
+                }} />
+              ))}
+            </div>}
+            <div className="grid min-w-0 gap-2">
+              <span className="text-sm font-medium">{t('imageGeneration.size')}</span>
+              {mode === 'edit'
+                ? <p className="py-1 text-sm text-muted-foreground">{t('imageGeneration.referenceSize')}</p>
+                : <SearchableSelect value={size} onChange={setSize} options={sizes} ariaLabel={t('imageGeneration.size')} menuPortal />}
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="grid min-w-0 gap-2">
-                <span className="text-sm font-medium">{t('imageGeneration.model')}</span>
-                <SearchableSelect value={selectedModel} onChange={setModel} options={(models.data?.models ?? []).map((entry) => ({ value: entry.id, label: entry.label }))}
-                  ariaLabel={t('imageGeneration.model')} menuPortal />
-              </div>
-              <div className="grid min-w-0 gap-2">
-                <span className="text-sm font-medium">{t('imageGeneration.size')}</span>
-                {reference
-                  ? <p className="py-1 text-sm text-muted-foreground">{t('imageGeneration.referenceSize')}</p>
-                  : <SearchableSelect value={size} onChange={setSize} options={sizes} ariaLabel={t('imageGeneration.size')} menuPortal />}
-              </div>
-            </div>
-            <Button type="submit" className="w-full" disabled={submitting || !prompt.trim() || !selectedModel || !models.data?.installed}>
+            <Button type="submit" className="w-full" disabled={!canSubmit}>
               <SparklesIcon />{t('imageGeneration.generate')}
             </Button>
             {(error || models.error) && <p role="alert" className="text-sm text-destructive">{error || describeError(models.error)}</p>}
@@ -162,7 +190,12 @@ export function ImagePage() {
                 {rows.map((job) => <button key={job.id} type="button" aria-pressed={selected?.id === job.id}
                   onClick={() => { setSelectedId(job.id); setResultError(''); }}
                   className={cn('flex w-full items-center justify-between gap-3 rounded-md px-2 py-2 text-left text-sm hover:bg-muted', selected?.id === job.id && 'bg-muted')}>
-                  <span className="truncate">{job.prompt}</span>
+                  <span className="min-w-0 truncate">
+                    <span className="mr-2 text-xs text-muted-foreground">
+                      {t('imageGeneration.modes.' + (job.mode ?? (job.size === 'reference' ? 'edit' : 'text-to-image')))}
+                    </span>
+                    {job.prompt}
+                  </span>
                   <span className={cn('shrink-0 text-xs text-muted-foreground', currentImageJob(job) && 'animate-pulse')}>{t('imageGeneration.states.' + job.state)}</span>
                 </button>)}
               </div>

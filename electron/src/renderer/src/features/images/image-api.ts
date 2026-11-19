@@ -9,6 +9,7 @@ export type ImageModels = {
   installed: boolean;
   models: Array<{ id: string; label: string }>;
   weight_bytes: number;
+  max_references?: number;
 };
 
 export type ImageInstall = ImageModels & {
@@ -22,11 +23,14 @@ export type ImageInstall = ImageModels & {
   };
 };
 
+export type ImageMode = 'text-to-image' | 'image-to-image' | 'edit';
+
 export type ImageJob = {
   id: string;
   prompt: string;
   model: string;
   size: string;
+  mode?: ImageMode;
   created_at: number;
   state: 'queued' | 'waiting' | 'starting' | 'generating' | 'done' | 'failed' | 'interrupted';
   error: string | null;

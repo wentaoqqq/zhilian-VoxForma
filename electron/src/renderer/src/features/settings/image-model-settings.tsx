@@ -5,6 +5,7 @@ import { apiJson, describeError } from '@/lib/api/client';
 import { Button } from '@/components/ui/button';
 import { imageInstallKey, imageModelsKey, loadImageInstall } from '@/features/images/image-api';
 import { SettingsSection } from './settings-layout';
+import { ActiveBadge } from './model-list/badges';
 
 export function ImageModelSettings() {
   const { t } = useTranslation();
@@ -27,7 +28,10 @@ export function ImageModelSettings() {
   return (
     <SettingsSection icon={ImageIcon} title={t('engineSidebar.image')}>
       <div className="space-y-3 p-4">
-        <strong>Diffusers · {state?.models.map((model) => model.label).join(', ') || 'Qwen Image 2.1 BF16'}</strong>
+        <div className="flex flex-wrap items-center gap-2">
+          <strong>Diffusers · {state?.models.map((model) => model.label).join(', ') || 'Qwen Image 2.1 BF16'}</strong>
+          {state?.installed && <ActiveBadge />}
+        </div>
         <p className="text-sm text-muted-foreground">{t('imageGeneration.installDescription')}</p>
         {state && !state.installed && <p className="text-sm text-muted-foreground">
           {t('imageGeneration.weightSize', { size: (state.weight_bytes / 1024 ** 3).toFixed(1) })}

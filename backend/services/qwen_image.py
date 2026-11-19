@@ -64,9 +64,13 @@ async def _run_worker(directory: Path, payload: dict, set_stage) -> None:
             path.unlink(missing_ok=True)
 
 
-async def generate(job_id: str, directory: Path, *, prompt: str, size: str, reference: str | None, set_stage) -> None:
+async def generate(job_id: str, directory: Path, *, prompt: str, size: str, references: list[str], mode: str, set_stage) -> None:
     dimensions = SIZES[size]
-    payload = {"prompt": prompt, "reference": reference, "dimensions": dimensions, "seed": secrets.randbits(53)}
+    if mode == "image-to-image":
+        prompt = f"Create a new image using the input images as visual references. Description of the new image: {prompt}"
+    elif mode == "edit" and len(references) > 1:
+        prompt = f"Edit the first image using the other images as visual references. Editing instruction: {prompt}"
+    payload = {"prompt": prompt, "references": references, "dimensions": dimensions, "seed": secrets.randbits(53)}
     handle = await avatar_gpu.acquire(f"voicestudio:image:{job_id}")
     try:
         set_stage("starting")
