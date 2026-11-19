@@ -773,6 +773,7 @@ def _phase_a_build_inner() -> None:
         dub_translate,
         projects,
         production,
+        image_generation,
         glossary,
         engines,
         tools,
@@ -808,7 +809,7 @@ def _phase_a_build_inner() -> None:
     from api.routers import cloud_sync as _cloud_sync_router  # noqa: E402
     _router_modules.extend([
         system, profiles, profile_images, exports, generation, voice_convert, dub_core, dub_generate,
-        dub_export, dub_translate, projects, production, glossary, engines, tools,
+        dub_export, dub_translate, projects, production, image_generation, glossary, engines, tools,
         stories, setup, gallery, archetypes, describe_voice, community,
         batch, watermark, events, capture, capture_ws, speech_platform, dictation,
         openai_compat, tts_stream, marketplace, personas, sonitranslate,
@@ -1357,6 +1358,9 @@ async def lifespan(app: FastAPI):
     await _wait_for_profile_reconcile_thread(app)
     # Deferred startup includes routers after the outer lifespan has entered;
     # stop production explicitly rather than relying on its router lifespan.
+    _images = sys.modules.get("api.routers.image_generation")
+    if _images is not None:
+        await _images.queue.stop()
     _production = sys.modules.get("api.routers.production")
     if _production is not None:
         await _production.queue.stop()

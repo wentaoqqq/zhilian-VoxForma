@@ -767,6 +767,43 @@
     "title": "Body_convert_speech_convert_post",
     "type": "object"
    },
+   "Body_create_job_image_generation_jobs_post": {
+    "properties": {
+     "model": {
+      "title": "Model",
+      "type": "string"
+     },
+     "prompt": {
+      "maxLength": 8000,
+      "minLength": 1,
+      "title": "Prompt",
+      "type": "string"
+     },
+     "reference": {
+      "anyOf": [
+       {
+        "contentMediaType": "application/octet-stream",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reference"
+     },
+     "size": {
+      "title": "Size",
+      "type": "string"
+     }
+    },
+    "required": [
+     "prompt",
+     "model",
+     "size"
+    ],
+    "title": "Body_create_job_image_generation_jobs_post",
+    "type": "object"
+   },
    "Body_create_profile_profiles_post": {
     "properties": {
      "design_recipe": {
@@ -15105,6 +15142,178 @@
      }
     },
     "summary": "Set History Starred"
+   }
+  },
+  "/image-generation/install": {
+   "get": {
+    "operationId": "installation_status_image_generation_install_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Installation Status Image Generation Install Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Installation Status",
+    "tags": [
+     "image-generation"
+    ]
+   },
+   "post": {
+    "operationId": "start_install_image_generation_install_post",
+    "responses": {
+     "202": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Start Install Image Generation Install Post",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Start Install",
+    "tags": [
+     "image-generation"
+    ]
+   }
+  },
+  "/image-generation/jobs": {
+   "get": {
+    "operationId": "list_jobs_image_generation_jobs_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response List Jobs Image Generation Jobs Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "List Jobs",
+    "tags": [
+     "image-generation"
+    ]
+   },
+   "post": {
+    "operationId": "create_job_image_generation_jobs_post",
+    "requestBody": {
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_create_job_image_generation_jobs_post"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "202": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Create Job Image Generation Jobs Post",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Create Job",
+    "tags": [
+     "image-generation"
+    ]
+   }
+  },
+  "/image-generation/jobs/{id}/image": {
+   "get": {
+    "operationId": "image_result_image_generation_jobs__id__image_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "format": "uuid",
+       "title": "Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Image Result",
+    "tags": [
+     "image-generation"
+    ]
+   }
+  },
+  "/image-generation/models": {
+   "get": {
+    "operationId": "available_models_image_generation_models_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Available Models Image Generation Models Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Available Models",
+    "tags": [
+     "image-generation"
+    ]
    }
   },
   "/jobs": {

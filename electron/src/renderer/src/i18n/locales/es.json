@@ -399,6 +399,7 @@
     "installing": "Descargando {{label}}. La transcripción se reintentará al terminar."
   },
   "engineSidebar": {
+    "image": "Imágenes con IA",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4801,5 +4802,37 @@
       "noUnassigned": "No hay materiales sin asignar"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "Instala el módulo de imágenes en Ajustes para empezar.",
+    "requirements": "El servidor requiere Linux x86-64 o WSL y un controlador NVIDIA compatible con CUDA 13.",
+    "openSettings": "Abrir ajustes de modelos",
+    "prompt": "Instrucción",
+    "reference": "Imagen de referencia (opcional)",
+    "removeReference": "Quitar",
+    "model": "Modelo",
+    "size": "Tamaño",
+    "referenceSize": "Proporción de la referencia · aprox. 1K",
+    "generate": "Generar imagen",
+    "empty": "Tu imagen aparecerá aquí.",
+    "download": "Descargar PNG",
+    "history": "Historial",
+    "states": {
+      "queued": "En cola",
+      "waiting": "En espera de GPU",
+      "starting": "Iniciando ComfyUI",
+      "generating": "Generando",
+      "done": "Completado",
+      "failed": "Error",
+      "interrupted": "Interrumpido"
+    },
+    "installDescription": "Instala ComfyUI y el modelo en un entorno separado. Se reutilizan los pesos ya verificados.",
+    "weightSize": "Pesos del modelo: {{size}} GiB",
+    "install": "Instalar módulo de imágenes",
+    "installSteps": {
+      "source": "Instalando ComfyUI",
+      "runtime": "Preparando el entorno de Python",
+      "weights": "Preparando los pesos"
+    }
   }
 }

@@ -19,6 +19,7 @@ import {
   BlocksIcon,
   WorkflowIcon,
   ClapperboardIcon,
+  ImageIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -29,6 +30,7 @@ import './workspace-menu.css';
 type Destination = readonly [
   to:
     | '/production'
+    | '/images'
     | '/avatar'
     | '/avatar/characters'
     | '/clone'
@@ -71,6 +73,7 @@ const avatarDestinations: Destination[] = [
 ];
 const laterDestinations: Destination[] = [
   ['/production', 'production.title', ClapperboardIcon],
+  ['/images', 'engineSidebar.image', ImageIcon],
   ['/transcriptions', 'nav.transcribe', MicIcon],
   ['/workflows', 'workflows.title', WorkflowIcon],
   ['/projects', 'projects.title', FolderIcon],
@@ -85,6 +88,7 @@ const iconClass =
 
 const iconMotion: Record<Destination[0], string> = {
   '/production': 'tilt',
+  '/images': 'lift',
   '/avatar': 'pulse',
   '/avatar/characters': 'lift',
   '/clone': 'pulse',

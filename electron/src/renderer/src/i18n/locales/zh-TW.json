@@ -397,6 +397,7 @@
     "installing": "正在下載 {{label}}，完成後將重新轉寫。"
   },
   "engineSidebar": {
+    "image": "AI 生圖",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4799,5 +4800,37 @@
       "noUnassigned": "目前沒有未指派歸屬的素材"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "請先在設定中安裝生圖模組。",
+    "requirements": "後端需要 x86-64 Linux 或 WSL，以及支援 CUDA 13 的 NVIDIA 驅動程式。",
+    "openSettings": "開啟模型設定",
+    "prompt": "提示詞",
+    "reference": "參考圖（選填）",
+    "removeReference": "移除",
+    "model": "模型",
+    "size": "尺寸",
+    "referenceSize": "依照參考圖比例 · 約 1K",
+    "generate": "生成圖片",
+    "empty": "生成的圖片會顯示在這裡。",
+    "download": "下載 PNG",
+    "history": "生成紀錄",
+    "states": {
+      "queued": "排隊中",
+      "waiting": "等待 GPU",
+      "starting": "正在啟動 ComfyUI",
+      "generating": "正在生圖",
+      "done": "已完成",
+      "failed": "失敗",
+      "interrupted": "已中斷"
+    },
+    "installDescription": "在獨立環境安裝 ComfyUI 和模型。已驗證的現有權重可直接重用。",
+    "weightSize": "模型權重 {{size}} GiB",
+    "install": "安裝生圖模組",
+    "installSteps": {
+      "source": "正在安裝 ComfyUI",
+      "runtime": "正在準備 Python 環境",
+      "weights": "正在準備模型權重"
+    }
   }
 }

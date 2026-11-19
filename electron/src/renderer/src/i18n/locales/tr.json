@@ -397,6 +397,7 @@
     "installing": "{{label}} indiriliyor. Bittiğinde yazıya dökme yeniden denenecek."
   },
   "engineSidebar": {
+    "image": "Yapay zekâ görselleri",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4799,5 +4800,37 @@
       "noUnassigned": "Atanmamış materyal yok"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "Başlamak için görsel modülünü Ayarlar’dan yükleyin.",
+    "requirements": "Sunucu x86-64 Linux veya WSL ve CUDA 13 destekli NVIDIA sürücüsü gerektirir.",
+    "openSettings": "Model ayarlarını aç",
+    "prompt": "İstem",
+    "reference": "Referans görseli (isteğe bağlı)",
+    "removeReference": "Kaldır",
+    "model": "Model",
+    "size": "Boyut",
+    "referenceSize": "Referansın en boy oranı · yaklaşık 1K",
+    "generate": "Görsel oluştur",
+    "empty": "Görseliniz burada görünecek.",
+    "download": "PNG indir",
+    "history": "Geçmiş",
+    "states": {
+      "queued": "Sırada",
+      "waiting": "GPU bekleniyor",
+      "starting": "ComfyUI başlatılıyor",
+      "generating": "Oluşturuluyor",
+      "done": "Tamamlandı",
+      "failed": "Başarısız",
+      "interrupted": "Kesintiye uğradı"
+    },
+    "installDescription": "ComfyUI ve modeller ayrı ortama yüklenir. Doğrulanmış ağırlıklar yeniden kullanılır.",
+    "weightSize": "Model ağırlıkları: {{size}} GiB",
+    "install": "Görsel modülünü yükle",
+    "installSteps": {
+      "source": "ComfyUI yükleniyor",
+      "runtime": "Python ortamı hazırlanıyor",
+      "weights": "Model ağırlıkları hazırlanıyor"
+    }
   }
 }

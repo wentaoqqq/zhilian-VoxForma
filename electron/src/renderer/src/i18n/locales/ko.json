@@ -397,6 +397,7 @@
     "busy": "전사 중…"
   },
   "engineSidebar": {
+    "image": "AI 이미지",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4799,5 +4800,37 @@
       "noUnassigned": "소속이 지정되지 않은 소재가 없습니다"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "설정에서 이미지 생성 모듈을 설치하세요.",
+    "requirements": "백엔드에 x86-64 Linux 또는 WSL과 CUDA 13을 지원하는 NVIDIA 드라이버가 필요합니다.",
+    "openSettings": "모델 설정 열기",
+    "prompt": "프롬프트",
+    "reference": "참조 이미지(선택 사항)",
+    "removeReference": "제거",
+    "model": "모델",
+    "size": "크기",
+    "referenceSize": "참조 이미지 비율 · 약 1K",
+    "generate": "이미지 생성",
+    "empty": "생성한 이미지가 여기에 표시됩니다.",
+    "download": "PNG 다운로드",
+    "history": "생성 기록",
+    "states": {
+      "queued": "대기 중",
+      "waiting": "GPU 대기 중",
+      "starting": "ComfyUI 시작 중",
+      "generating": "생성 중",
+      "done": "완료",
+      "failed": "실패",
+      "interrupted": "중단됨"
+    },
+    "installDescription": "별도 환경에 ComfyUI와 모델을 설치합니다. 기존 가중치는 검증 후 재사용합니다.",
+    "weightSize": "모델 가중치 {{size}} GiB",
+    "install": "이미지 모듈 설치",
+    "installSteps": {
+      "source": "ComfyUI 설치 중",
+      "runtime": "Python 환경 준비 중",
+      "weights": "모델 가중치 준비 중"
+    }
   }
 }

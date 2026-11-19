@@ -397,6 +397,7 @@
     "installing": "{{label}} डाउनलोड हो रहा है। पूरा होने पर ट्रांसक्रिप्शन फिर से चलेगा।"
   },
   "engineSidebar": {
+    "image": "AI चित्र",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4799,5 +4800,37 @@
       "noUnassigned": "किसी उत्पाद से न जुड़ी कोई सामग्री नहीं है"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "शुरू करने के लिए सेटिंग्स से चित्र मॉड्यूल इंस्टॉल करें।",
+    "requirements": "बैकएंड के लिए x86-64 Linux या WSL और CUDA 13 समर्थित NVIDIA ड्राइवर चाहिए।",
+    "openSettings": "मॉडल सेटिंग्स खोलें",
+    "prompt": "निर्देश",
+    "reference": "संदर्भ चित्र (वैकल्पिक)",
+    "removeReference": "हटाएँ",
+    "model": "मॉडल",
+    "size": "आकार",
+    "referenceSize": "संदर्भ का अनुपात · लगभग 1K",
+    "generate": "चित्र बनाएँ",
+    "empty": "आपका चित्र यहाँ दिखेगा।",
+    "download": "PNG डाउनलोड करें",
+    "history": "इतिहास",
+    "states": {
+      "queued": "कतार में",
+      "waiting": "GPU की प्रतीक्षा",
+      "starting": "ComfyUI शुरू हो रहा है",
+      "generating": "चित्र बन रहा है",
+      "done": "पूरा हुआ",
+      "failed": "विफल",
+      "interrupted": "बाधित"
+    },
+    "installDescription": "ComfyUI और मॉडल अलग वातावरण में इंस्टॉल होते हैं। सत्यापित वेट दोबारा इस्तेमाल होते हैं।",
+    "weightSize": "मॉडल वेट: {{size}} GiB",
+    "install": "चित्र मॉड्यूल इंस्टॉल करें",
+    "installSteps": {
+      "source": "ComfyUI इंस्टॉल हो रहा है",
+      "runtime": "Python वातावरण तैयार हो रहा है",
+      "weights": "मॉडल वेट तैयार हो रहे हैं"
+    }
   }
 }

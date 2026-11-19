@@ -407,6 +407,7 @@
     "installing": "Завантаження {{label}}. Розшифровка повториться після завершення."
   },
   "engineSidebar": {
+    "image": "Зображення ШІ",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4827,5 +4828,37 @@
       "noUnassigned": "Немає матеріалів без продукту"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "Спочатку встановіть модуль зображень у налаштуваннях.",
+    "requirements": "Серверу потрібні Linux x86-64 або WSL та драйвер NVIDIA з підтримкою CUDA 13.",
+    "openSettings": "Відкрити налаштування моделей",
+    "prompt": "Підказка",
+    "reference": "Зразок зображення (необов’язково)",
+    "removeReference": "Вилучити",
+    "model": "Модель",
+    "size": "Розмір",
+    "referenceSize": "Пропорції зразка · близько 1K",
+    "generate": "Створити зображення",
+    "empty": "Ваше зображення з’явиться тут.",
+    "download": "Завантажити PNG",
+    "history": "Історія",
+    "states": {
+      "queued": "У черзі",
+      "waiting": "Очікування GPU",
+      "starting": "Запуск ComfyUI",
+      "generating": "Генерація",
+      "done": "Готово",
+      "failed": "Помилка",
+      "interrupted": "Перервано"
+    },
+    "installDescription": "Встановлює ComfyUI та моделі в окреме середовище. Перевірені ваги використовуються повторно.",
+    "weightSize": "Ваги моделі: {{size}} ГіБ",
+    "install": "Встановити модуль зображень",
+    "installSteps": {
+      "source": "Встановлення ComfyUI",
+      "runtime": "Підготовка середовища Python",
+      "weights": "Підготовка ваг моделі"
+    }
   }
 }

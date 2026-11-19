@@ -18,6 +18,7 @@ import { DiarisationSettings } from './model-list/diarisation-list';
 import { DictationList } from './model-list/dictation-list';
 import { EngineFamilyList } from './model-list/engine-family-list';
 import { VideoModelSettings } from './video-model-settings';
+import { ImageModelSettings } from './image-model-settings';
 
 export { DiarisationSettings };
 
@@ -60,6 +61,8 @@ function FamilyIndex() {
  */
 export function ModelSettings({ family }: { family?: ModelFamily }) {
   switch (family) {
+    case 'image':
+      return <ImageModelSettings />;
     case 'video':
       return <VideoModelSettings />;
     case undefined:

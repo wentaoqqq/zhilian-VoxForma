@@ -1,5 +1,6 @@
 import {
   VideoIcon,
+  ImageIcon,
   AudioLinesIcon,
   BrainCircuitIcon,
   KeyboardIcon,
@@ -11,6 +12,7 @@ import {
 
 export const modelFamilies = [
   'video',
+  'image',
   'tts',
   'asr',
   'dictation',
@@ -23,6 +25,7 @@ export type ModelFamily = (typeof modelFamilies)[number];
 
 export const familyIcons: Record<ModelFamily, LucideIcon> = {
   video: VideoIcon,
+  image: ImageIcon,
   tts: AudioLinesIcon,
   asr: MicIcon,
   dictation: KeyboardIcon,

@@ -397,6 +397,7 @@
     "installing": "{{label}} をダウンロード中です。完了すると文字起こしを再試行します。"
   },
   "engineSidebar": {
+    "image": "AI 画像生成",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4799,5 +4800,37 @@
       "noUnassigned": "所属未設定の素材はありません"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "設定から画像生成モジュールをインストールしてください。",
+    "requirements": "バックエンドには x86-64 Linux または WSL と CUDA 13 対応の NVIDIA ドライバーが必要です。",
+    "openSettings": "モデル設定を開く",
+    "prompt": "プロンプト",
+    "reference": "参照画像（任意）",
+    "removeReference": "削除",
+    "model": "モデル",
+    "size": "サイズ",
+    "referenceSize": "参照画像の縦横比 · 約 1K",
+    "generate": "画像を生成",
+    "empty": "生成画像がここに表示されます。",
+    "download": "PNG をダウンロード",
+    "history": "履歴",
+    "states": {
+      "queued": "待機中",
+      "waiting": "GPU を待機中",
+      "starting": "ComfyUI を起動中",
+      "generating": "生成中",
+      "done": "完了",
+      "failed": "失敗",
+      "interrupted": "中断"
+    },
+    "installDescription": "ComfyUI とモデルを専用環境にインストールします。検証済みの既存の重みは再利用します。",
+    "weightSize": "モデルの重み {{size}} GiB",
+    "install": "画像生成モジュールをインストール",
+    "installSteps": {
+      "source": "ComfyUI をインストール中",
+      "runtime": "Python 環境を準備中",
+      "weights": "モデルの重みを準備中"
+    }
   }
 }

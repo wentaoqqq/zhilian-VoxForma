@@ -397,6 +397,7 @@
     "installing": "Đang tải {{label}}. Sẽ thử phiên âm lại khi hoàn tất."
   },
   "engineSidebar": {
+    "image": "Ảnh AI",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4799,5 +4800,37 @@
       "noUnassigned": "Không có tư liệu chưa được gán"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "Hãy cài mô-đun tạo ảnh trong phần cài đặt.",
+    "requirements": "Máy chủ cần Linux x86-64 hoặc WSL và trình điều khiển NVIDIA hỗ trợ CUDA 13.",
+    "openSettings": "Mở cài đặt mô hình",
+    "prompt": "Lời nhắc",
+    "reference": "Ảnh tham khảo (tùy chọn)",
+    "removeReference": "Gỡ bỏ",
+    "model": "Mô hình",
+    "size": "Kích thước",
+    "referenceSize": "Tỷ lệ ảnh tham khảo · khoảng 1K",
+    "generate": "Tạo ảnh",
+    "empty": "Ảnh của bạn sẽ xuất hiện ở đây.",
+    "download": "Tải PNG",
+    "history": "Lịch sử",
+    "states": {
+      "queued": "Đang xếp hàng",
+      "waiting": "Đang chờ GPU",
+      "starting": "Đang khởi động ComfyUI",
+      "generating": "Đang tạo ảnh",
+      "done": "Hoàn tất",
+      "failed": "Thất bại",
+      "interrupted": "Bị gián đoạn"
+    },
+    "installDescription": "Cài ComfyUI và mô hình trong môi trường riêng. Tái sử dụng các trọng số đã xác minh.",
+    "weightSize": "Trọng số mô hình: {{size}} GiB",
+    "install": "Cài mô-đun tạo ảnh",
+    "installSteps": {
+      "source": "Đang cài ComfyUI",
+      "runtime": "Đang chuẩn bị môi trường Python",
+      "weights": "Đang chuẩn bị trọng số"
+    }
   }
 }

@@ -828,6 +828,7 @@
     "installing": "Downloading {{label}}. Transcription retries when it finishes."
   },
   "engineSidebar": {
+    "image": "AI Images",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4799,5 +4800,37 @@
       "noUnassigned": "No unassigned media"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "Install the image module in Settings to get started.",
+    "requirements": "The backend needs x86-64 Linux or WSL with an NVIDIA driver that supports CUDA 13.",
+    "openSettings": "Open model settings",
+    "prompt": "Prompt",
+    "reference": "Reference image (optional)",
+    "removeReference": "Remove",
+    "model": "Model",
+    "size": "Size",
+    "referenceSize": "Match the reference aspect ratio · approx. 1K",
+    "generate": "Generate image",
+    "empty": "Your image will appear here.",
+    "download": "Download PNG",
+    "history": "History",
+    "states": {
+      "queued": "Queued",
+      "waiting": "Waiting for GPU",
+      "starting": "Starting ComfyUI",
+      "generating": "Generating",
+      "done": "Complete",
+      "failed": "Failed",
+      "interrupted": "Interrupted"
+    },
+    "installDescription": "Install ComfyUI and the model pack in a separate environment. Existing verified weights are reused.",
+    "weightSize": "Model weights: {{size}} GiB",
+    "install": "Install image module",
+    "installSteps": {
+      "source": "Installing ComfyUI",
+      "runtime": "Preparing the Python environment",
+      "weights": "Preparing model weights"
+    }
   }
 }

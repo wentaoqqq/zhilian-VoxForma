@@ -51,7 +51,7 @@ class Admission:
             return await self.app(scope,receive,send)
         # Avatar bridge only submits/polls CPU-side work. Its queue executor
         # obtains the lease; holding one while submitting would deadlock.
-        passive=path.startswith(('/api/avatar/','/auth/','/batch/','/engines/video/'))
+        passive=path.startswith(('/api/avatar/','/auth/','/batch/','/engines/video/','/image-generation/'))
         mutating=scope.get('method','GET') not in ('GET','HEAD','OPTIONS')
         if scope['type']=='websocket':
             # TTS requests on a persistent websocket acquire per message, not

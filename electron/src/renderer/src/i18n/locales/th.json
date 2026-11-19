@@ -397,6 +397,7 @@
     "installing": "กำลังดาวน์โหลด {{label}} ระบบจะลองถอดเสียงอีกครั้งเมื่อเสร็จ"
   },
   "engineSidebar": {
+    "image": "ภาพ AI",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4799,5 +4800,37 @@
       "noUnassigned": "ไม่มีสื่อที่ยังไม่ระบุผลิตภัณฑ์"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "ติดตั้งโมดูลภาพในการตั้งค่าเพื่อเริ่มใช้งาน",
+    "requirements": "เซิร์ฟเวอร์ต้องใช้ Linux x86-64 หรือ WSL และไดรเวอร์ NVIDIA ที่รองรับ CUDA 13",
+    "openSettings": "เปิดการตั้งค่าโมเดล",
+    "prompt": "คำสั่ง",
+    "reference": "ภาพอ้างอิง (ไม่บังคับ)",
+    "removeReference": "นำออก",
+    "model": "โมเดล",
+    "size": "ขนาด",
+    "referenceSize": "ตามสัดส่วนภาพอ้างอิง · ประมาณ 1K",
+    "generate": "สร้างภาพ",
+    "empty": "ภาพของคุณจะปรากฏที่นี่",
+    "download": "ดาวน์โหลด PNG",
+    "history": "ประวัติ",
+    "states": {
+      "queued": "อยู่ในคิว",
+      "waiting": "กำลังรอ GPU",
+      "starting": "กำลังเริ่ม ComfyUI",
+      "generating": "กำลังสร้างภาพ",
+      "done": "เสร็จแล้ว",
+      "failed": "ล้มเหลว",
+      "interrupted": "ถูกขัดจังหวะ"
+    },
+    "installDescription": "ติดตั้ง ComfyUI และโมเดลในสภาพแวดล้อมแยกกัน โดยนำค่าน้ำหนักที่ตรวจสอบแล้วมาใช้ซ้ำ",
+    "weightSize": "ค่าน้ำหนักโมเดล: {{size}} GiB",
+    "install": "ติดตั้งโมดูลภาพ",
+    "installSteps": {
+      "source": "กำลังติดตั้ง ComfyUI",
+      "runtime": "กำลังเตรียมสภาพแวดล้อม Python",
+      "weights": "กำลังเตรียมค่าน้ำหนักโมเดล"
+    }
   }
 }

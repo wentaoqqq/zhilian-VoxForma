@@ -397,6 +397,7 @@
     "installing": "{{label}} wordt gedownload. De transcriptie start opnieuw zodra dit klaar is."
   },
   "engineSidebar": {
+    "image": "AI-afbeeldingen",
     "tts": "TTS",
     "asr": "ASR",
     "llm": "LLM",
@@ -4799,5 +4800,37 @@
       "noUnassigned": "Geen niet-toegewezen materiaal"
     },
     "harnessBrand": "智链AI"
+  },
+  "imageGeneration": {
+    "installFirst": "Installeer de afbeeldingsmodule via Instellingen om te beginnen.",
+    "requirements": "De backend vereist x86-64 Linux of WSL en een NVIDIA-stuurprogramma met CUDA 13.",
+    "openSettings": "Modelinstellingen openen",
+    "prompt": "Prompt",
+    "reference": "Referentieafbeelding (optioneel)",
+    "removeReference": "Verwijderen",
+    "model": "Model",
+    "size": "Formaat",
+    "referenceSize": "Verhouding van de referentie · ca. 1K",
+    "generate": "Afbeelding maken",
+    "empty": "Je afbeelding verschijnt hier.",
+    "download": "PNG downloaden",
+    "history": "Geschiedenis",
+    "states": {
+      "queued": "In de wachtrij",
+      "waiting": "Wachten op GPU",
+      "starting": "ComfyUI wordt gestart",
+      "generating": "Bezig met genereren",
+      "done": "Voltooid",
+      "failed": "Mislukt",
+      "interrupted": "Onderbroken"
+    },
+    "installDescription": "Installeert ComfyUI en de modellen in een aparte omgeving. Gecontroleerde gewichten worden hergebruikt.",
+    "weightSize": "Modelgewichten: {{size}} GiB",
+    "install": "Afbeeldingsmodule installeren",
+    "installSteps": {
+      "source": "ComfyUI installeren",
+      "runtime": "Python-omgeving voorbereiden",
+      "weights": "Modelgewichten voorbereiden"
+    }
   }
 }

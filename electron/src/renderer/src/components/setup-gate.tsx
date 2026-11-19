@@ -199,7 +199,7 @@ export function SetupGate({ children }: { children: ReactNode }) {
                     <div className="space-y-4">
                       <ModelLibrary />
                       <div className="flex flex-wrap gap-1">
-                        {modelFamilies.map((value) => (
+                        {modelFamilies.filter((value) => value !== 'image').map((value) => (
                           <Button
                             key={value}
                             variant={family === value ? 'secondary' : 'ghost'}
