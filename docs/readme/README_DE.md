@@ -37,7 +37,7 @@
     <a href="https://github.com/debpalash/Opal?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/opal-dark.svg" /><img src="../../docs/sponsors/opal.svg" alt="Opal" height="32" align="middle" /></picture></a>
     <a href="https://github.com/velixio/supermetry?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/supermetry-dark.svg" /><img src="../../docs/sponsors/supermetry.svg" alt="Supermetry" height="32" align="middle" /></picture></a>
       ·   <sub>Sondersponsor</sub> 
-    <a href="https://app.spicrawl.com/signup?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
+    <a href="https://spicrawl.com?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
   </p>
 </div>
 
@@ -55,6 +55,8 @@
 <p align="center">
   <a href="https://github.com/debpalash/VoiceStudio/releases/latest"><img src="https://img.shields.io/badge/Herunterladen-993f61?style=for-the-badge&amp;logo=github&amp;logoColor=ffffff" alt="Herunterladen" height="24" /></a>
   <a href="#get-started"><img src="https://img.shields.io/badge/Erste%20Schritte-27272a?style=for-the-badge" alt="Erste Schritte" height="24" /></a>
+  <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Pro-27272a?style=for-the-badge" alt="VoiceStudio Pro" height="24" /></a>
+  <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Cloud-27272a?style=for-the-badge" alt="VoiceStudio Cloud" height="24" /></a>
 </p>
 
 <a id="what-you-can-do"></a>
@@ -108,11 +110,46 @@ Beginnen Sie mit **VoiceStudio** (Standard, unterstützt von k2-fsa/OmniVoice) o
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="../../docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
 
+## Pro und Cloud
+
+Alles oben ist kostenlos, läuft auf Ihrer eigenen Hardware und braucht kein Konto. Pro und Cloud sind optional.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-pro.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Pro</a></strong><br /><br />
+      Für bezahlte Kundenprojekte auf mehr als einem Rechner.
+      <ul>
+        <li>Eine kommerzielle Lizenz für Ihre Kundenarbeit, per E-Mail zugestellt</li>
+        <li>Ein Nutzer auf bis zu 3 Geräten gleichzeitig</li>
+        <li>Aufträge an Ihre anderen GPUs senden, während Ihre Projekte lokal bleiben</li>
+        <li>Neue Funktionen und Korrekturen zuerst</li>
+      </ul>
+      <sub>Closed-Source-Build, Konto erforderlich, 7 Tage volle Rückerstattung. Die AGPL-3.0-App bleibt kostenlos, auch für die kommerzielle Nutzung gemäß ihren Bedingungen.</sub><br /><br />
+      <strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Pro-Tarife ansehen →</a></strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-cloud.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Cloud</a></strong><br /><br />
+      Eine gehostete Sprach- und Synchronisations-API, kommt bald. Keine GPU nötig.
+      <ul>
+        <li>Sprachausgabe, Stimmengestaltung und Stimmenklonen mit Einwilligung</li>
+        <li>Synchronisation, Transkription und Hörbücher</li>
+        <li>Nutzung und Guthaben nach Tag oder Projekt</li>
+        <li>Lange Aufträge, die selbstständig laufen</li>
+      </ul>
+      <sub>Noch nicht verfügbar: Treten Sie dem Early Access bei und erhalten Sie kostenloses Nutzungsguthaben. Die Desktop-App bleibt kostenlos und lokal.</sub><br /><br />
+      <strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Cloud Early Access beitreten →</a></strong>
+    </td>
+  </tr>
+</table>
+
 <a id="platforms"></a>
 
 ## Plattformen
 
 Wählen Sie Ihr System und erweitern Sie dann eine Installationsmethode.
+
+Native GGUF-Engines unterstützen zusätzlich enginespezifische Vulkan-Beschleunigung auf AMD-, Intel- und NVIDIA-GPUs ([OmniVoice](../../docs/engines/omnivoice-gguf.md#vulkan-acceleration), [CosyVoice](../../docs/engines/cosyvoice-gguf.md)). OmniVoice GGUF wählt unter Windows und Linux automatisch GPU und Modellgröße aus. Wenn eine versteckte Prüfung hängen bleibt, wiederholt die Vulkan-Erkennung den Versuch mit einer nativen Zusammenfassung; Windows- und Linux-Desktop-Builds schlagen fehl, statt unbemerkt ohne Vulkan-Modul ausgeliefert zu werden.
 
 <a id="install-macos"></a>
 
@@ -169,6 +206,8 @@ Die App-Benutzeroberfläche läuft auf Intel; Verbinden Sie es mit einem VoiceSt
 
 <details>
 <summary><img src="../../docs/assets/platforms/windows.svg" alt="" width="20" height="20" /> <strong>Windows</strong> · PowerShell · EXE</summary>
+
+Die experimentelle [Windows-ROCm-Einrichtung](../../docs/install/windows-rocm.md) unterstützt ausgewählte RDNA-2-GPUs der RX-6000-Serie mit den Zielen `gfx1030`, `gfx1031` oder `gfx1032`; die RX 6500 XT (`gfx1034`) ist ausgeschlossen. Der separat festgelegte CTranslate2-Build enthält native `gfx1031`-Kernel für die Transkription auf der RX 6700 XT; die Einrichtung prüft die tatsächliche Ausführung auf der GPU. Die Tests der RX 6700 XT umfassen auch native Torch-Spracherzeugung und PyTorch Whisper. Unter ROCm 10 nutzt faster-whisper einen separaten Inferenzprozess für die sichere CPU-Auswahl und den CPU-Rückfall. Für andere Karten und Aufgaben gelten die im Leitfaden genannten Prüfgrenzen. Leistungsvoreinstellungen prüfen geänderte Engine-Auswahlen vor dem Speichern in einem untergeordneten Offline-Prozess und erhalten den Rückfall, wenn eine installierte Laufzeitumgebung versagt.
 
 <blockquote>
 
@@ -462,9 +501,9 @@ Upgrade von 0.5.3 oder älter (der Tauri-App)? [Neue App separat installieren](.
 | Setup-Hilfe | [Fehlerbehebung](../../docs/install/troubleshooting.md) · [Modell-Downloads](../../docs/downloading-models.md) |
 | Führer | [Synchronisation mit mehreren Sprechern](../../docs/dubbing/multi-speaker-guide.md) · [Ausdrucksstarke Sprache](../../docs/expressive-speech.md) · [Vertonungen exportieren](../../docs/dubbing/export.md) |
 | Modelle & Qualität | [Engine-Anleitungen](../../docs/engines/README.md) · [whisper.cpp ASR](../../docs/engines/whisper-cpp.md) · [Benchmarks](../../docs/benchmarks.md) |
-| Integrationen | [Lokale API](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [Beispiele](../../examples/README.md) |
+| Integrationen | [CLI](../../docs/install/script.md#terminal-command) · [Lokale API](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [Beispiele](../../examples/README.md) |
 | Telefon-Apps | [iOS und Android](../../docs/mobile.md) |
-| Entwicklung | [Mitwirken](../../.github/CONTRIBUTING.md) ([unterzeichnen Sie die CLA](../../.github/CONTRIBUTING.md#contribution-licensing) vor Ihrer ersten PR) · [Änderungsprotokoll](../../CHANGELOG.md) |
+| Entwicklung | [Mitwirken](../../.github/CONTRIBUTING.md) ([unterzeichnen Sie die CLA](../../.github/CONTRIBUTING.md#contribution-licensing) vor Ihrer ersten PR) · [Änderungsprotokoll](../../CHANGELOG.md) · [Richtlinie zur Codesignatur](../code-signing-policy.md) |
 
 Agenten-Skills: `npx skills add debpalash/VoiceStudio` (**voicestudio** für Audioarbeiten, **voicestudio-maintainer** für das Repository).
 

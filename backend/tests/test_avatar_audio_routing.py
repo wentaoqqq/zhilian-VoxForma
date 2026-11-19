@@ -105,7 +105,7 @@ def test_internal_speech_emotion_engine_allowlist(tmp_path, monkeypatch, engine,
     namespace = {'Request': object, 'Path': Path, 'ROOT': tmp_path, 'ASSETS': tmp_path,
                  'data_dir': lambda: tmp_path, 'json': json,
                  'HTTPException': HTTPException, 'UnsafePath': ValueError,
-                 'internal_lease': lambda _: 'lease', 'contained_path': lambda _, value: Path(value),
+                 'internal_lease': lambda _: 'lease', 'resolve_within': lambda _, value: Path(value),
                  'inside': lambda *_: True, 'speech_reference': lambda value: value,
                  'gpu_client': SimpleNamespace(current_lease=contextvars.ContextVar('test_lease', default=None)),
                  'native_speech': native, 'speech_until_cancelled': until_cancelled}

@@ -37,7 +37,7 @@
     <a href="https://github.com/debpalash/Opal?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/opal-dark.svg" /><img src="../../docs/sponsors/opal.svg" alt="Opal" height="32" align="middle" /></picture></a>
     <a href="https://github.com/velixio/supermetry?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/supermetry-dark.svg" /><img src="../../docs/sponsors/supermetry.svg" alt="Supermetry" height="32" align="middle" /></picture></a>
       ·   <sub>สปอนเซอร์พิเศษ</sub> 
-    <a href="https://app.spicrawl.com/signup?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
+    <a href="https://spicrawl.com?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
   </p>
 </div>
 
@@ -55,6 +55,8 @@
 <p align="center">
   <a href="https://github.com/debpalash/VoiceStudio/releases/latest"><img src="https://img.shields.io/badge/%E0%B8%94%E0%B8%B2%E0%B8%A7%E0%B8%99%E0%B9%8C%E0%B9%82%E0%B8%AB%E0%B8%A5%E0%B8%94-993f61?style=for-the-badge&amp;logo=github&amp;logoColor=ffffff" alt="ดาวน์โหลด" height="24" /></a>
   <a href="#get-started"><img src="https://img.shields.io/badge/%E0%B9%80%E0%B8%A3%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%99%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-27272a?style=for-the-badge" alt="เริ่มต้นใช้งาน" height="24" /></a>
+  <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Pro-27272a?style=for-the-badge" alt="VoiceStudio Pro" height="24" /></a>
+  <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Cloud-27272a?style=for-the-badge" alt="VoiceStudio Cloud" height="24" /></a>
 </p>
 
 <a id="what-you-can-do"></a>
@@ -108,11 +110,46 @@
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="../../docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
 
+## Pro และ Cloud
+
+ทุกอย่างข้างต้นใช้ได้ฟรี ทำงานบนฮาร์ดแวร์ของคุณเอง และไม่ต้องมีบัญชี Pro และ Cloud เป็นตัวเลือกเสริม
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-pro.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Pro</a></strong><br /><br />
+      สำหรับงานลูกค้าที่มีค่าจ้างบนเครื่องมากกว่าหนึ่งเครื่อง
+      <ul>
+        <li>ใบอนุญาตเชิงพาณิชย์สำหรับงานลูกค้า ส่งให้ทางอีเมล</li>
+        <li>ผู้ใช้หนึ่งคนบนอุปกรณ์สูงสุด 3 เครื่องพร้อมกัน</li>
+        <li>ส่งงานไปยัง GPU เครื่องอื่นของคุณ โดยโปรเจกต์ยังอยู่ในเครื่อง</li>
+        <li>ได้ฟีเจอร์และการแก้ไขใหม่ก่อนใคร</li>
+      </ul>
+      <sub>รุ่นซอร์สปิด ต้องมีบัญชี คืนเงินเต็มจำนวนภายใน 7 วัน แอป AGPL-3.0 ยังคงฟรี รวมถึงการใช้เชิงพาณิชย์ตามเงื่อนไขของสัญญาอนุญาต</sub><br /><br />
+      <strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">ดูแผน Pro →</a></strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-cloud.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Cloud</a></strong><br /><br />
+      API เสียงและการพากย์แบบโฮสต์ เร็วๆ นี้ ไม่ต้องใช้ GPU
+      <ul>
+        <li>เสียงพูด การออกแบบเสียง และการโคลนเสียงโดยได้รับความยินยอม</li>
+        <li>การพากย์ การถอดเสียง และหนังสือเสียง</li>
+        <li>การใช้งานและเครดิตตามวันหรือโปรเจกต์</li>
+        <li>งานยาวที่ทำงานได้เอง</li>
+      </ul>
+      <sub>ยังไม่เปิดให้ใช้งาน: เข้าร่วมการเข้าถึงก่อนใครเพื่อรับเครดิตใช้งานฟรี แอปเดสก์ท็อปยังคงฟรีและทำงานในเครื่อง</sub><br /><br />
+      <strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">เข้าร่วมการเข้าถึงก่อนใครของ Cloud →</a></strong>
+    </td>
+  </tr>
+</table>
+
 <a id="platforms"></a>
 
 ## แพลตฟอร์ม
 
 เลือกระบบของคุณ จากนั้นขยายวิธีการติดตั้ง
+
+เอนจิน GGUF แบบเนทีฟยังรองรับการเร่งความเร็ว Vulkan เฉพาะเอนจินบน GPU ของ AMD, Intel และ NVIDIA ([OmniVoice](../../docs/engines/omnivoice-gguf.md#vulkan-acceleration), [CosyVoice](../../docs/engines/cosyvoice-gguf.md)) OmniVoice GGUF เลือก GPU และขนาดโมเดลโดยอัตโนมัติบน Windows และ Linux หากการตรวจสอบที่ซ่อนอยู่ค้าง การตรวจหา Vulkan จะลองใหม่ด้วยข้อมูลสรุปแบบเนทีฟ ส่วนบิลด์เดสก์ท็อป Windows และ Linux จะล้มเหลวแทนการเผยแพร่โดยไม่มีโมดูล Vulkan อย่างเงียบ ๆ
 
 <a id="install-macos"></a>
 
@@ -169,6 +206,8 @@ UI ของแอปทำงานบน Intel เชื่อมต่อก�
 
 <details>
 <summary><img src="../../docs/assets/platforms/windows.svg" alt="" width="20" height="20" /> <strong>Windows</strong> · PowerShell · EXE</summary>
+
+[การตั้งค่า Windows ROCm แบบทดลอง](../../docs/install/windows-rocm.md) รองรับ GPU RDNA 2 RX 6000 บางรุ่นที่มีเป้าหมายเป็น `gfx1030`, `gfx1031` หรือ `gfx1032` โดยไม่รวม RX 6500 XT (`gfx1034`) บิลด์ CTranslate2 ที่ตรึงเวอร์ชันแยกต่างหากมีเคอร์เนล `gfx1031` แบบเนทีฟสำหรับการถอดเสียงบน RX 6700 XT โดยขั้นตอนตั้งค่าจะตรวจสอบการทำงานจริงของเคอร์เนลบน GPU การทดสอบ RX 6700 XT ยังครอบคลุมการสร้างเสียงพูดด้วย Torch แบบเนทีฟและ PyTorch Whisper ด้วย faster-whisper บน ROCm 10 ใช้กระบวนการอนุมานแยกต่างหากเพื่อให้เลือก CPU และสลับกลับไปใช้ CPU ได้อย่างปลอดภัย การ์ดและงานประเภทอื่นยังอยู่ภายใต้ข้อจำกัดการตรวจสอบในคู่มือ ค่าประสิทธิภาพที่ตั้งไว้ล่วงหน้าจะตรวจสอบความพร้อมของรันไทม์สำหรับเอนจินที่เปลี่ยนในกระบวนการลูกแบบออฟไลน์ก่อนบันทึก และคงทางเลือกสำรองไว้หากรันไทม์ที่ติดตั้งล้มเหลว
 
 <blockquote>
 
@@ -462,9 +501,9 @@ https://github.com/debpalash/VoiceStudio/blob/main/docs/install/agent.md
 | ความช่วยเหลือในการติดตั้ง | [การแก้ไขปัญหา](../../docs/install/troubleshooting.md) · [ดาวน์โหลดแบบจำลอง](../../docs/downloading-models.md) |
 | คู่มือ | [การพากย์เสียงสำหรับผู้พูดหลายคน](../../docs/dubbing/multi-speaker-guide.md) · [เสียงพูดที่แสดงอารมณ์](../../docs/expressive-speech.md) · [ส่งออกเสียงพากย์](../../docs/dubbing/export.md) |
 | โมเดลและคุณภาพ | [คู่มือเครื่องยนต์](../../docs/engines/README.md) · [whisper.cpp ASR](../../docs/engines/whisper-cpp.md) · [เกณฑ์มาตรฐาน](../../docs/benchmarks.md) |
-| การเชื่อมต่อกับเครื่องมืออื่น | [API ท้องถิ่น](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [ตัวอย่าง](../../examples/README.md) |
+| การเชื่อมต่อกับเครื่องมืออื่น | [CLI](../../docs/install/script.md#terminal-command) · [API ท้องถิ่น](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [ตัวอย่าง](../../examples/README.md) |
 | แอปบนโทรศัพท์ | [iOS และ Android](../../docs/mobile.md) |
-| การพัฒนา | [การสนับสนุน](../../.github/CONTRIBUTING.md) ([ลงนาม CLA](../../.github/CONTRIBUTING.md#contribution-licensing) ก่อน PR ครั้งแรกของคุณ) · [บันทึกการเปลี่ยนแปลง](../../CHANGELOG.md) |
+| การพัฒนา | [การสนับสนุน](../../.github/CONTRIBUTING.md) ([ลงนาม CLA](../../.github/CONTRIBUTING.md#contribution-licensing) ก่อน PR ครั้งแรกของคุณ) · [บันทึกการเปลี่ยนแปลง](../../CHANGELOG.md) · [นโยบายการลงนามโค้ด](../code-signing-policy.md) |
 
 ทักษะสำหรับเอเจนต์: `npx skills add debpalash/VoiceStudio` (**voicestudio** สำหรับงานเสียง และ **voicestudio-maintainer** สำหรับดูแลคลังโค้ด)
 

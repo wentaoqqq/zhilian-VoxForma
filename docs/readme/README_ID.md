@@ -37,7 +37,7 @@
     <a href="https://github.com/debpalash/Opal?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/opal-dark.svg" /><img src="../../docs/sponsors/opal.svg" alt="Opal" height="32" align="middle" /></picture></a>
     <a href="https://github.com/velixio/supermetry?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/supermetry-dark.svg" /><img src="../../docs/sponsors/supermetry.svg" alt="Supermetry" height="32" align="middle" /></picture></a>
       ·   <sub>Sponsor khusus</sub> 
-    <a href="https://app.spicrawl.com/signup?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
+    <a href="https://spicrawl.com?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
   </p>
 </div>
 
@@ -55,6 +55,8 @@
 <p align="center">
   <a href="https://github.com/debpalash/VoiceStudio/releases/latest"><img src="https://img.shields.io/badge/Unduh-993f61?style=for-the-badge&amp;logo=github&amp;logoColor=ffffff" alt="Unduh" height="24" /></a>
   <a href="#get-started"><img src="https://img.shields.io/badge/Mulai-27272a?style=for-the-badge" alt="Mulai" height="24" /></a>
+  <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Pro-27272a?style=for-the-badge" alt="VoiceStudio Pro" height="24" /></a>
+  <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Cloud-27272a?style=for-the-badge" alt="VoiceStudio Cloud" height="24" /></a>
 </p>
 
 <a id="what-you-can-do"></a>
@@ -108,11 +110,46 @@ Mulailah dengan **VoiceStudio** (default, didukung oleh k2-fsa/OmniVoice), atau 
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="../../docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
 
+## Pro dan Cloud
+
+Semua yang di atas gratis, berjalan di perangkat keras Anda sendiri, dan tidak memerlukan akun. Pro dan Cloud bersifat opsional.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-pro.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Pro</a></strong><br /><br />
+      Untuk pekerjaan klien berbayar di lebih dari satu mesin.
+      <ul>
+        <li>Lisensi Komersial untuk pekerjaan klien Anda, dikirim lewat email</li>
+        <li>Satu pengguna di hingga 3 perangkat sekaligus</li>
+        <li>Kirim pekerjaan ke GPU Anda yang lain sementara proyek tetap lokal</li>
+        <li>Fitur dan perbaikan baru lebih dulu</li>
+      </ul>
+      <sub>Build sumber tertutup, wajib akun, pengembalian dana penuh 7 hari. Aplikasi AGPL-3.0 tetap gratis, termasuk untuk penggunaan komersial sesuai ketentuannya.</sub><br /><br />
+      <strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Lihat paket Pro →</a></strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-cloud.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Cloud</a></strong><br /><br />
+      API suara dan sulih suara yang di-hosting, segera hadir. Tanpa perlu GPU.
+      <ul>
+        <li>Ucapan, desain suara, dan kloning suara dengan persetujuan</li>
+        <li>Sulih suara, transkripsi, dan buku audio</li>
+        <li>Penggunaan dan kredit per hari atau proyek</li>
+        <li>Pekerjaan panjang yang berjalan sendiri</li>
+      </ul>
+      <sub>Belum tersedia: gabung akses awal untuk kredit penggunaan gratis. Aplikasi desktop tetap gratis dan lokal.</sub><br /><br />
+      <strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Gabung akses awal Cloud →</a></strong>
+    </td>
+  </tr>
+</table>
+
 <a id="platforms"></a>
 
 ## Platform
 
 Pilih sistem Anda, lalu perluas metode instalasi.
+
+Mesin GGUF native juga mendukung akselerasi Vulkan khusus mesin pada GPU AMD, Intel, dan NVIDIA ([OmniVoice](../../docs/engines/omnivoice-gguf.md#vulkan-acceleration), [CosyVoice](../../docs/engines/cosyvoice-gguf.md)). OmniVoice GGUF memilih GPU dan ukuran model secara otomatis di Windows dan Linux. Jika pemeriksaan tersembunyi macet, deteksi Vulkan mencoba lagi dengan ringkasan native; build desktop Windows dan Linux gagal alih-alih diam-diam dikirim tanpa modul Vulkan.
 
 <a id="install-macos"></a>
 
@@ -169,6 +206,8 @@ UI aplikasi berjalan pada Intel; sambungkan ke backend VoiceStudio di komputer l
 
 <details>
 <summary><img src="../../docs/assets/platforms/windows.svg" alt="" width="20" height="20" /> <strong>Windows</strong> · PowerShell · EXE</summary>
+
+[Penyiapan Windows ROCm](../../docs/install/windows-rocm.md) eksperimental mendukung GPU RDNA 2 RX 6000 tertentu dengan target `gfx1030`, `gfx1031`, atau `gfx1032`; RX 6500 XT (`gfx1034`) tidak termasuk. Build CTranslate2 yang versinya dikunci secara terpisah menyertakan kernel asli `gfx1031` untuk transkripsi RX 6700 XT; penyiapan memeriksa eksekusi kernel GPU yang sebenarnya. Pengujian RX 6700 XT juga mencakup pembuatan suara Torch asli dan PyTorch Whisper. Pada ROCm 10, faster-whisper memakai proses inferensi terpisah agar pemilihan CPU dan peralihan ke CPU tetap aman. Kartu dan beban kerja lain tetap mengikuti batas validasi dalam panduan. Preset performa memvalidasi perubahan pilihan mesin dalam proses anak offline sebelum menyimpannya, dengan mempertahankan pilihan cadangan jika runtime yang terpasang gagal.
 
 <blockquote>
 
@@ -462,9 +501,9 @@ Mengupgrade dari 0.5.3 atau lebih lama (aplikasi Tauri)? [Instal aplikasi baru s
 | Bantuan pengaturan | [Pemecahan Masalah](../../docs/install/troubleshooting.md) · [Unduhan model](../../docs/downloading-models.md) |
 | Panduan | [Sulih suara multi-pembicara](../../docs/dubbing/multi-speaker-guide.md) · [Ucapan ekspresif](../../docs/expressive-speech.md) · [Mengekspor sulih suara](../../docs/dubbing/export.md) |
 | Model & kualitas | [Panduan mesin](../../docs/engines/README.md) · [whisper.cpp ASR](../../docs/engines/whisper-cpp.md) · [Tolok ukur](../../docs/benchmarks.md) |
-| Integrasi | [API Lokal](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [Contoh](../../examples/README.md) |
+| Integrasi | [CLI](../../docs/install/script.md#terminal-command) · [API Lokal](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [Contoh](../../examples/README.md) |
 | Aplikasi telepon | [iOS dan Android](../../docs/mobile.md) |
-| Perkembangan | [Berkontribusi](../../.github/CONTRIBUTING.md) ([menandatangani CLA](../../.github/CONTRIBUTING.md#contribution-licensing) sebelum PR pertama Anda) · [Changelog](../../CHANGELOG.md) |
+| Perkembangan | [Berkontribusi](../../.github/CONTRIBUTING.md) ([menandatangani CLA](../../.github/CONTRIBUTING.md#contribution-licensing) sebelum PR pertama Anda) · [Changelog](../../CHANGELOG.md) · [Kebijakan penandatanganan kode](../code-signing-policy.md) |
 
 Skill agen: `npx skills add debpalash/VoiceStudio` (**voicestudio** untuk pekerjaan audio, **voicestudio-maintainer** untuk repositori).
 

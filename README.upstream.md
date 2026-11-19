@@ -3,9 +3,6 @@
   <p>
     <a href="https://trendshift.io/repositories/28176?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-28176" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/28176" alt="Trendshift badge showing where VoiceStudio ranks among trending repositories" width="220" height="48" /></a>
   </p>
-  <p>
-    <strong>🎉 <a href="https://github.com/debpalash/VoiceStudio/stargazers">100,000 GitHub stars — thank you!</a></strong>
-  </p>
   <h2>AI voice studio. On your device.</h2>
   <h3>Clone, design, dub, dictate, transcribe and narrate in 646 languages.</h3>
   <p>Runs on your laptop, desktop, servers, phone, tablets and more</p>
@@ -38,8 +35,9 @@
     <a href="https://github.com/debpalash/Opal?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/opal-dark.svg" /><img src="docs/sponsors/opal.svg" alt="Opal" height="32" align="middle" /></picture></a>
     <a href="https://github.com/velixio/supermetry?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/supermetry-dark.svg" /><img src="docs/sponsors/supermetry.svg" alt="Supermetry" height="32" align="middle" /></picture></a>
       ·   <sub>Special sponsor</sub> 
-    <a href="https://app.spicrawl.com/signup?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/spicrawl-dark.svg" /><img src="docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
+    <a href="https://spicrawl.com?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/spicrawl-dark.svg" /><img src="docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
   </p>
+  <br />
 </div>
 
 <p align="center">
@@ -56,6 +54,8 @@
 <p align="center">
   <a href="https://github.com/debpalash/VoiceStudio/releases/latest"><img src="https://img.shields.io/badge/Download-993f61?style=for-the-badge&amp;logo=github&amp;logoColor=ffffff" alt="Download" height="24" /></a>
   <a href="#get-started"><img src="https://img.shields.io/badge/Get%20started-27272a?style=for-the-badge" alt="Get started" height="24" /></a>
+  <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Pro-27272a?style=for-the-badge" alt="VoiceStudio Pro" height="24" /></a>
+  <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Cloud-27272a?style=for-the-badge" alt="VoiceStudio Cloud" height="24" /></a>
 </p>
 
 ## What you can do
@@ -107,9 +107,52 @@ Start with **VoiceStudio** (default, powered by k2-fsa/OmniVoice), or pick from 
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
 
+## Pro and Cloud
+
+Everything above is free, runs on your own hardware and needs no account. Pro and Cloud are optional.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="docs/assets/voicestudio-pro.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Pro</a></strong><br /><br />
+      For paid client work across more than one machine.
+      <ul>
+        <li>A Commercial License for your client work, emailed to you</li>
+        <li>One user on up to 3 devices at once</li>
+        <li>Send jobs to your other GPUs while your projects stay local</li>
+        <li>New features and fixes first</li>
+      </ul>
+      <sub>Closed-source build, account required, 7-day full refund. The AGPL-3.0 app stays free, including commercial use under its terms.</sub><br /><br />
+      <strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">See Pro plans →</a></strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="docs/assets/voicestudio-cloud.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Cloud</a></strong><br /><br />
+      A hosted voice and dubbing API, coming soon. No GPU needed.
+      <ul>
+        <li>Speech, voice design and voice cloning with consent</li>
+        <li>Dubbing, transcription and audiobooks</li>
+        <li>Usage and credits by day or project</li>
+        <li>Long jobs that run on their own</li>
+      </ul>
+      <sub>Not available yet: join early access for free usage credits. The desktop app stays free and local.</sub><br /><br />
+      <strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Join Cloud early access →</a></strong>
+    </td>
+  </tr>
+</table>
+
 ## Platforms
 
+Experimental [Windows ROCm setup](docs/install/windows-rocm.md) supports selected RDNA 2 RX 6000 GPUs with targets `gfx1030`, `gfx1031` or `gfx1032`; RX 6500 XT (`gfx1034`) is excluded. GPU transcription uses a CTranslate2 build with native
+`gfx1031` kernels that this repository builds from upstream source and pins by
+hash, and setup checks actual GPU kernel execution. RX 6700 XT tests also cover native Torch speech generation and
+PyTorch Whisper. ROCm 10 faster-whisper uses a separate inference process to
+preserve safe CPU selection and fallback. Other cards and workloads retain the qualification limits in the guide.
+Performance presets validate changed engine selections in an offline child
+process before saving them, preserving fallback when an installed runtime fails.
+
 Choose your system, then expand an installation method.
+
+Native GGUF engines additionally support engine-specific Vulkan acceleration on AMD, Intel and NVIDIA GPUs ([OmniVoice](docs/engines/omnivoice-gguf.md#vulkan-acceleration), [CosyVoice](docs/engines/cosyvoice-gguf.md)). OmniVoice GGUF selects its GPU and model size automatically on Windows and Linux. Vulkan discovery retries a stalled hidden probe with a native summary; Windows and Linux desktop builds fail rather than silently ship without their Vulkan module.
 
 <a id="install-macos"></a>
 
@@ -459,15 +502,15 @@ Upgrading from 0.5.3 or older (the Tauri app)? [Install the new app separately](
 | Setup help | [Troubleshooting](docs/install/troubleshooting.md) · [Model downloads](docs/downloading-models.md) |
 | Guides | [Multi-speaker dubbing](docs/dubbing/multi-speaker-guide.md) · [Expressive speech](docs/expressive-speech.md) · [Exporting dubs](docs/dubbing/export.md) |
 | Models & quality | [Engine guides](docs/engines/README.md) · [whisper.cpp ASR](docs/engines/whisper-cpp.md) · [Benchmarks](docs/benchmarks.md) |
-| Integrations | [Local API](docs/speech-platform.md) · [MCP](docs/mcp.md) · [Examples](examples/README.md) |
+| Integrations | [CLI](docs/install/script.md#terminal-command) · [Local API](docs/speech-platform.md) · [MCP](docs/mcp.md) · [Examples](examples/README.md) |
 | Phone apps | [iOS and Android](docs/mobile.md) |
-| Development | [Contributing](.github/CONTRIBUTING.md) ([sign the CLA](.github/CONTRIBUTING.md#contribution-licensing) before your first PR) · [Changelog](CHANGELOG.md) |
+| Development | [Contributing](.github/CONTRIBUTING.md) ([sign the CLA](.github/CONTRIBUTING.md#contribution-licensing) before your first PR) · [Changelog](CHANGELOG.md) · [Code signing policy](docs/code-signing-policy.md) |
 
 Agent skills: `npx skills add debpalash/VoiceStudio` (**voicestudio** for audio work, **voicestudio-maintainer** for the repo).
 
 ## Sponsors
 
-VoiceStudio is free and has no paid cloud behind it. Sponsors keep it shipping: they fund maintainer time, test hardware, code-signing and release infrastructure.
+The VoiceStudio app is free and needs no paid cloud. Sponsors keep it shipping: they fund maintainer time, test hardware, code-signing and release infrastructure.
 
 <p>
     <a href="https://github.com/debpalash/OpenGTM?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/opengtm-dark.svg" /><img src="docs/sponsors/opengtm.svg" alt="OpenGTM" height="48" align="middle" /></picture></a>
@@ -521,3 +564,7 @@ Thank you to everyone who sends code, reports, translations and ideas. [All cont
 </p>
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
+
+**Disclaimer**
+
+VoiceStudio users are strictly prohibited from using it for unauthorized voice cloning, voice impersonation, fraud, scams, or any other illegal or unethical activities. All users shall ensure full compliance with applicable local laws, regulations, and ethical standards. The developers assume no liability for any misuse of VoiceStudio and advocate for responsible AI development and use, encouraging the community to uphold safety and ethical principles in AI research and applications.

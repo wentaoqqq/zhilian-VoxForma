@@ -37,7 +37,7 @@
     <a href="https://github.com/debpalash/Opal?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/opal-dark.svg" /><img src="../../docs/sponsors/opal.svg" alt="Opal" height="32" align="middle" /></picture></a>
     <a href="https://github.com/velixio/supermetry?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/supermetry-dark.svg" /><img src="../../docs/sponsors/supermetry.svg" alt="Supermetry" height="32" align="middle" /></picture></a>
       ·   <sub>Özel sponsor</sub> 
-    <a href="https://app.spicrawl.com/signup?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
+    <a href="https://spicrawl.com?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
   </p>
 </div>
 
@@ -55,6 +55,8 @@
 <p align="center">
   <a href="https://github.com/debpalash/VoiceStudio/releases/latest"><img src="https://img.shields.io/badge/%C4%B0ndir-993f61?style=for-the-badge&amp;logo=github&amp;logoColor=ffffff" alt="İndir" height="24" /></a>
   <a href="#get-started"><img src="https://img.shields.io/badge/Ba%C5%9Flarken-27272a?style=for-the-badge" alt="Başlarken" height="24" /></a>
+  <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Pro-27272a?style=for-the-badge" alt="VoiceStudio Pro" height="24" /></a>
+  <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Cloud-27272a?style=for-the-badge" alt="VoiceStudio Cloud" height="24" /></a>
 </p>
 
 <a id="what-you-can-do"></a>
@@ -108,11 +110,46 @@ Motorlarınızı seçin ve yalnızca ihtiyacınız olan modelleri indirin.
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="../../docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
 
+## Pro ve Cloud
+
+Yukarıdakilerin tümü ücretsizdir, kendi donanımınızda çalışır ve hesap gerektirmez. Pro ve Cloud isteğe bağlıdır.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-pro.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Pro</a></strong><br /><br />
+      Birden fazla makinede ücretli müşteri işleri için.
+      <ul>
+        <li>Müşteri işleriniz için e-postayla gönderilen Ticari Lisans</li>
+        <li>Aynı anda en fazla 3 cihazda bir kullanıcı</li>
+        <li>Projeleriniz yerelde kalırken işleri diğer GPU'larınıza gönderin</li>
+        <li>Yeni özellikler ve düzeltmeler önce sizde</li>
+      </ul>
+      <sub>Kapalı kaynak sürüm, hesap gerekir, 7 gün içinde tam iade. AGPL-3.0 uygulaması, koşullarına uygun ticari kullanım dahil ücretsiz kalır.</sub><br /><br />
+      <strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Pro planlarını görün →</a></strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-cloud.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Cloud</a></strong><br /><br />
+      Barındırılan ses ve dublaj API'si çok yakında. GPU gerekmez.
+      <ul>
+        <li>Konuşma, ses tasarımı ve izinli ses klonlama</li>
+        <li>Dublaj, transkripsiyon ve sesli kitaplar</li>
+        <li>Güne veya projeye göre kullanım ve kredi</li>
+        <li>Kendi kendine çalışan uzun işler</li>
+      </ul>
+      <sub>Henüz kullanılamıyor: erken erişime katılın, ücretsiz kullanım kredisi kazanın. Masaüstü uygulaması ücretsiz ve yerel kalır.</sub><br /><br />
+      <strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Cloud erken erişimine katılın →</a></strong>
+    </td>
+  </tr>
+</table>
+
 <a id="platforms"></a>
 
 ## Platformlar
 
 Sisteminizi seçin, ardından kurulum yöntemini genişletin.
+
+Yerel GGUF motorları AMD, Intel ve NVIDIA GPU’larda motora özgü Vulkan hızlandırmasını da destekler ([OmniVoice](../../docs/engines/omnivoice-gguf.md#vulkan-acceleration), [CosyVoice](../../docs/engines/cosyvoice-gguf.md)). OmniVoice GGUF, Windows ve Linux üzerinde GPU’yu ve model boyutunu otomatik seçer. Gizli bir denetim takılırsa Vulkan algılama yerel bir özetle yeniden dener; Windows ve Linux masaüstü derlemeleri Vulkan modülü olmadan sessizce dağıtılmak yerine başarısız olur.
 
 <a id="install-macos"></a>
 
@@ -169,6 +206,8 @@ Uygulama kullanıcı arayüzü Intel'de çalışır; başka bir bilgisayardaki V
 
 <details>
 <summary><img src="../../docs/assets/platforms/windows.svg" alt="" width="20" height="20" /> <strong>Windows</strong> · PowerShell · EXE</summary>
+
+Deneysel [Windows ROCm kurulumu](../../docs/install/windows-rocm.md), `gfx1030`, `gfx1031` veya `gfx1032` hedefli belirli RDNA 2 RX 6000 GPU’ları destekler; RX 6500 XT (`gfx1034`) kapsam dışındadır. Sürümü ayrıca sabitlenen CTranslate2 derlemesi, RX 6700 XT üzerinde transkripsiyon için yerel `gfx1031` çekirdekleri içerir; kurulum GPU çekirdeklerinin gerçekten çalıştığını doğrular. RX 6700 XT testleri, yerel Torch konuşma üretimini ve PyTorch Whisper’ı da kapsar. ROCm 10 üzerinde faster-whisper, güvenli CPU seçimi ve CPU’ya geri dönüş için ayrı bir çıkarım süreci kullanır. Diğer kartlar ve iş yükleri kılavuzdaki doğrulama sınırlarına tabidir. Performans ön ayarları, değiştirilen motor seçimlerinin çalışma zamanı hazırlığını kaydetmeden önce çevrimdışı bir alt süreçte doğrular ve kurulu bir çalışma zamanı başarısız olursa geri dönüş seçeneğini korur.
 
 <blockquote>
 
@@ -462,9 +501,9 @@ https://github.com/debpalash/VoiceStudio/blob/main/docs/install/agent.md
 | Kurulum yardımı | [Sorun giderme](../../docs/install/troubleshooting.md) · [Model indirmeleri](../../docs/downloading-models.md) |
 | Kılavuzlar | [Birden fazla konuşmacıyla dublaj](../../docs/dubbing/multi-speaker-guide.md) · [Duygulu konuşma](../../docs/expressive-speech.md) · [Dublajları dışa aktarma](../../docs/dubbing/export.md) |
 | Modeller ve kalite | [Motor kılavuzları](../../docs/engines/README.md) · [whisper.cpp ASR](../../docs/engines/whisper-cpp.md) · [Karşılaştırmalar](../../docs/benchmarks.md) |
-| Entegrasyonlar | [Yerel API](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [Örnekler](../../examples/README.md) |
+| Entegrasyonlar | [CLI](../../docs/install/script.md#terminal-command) · [Yerel API](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [Örnekler](../../examples/README.md) |
 | Telefon uygulamaları | [iOS ve Android](../../docs/mobile.md) |
-| Geliştirme | [Katkıda bulunuyor](../../.github/CONTRIBUTING.md) ([CLA'yı imzalayın](../../.github/CONTRIBUTING.md#contribution-licensing) ilk PR'ınızdan önce) · [Değişiklik günlüğü](../../CHANGELOG.md) |
+| Geliştirme | [Katkıda bulunuyor](../../.github/CONTRIBUTING.md) ([CLA'yı imzalayın](../../.github/CONTRIBUTING.md#contribution-licensing) ilk PR'ınızdan önce) · [Değişiklik günlüğü](../../CHANGELOG.md) · [Kod imzalama politikası](../code-signing-policy.md) |
 
 Ajan becerileri: `npx skills add debpalash/VoiceStudio` (ses çalışmaları için **voicestudio**, depo bakımı için **voicestudio-maintainer**).
 

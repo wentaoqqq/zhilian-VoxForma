@@ -18,6 +18,7 @@ import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import {
   installRuntime,
   runtimeDownloadEnv,
+  runtimeRequiredGib,
   promoteLegacyRuntimeCaches,
   CUDNN8_COMPAT_PIN,
   MISSING_SYSTEM_LIBRARY_CODE,
@@ -47,6 +48,22 @@ import {
 } from './runtime-project';
 
 vi.mock('./runtime-download', () => ({ downloadRuntimeInstaller: vi.fn() }));
+
+it.each([
+  ['darwin', 'default', 5],
+  ['darwin', 'cpu', 5],
+  ['linux', 'cpu', 5],
+  ['win32', 'cpu', 5],
+  ['linux', 'default', 9],
+  ['win32', 'default', 9],
+  ['linux', 'rocm', 9],
+  ['win32', 'rocm', 9],
+] as const)(
+  'publishes the %s/%s runtime preflight minimum as %s GiB',
+  (platform, variant, expected) => {
+    expect(runtimeRequiredGib(platform, variant)).toBe(expected);
+  },
+);
 vi.mock('./wheel-prefetch', async (importOriginal) => {
   const actual = await importOriginal<typeof import('./wheel-prefetch')>();
   return { ...actual, httpsRangeTransport: vi.fn(actual.httpsRangeTransport) };
@@ -109,6 +126,20 @@ afterEach(async () => {
   vi.unstubAllEnvs();
   vi.mocked(statfs).mockClear();
   await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
+});
+
+it('estimates disk space without accepting unsupported Windows ARM64 ROCm installs', async () => {
+  forcePlatform('win32');
+  vi.spyOn(process, 'arch', 'get').mockReturnValue('arm64');
+  vi.stubEnv('OMNIVOICE_TORCH_VARIANT', 'rocm');
+  expect(runtimeRequiredGib()).toBe(9);
+  const { bundle, project } = await fixture();
+  const run = vi.fn();
+  await expect(
+    installRuntime(bundle, project, null, run, new AbortController().signal),
+  ).rejects.toThrow('Windows ROCm requires Windows x64 Python 3.12 (cp312).');
+  expect(run).not.toHaveBeenCalled();
+  expect(downloadRuntimeInstaller).not.toHaveBeenCalled();
 });
 
 describe('packaged runtime setup', () => {
@@ -578,16 +609,16 @@ describe('packaged runtime setup', () => {
       'torchaudio',
       '--reinstall-package',
       'torchvision',
-      'torch==2.8.0+rocm6.4',
-      'torchaudio==2.8.0+rocm6.4',
-      'torchvision==0.23.0+rocm6.4',
+      'torch==2.10.0+rocm7.1',
+      'torchaudio==2.10.0+rocm7.1',
+      'torchvision==0.25.0+rocm7.1',
       '--extra-index-url',
       ROCM_TORCH_INDEX,
       '--index-strategy',
       'unsafe-best-match',
     ]);
     // A mirror without a rocm-style name keeps the bare pins.
-    expect(rocmTorchInstallArgs('https://mirror.invalid/rocm/')).toContain('torch==2.8.0');
+    expect(rocmTorchInstallArgs('https://mirror.invalid/rocm/')).toContain('torch==2.10.0');
   });
   it('leaves macOS on its native stack when ROCm is requested', async () => {
     forcePlatform('darwin');
@@ -1721,5 +1752,69 @@ describe('outdated Visual C++ runtime behind a native import crash (#3293)', () 
         new AbortController().signal,
       ),
     ).rejects.not.toMatchObject({ code: OUTDATED_SYSTEM_LIBRARY_CODE });
+  });
+});
+
+describe('retryTransientDownload (#3882)', () => {
+  const gateway = Object.assign(new Error('Runtime setup exited with code 2'), {
+    stderr:
+      'Failed to download `en-core-web-sm`\n  Request failed after 5 retries in 30.6s\n  HTTP status server error (504 Gateway Timeout)',
+  });
+  const noWait = async () => {};
+  const signal = () => new AbortController().signal;
+
+  it('repeats the sync after a 5xx and succeeds', async () => {
+    const sync = vi.fn().mockRejectedValueOnce(gateway).mockResolvedValue(undefined);
+    const { retryTransientDownload } = await import('./runtime-project');
+    await retryTransientDownload(sync, signal(), undefined, [1, 1], noWait);
+    expect(sync).toHaveBeenCalledTimes(2);
+  });
+
+  it('explains a persistent server error and points to Retry', async () => {
+    const sync = vi.fn().mockRejectedValue(gateway);
+    const { retryTransientDownload } = await import('./runtime-project');
+    const failure = await retryTransientDownload(sync, signal(), undefined, [1, 1], noWait).catch(
+      (error: Error) => error,
+    );
+    expect((failure as Error).message).toMatch(/temporary error.*press Retry/s);
+    expect(sync).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not treat a status-like number in a path as a server error', async () => {
+    const { isTransientDownloadFailure } = await import('./runtime-project');
+    expect(
+      isTransientDownloadFailure(
+        Object.assign(new Error('Permission denied'), {
+          stderr: 'error: /home/u/504/.venv: denied',
+        }),
+      ),
+    ).toBe(false);
+    expect(isTransientDownloadFailure(gateway)).toBe(true);
+  });
+
+  it('keeps the original error code when giving up', async () => {
+    const sync = vi
+      .fn()
+      .mockRejectedValue(Object.assign(new Error('Request failed: operation timed out'), { code: 'EACCES' }));
+    const { retryTransientDownload } = await import('./runtime-project');
+    const failure = await retryTransientDownload(sync, signal(), undefined, [1], noWait).catch(
+      (error: Error) => error,
+    );
+    expect(failure).toMatchObject({ code: 'EACCES' });
+  });
+
+  it('does not retry a lock timeout', async () => {
+    const { isTransientDownloadFailure } = await import('./runtime-project');
+    expect(isTransientDownloadFailure(new Error('lock timed out'))).toBe(false);
+  });
+
+  it('does not repeat a non-network failure', async () => {
+    const sync = vi.fn().mockRejectedValue(new Error('No solution found'));
+    const { retryTransientDownload } = await import('./runtime-project');
+    const failure = await retryTransientDownload(sync, signal(), undefined, [1, 1], noWait).catch(
+      (error: Error) => error,
+    );
+    expect((failure as Error).message).toBe('No solution found');
+    expect(sync).toHaveBeenCalledTimes(1);
   });
 });

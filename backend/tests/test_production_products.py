@@ -244,7 +244,8 @@ def test_chat_schema_and_product_delete_scope(client):
         assert [r['id'] for r in conn.execute('SELECT id FROM production_messages')] == ['1']
 
 
-def test_upgrade_from_current_head_preserves_history_and_matches_fresh_schema(tmp_path, monkeypatch):
+@pytest.mark.parametrize('previous_head', ['0019_production_agent', '0020_product_workspace'])
+def test_upgrade_from_current_head_preserves_history_and_matches_fresh_schema(tmp_path, monkeypatch, previous_head):
     import sqlite3
     from alembic import command
     from alembic.config import Config
@@ -255,19 +256,23 @@ def test_upgrade_from_current_head_preserves_history_and_matches_fresh_schema(tm
     monkeypatch.setattr(db, 'DB_PATH', str(path))
     # Exact previous runtime schema, stamped at its actual Alembic head.
     with sqlite3.connect(path) as conn:
-        conn.executescript(db._BASE_SCHEMA.replace(PRODUCT_WORKSPACE_SCHEMA, ''))
+        has_products = previous_head == '0020_product_workspace'
+        conn.executescript(db._BASE_SCHEMA if has_products else db._BASE_SCHEMA.replace(PRODUCT_WORKSPACE_SCHEMA, ''))
+        if has_products:
+            conn.execute('INSERT INTO production_products VALUES (?,?,?,?)', ('saved-product', '{"name":"Saved"}', 1., 1.))
         conn.execute('INSERT INTO production_brands VALUES (?,?,?,?)', ('legacy', '{"name":"Historical"}', 1., 1.))
         conn.execute('INSERT INTO media_assets VALUES (?,?,?,?,?)', ('a' * 64, 'a' * 64, 'old.txt', '{"kind":"text"}', 1.))
     cfg = Config(str(Path(__file__).resolve().parents[2] / 'alembic.ini'))
     cfg.set_main_option('sqlalchemy.url', 'sqlite:///' + str(path))
     cfg.attributes['configure_logger'] = False
-    assert ScriptDirectory.from_config(cfg).get_heads() == ['0020_product_workspace']
-    command.stamp(cfg, '0019_production_agent')
+    assert ScriptDirectory.from_config(cfg).get_heads() == ['0021_merge_voicestudio_058']
+    command.stamp(cfg, previous_head)
     command.upgrade(cfg, 'head')
     tables = ('production_products', 'production_product_assets', 'production_conversations', 'production_messages')
     with db.db_conn() as conn:
         upgraded = {table: [tuple(r) for r in conn.execute(f'PRAGMA table_info({table})')] for table in tables}
-        assert conn.execute('SELECT COUNT(*) FROM production_products').fetchone()[0] == 0
+        products = conn.execute('SELECT id FROM production_products').fetchall()
+        assert [row[0] for row in products] == (['saved-product'] if has_products else [])
         assert conn.execute('SELECT COUNT(*) FROM production_brands').fetchone()[0] == 1
         assert conn.execute('SELECT COUNT(*) FROM media_assets').fetchone()[0] == 1
     fresh_path = tmp_path / 'fresh.db'

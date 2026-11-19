@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -48,7 +49,7 @@ def test_missing_reports_fail(tmp_path):
 
 
 def load_workflow():
-    return yaml.load((ROOT / ".github/workflows/electron-release.yml").read_text(), Loader=yaml.BaseLoader)
+    return yaml.load((ROOT / ".github/workflows/electron-release.yml").read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
 
 
 def test_every_package_leg_reports_and_mac_check_ignores_allow_unsigned():
@@ -60,7 +61,7 @@ def test_every_package_leg_reports_and_mac_check_ignores_allow_unsigned():
     assert mac["env"]["HAS_CREDENTIALS"] == "${{ secrets.ELECTRON_MACOS_CSC_LINK != '' }}"
     windows = steps["Report and enforce Windows signing"]
     assert windows["if"] == "matrix.platform == 'win32'"
-    assert windows["env"]["HAS_CREDENTIALS"] == "${{ secrets.ELECTRON_WINDOWS_CSC_LINK != '' }}"
+    assert windows["env"]["HAS_CREDENTIALS"] == "${{ secrets.ELECTRON_WINDOWS_CSC_LINK != '' || env.SIGNPATH_ENABLED == 'true' }}"
     assert steps["Report Linux signing"]["if"] == "matrix.platform == 'linux'"
     assert steps["Save the signing report"]["with"]["name"] == "electron-signing-${{ matrix.platform }}-${{ matrix.arch }}"
 
@@ -110,7 +111,7 @@ def test_release_notes_helper_comes_from_the_workflow_commit(tmp_path):
     env = dict(os.environ, PATH=f"{fake}{os.pathsep}{os.environ['PATH']}", GITHUB_SHA="workflow-sha",
                GITHUB_REPOSITORY="debpalash/VoiceStudio", RUNNER_TEMP=str(tmp_path))
     subprocess.run(["bash", "-e", "-c", describe["run"]], cwd=work, env=env, check=True)
-    text = (work / "release-assets/RELEASE_NOTES.md").read_text()
+    text = (work / "release-assets/RELEASE_NOTES.md").read_text(encoding="utf-8")
     # The table leads the notes; the changelog follows unchanged.
     assert "| Linux x64 |" in text
     assert text.index("### Installer signing") < text.index("**Highlights**")
@@ -118,10 +119,20 @@ def test_release_notes_helper_comes_from_the_workflow_commit(tmp_path):
 
 @pytest.mark.parametrize("failures,message,calls,ok", [
     (1, "Failed to staple your application with code: 68", 2, True),
-    (2, "Failed to staple your application with code: 68", 2, False),
+    # v0.5.8-beta.1: the staple lookup failed twice in a row, then succeeded.
+    (2, "Failed to staple your application with code: 68", 3, True),
+    (3, "Failed to staple your application with code: 68", 3, False),
+    # The notarization upload itself can be cut off (v0.5.8-beta.1 draft).
+    (1, "Error: abortedUpload(resumeRequest: SotoS3.S3.ResumeMultipartUploadRequest", 2, True),
+    (1, 'Error Domain=NSURLErrorDomain Code=-1005 "The network connection was lost."', 2, True),
+    (1, "Error Domain=NSURLErrorDomain Code=-1001 timed out", 2, True),
+    # A server-trust failure is not a dropped connection.
+    (1, "Error Domain=NSURLErrorDomain Code=-1202 untrusted server certificate", 1, False),
+    # A rejected notarization or a signing failure is not transient.
+    (1, "Failed to notarize via notarytool. status: Invalid", 1, False),
     (1, "codesign failed", 1, False),
 ])
-def test_package_builds_again_only_when_stapling_fails(tmp_path, failures, message, calls, ok):
+def test_package_builds_again_only_when_apple_drops_the_connection(tmp_path, failures, message, calls, ok):
     import shutil
     shutil.copy(ROOT / "scripts/prepare-apple-notarization.sh", tmp_path)
     # A dropped connection to Apple's ticket server failed beta.2 after notarization.
@@ -139,7 +150,58 @@ def test_package_builds_again_only_when_stapling_fails(tmp_path, failures, messa
     )
     (fake / "bun").chmod(0o755)
     env = dict(os.environ, PATH=f"{fake}{os.pathsep}{os.environ['PATH']}", RUNNER_TEMP=str(tmp_path),
-               CSC_LINK="", PUBLISH="false")
+               CSC_LINK="", PUBLISH="false", APPLE_RETRY_DELAY_SECONDS="0")
     result = subprocess.run(["bash", "-e", "-c", script], cwd=ROOT / "electron", env=env, capture_output=True, text=True)
     assert (result.returncode == 0) is ok, result.stdout + result.stderr
-    assert len(count.read_text().splitlines()) == calls
+    assert len(count.read_text(encoding="utf-8").splitlines()) == calls
+
+
+def test_signpath_signing_is_gated_pinned_and_precedes_feed_and_checksums():
+    build = load_workflow()["jobs"]["package"]
+    gate = build["env"]["SIGNPATH_ENABLED"]
+    for needed in ("secrets.SIGNPATH_API_TOKEN", "vars.SIGNPATH_ORGANIZATION_ID",
+                   "vars.SIGNPATH_PROJECT_SLUG", "vars.SIGNPATH_SIGNING_POLICY_SLUG"):
+        assert needed in gate
+    assert "ELECTRON_WINDOWS_CSC_LINK" in gate  # an own certificate wins
+
+    # Approval waits: the leg's timeout grows only for Windows with SignPath
+    # configured (job timeouts cannot read secrets), the step fails clearly first.
+    timeout = build["timeout-minutes"]
+    assert "matrix.platform == 'win32'" in timeout and "vars.SIGNPATH_ORGANIZATION_ID" in timeout
+    assert "150" in timeout and "75" in timeout and "secrets." not in timeout
+    submit_step = next(s for s in build["steps"] if s.get("name") == "Sign the Windows installer with SignPath")
+    assert submit_step["timeout-minutes"] == "70"
+    assert int(submit_step["with"]["wait-for-completion-timeout-in-seconds"]) <= 70 * 60
+
+    # SignPath's github-token needs actions: read; keep everything else read-only.
+    assert build["permissions"] == {"contents": "read", "actions": "read"}
+
+    steps = build["steps"]
+    names = [s.get("name") for s in steps]
+    sign_steps = [s for s in steps if s.get("name", "").startswith(("Upload the unsigned Windows", "Sign the Windows installer with SignPath", "Replace the installer with the signed"))]
+    assert len(sign_steps) == 3
+    for step in sign_steps:
+        assert step["if"] == "env.SIGNPATH_ENABLED == 'true'"
+        if "uses" in step:
+            assert re.search(r"@[0-9a-f]{40}$", step["uses"].split(" ")[0]), step["uses"]
+    submit = next(s for s in sign_steps if s["uses"].startswith("signpath/github-action-submit-signing-request@"))
+    assert submit["with"]["wait-for-completion"] == "true"
+    assert "api-token" in submit["with"] and "SIGNPATH_API_TOKEN" in submit["with"]["api-token"]
+
+    # After packaging (which writes the feed), before verification, upload and
+    # (in the release job) SHA256SUMS.
+    package = names.index("Package without publishing")
+    first, last = names.index(sign_steps[0]["name"]), names.index(sign_steps[-1]["name"])
+    assert package < first < last < names.index("Verify Windows installer signature before publication")
+    assert last < names.index("Save installers and updater metadata for review")
+    replace = sign_steps[-1]["run"]
+    assert "apply-signed-windows.mjs" in replace
+    # Loaded from the workflow commit (older tags lack the helper), never from the checkout.
+    assert "ref=$GITHUB_SHA" in replace and '"$RUNNER_TEMP/apply-signed-windows.mjs"' in replace
+    assert "node scripts/apply-signed-windows.mjs" not in replace
+    assert replace.index("apply-signed-windows.mjs\" release-signed") < replace.index("update-package-contract.mjs")
+
+    # Signing is configured -> unsigned output must fail the report step.
+    report = next(s for s in steps if s.get("name") == "Report and enforce Windows signing")
+    assert "SIGNPATH_ENABLED" in report["env"]["HAS_CREDENTIALS"]
+

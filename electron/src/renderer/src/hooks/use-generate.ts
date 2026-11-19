@@ -43,7 +43,9 @@ import { isPresetOnly, useTtsReadiness } from './use-tts-readiness';
 import { useEngines } from './use-engines';
 import { expressionCaps } from '@/lib/expression';
 import { recordActionBreadcrumb } from '@/lib/report-breadcrumb';
+import { useResolvedLicenceError } from './use-resolved-licence-error';
 import { announceDroppedSpeech } from '@/lib/dropped-speech';
+import { recordTakeSpeed } from '@/lib/store/quality-offer';
 
 const TIMER_TICK_MS = 100;
 const PROGRESS_THROTTLE_MS = 100;
@@ -199,6 +201,13 @@ function useGenerateController(): UseGenerateClone {
   );
   const [error, setError] = useState<string | null>(null);
   const [errorTopic, setErrorTopic] = useState<string | null>(null);
+  const [errorCause, setErrorCause] = useState<unknown>(null);
+  const clearError = useCallback(() => {
+    setError(null);
+    setErrorTopic(null);
+    setErrorCause(null);
+  }, []);
+  useResolvedLicenceError(errorCause, clearError);
   const [isGenerating, setIsGenerating] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [progress, setProgress] = useState<number | null>(null);
@@ -210,6 +219,8 @@ function useGenerateController(): UseGenerateClone {
   const cancelledRef = useRef(false);
   const activeRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // A take that waited for model loading says nothing about render speed.
+  const sawModelLoadRef = useRef(false);
 
   // Trailing-edge throttle can fire after completion; `activeRef` gates it so
   // a stale 100% never lands on an idle form.
@@ -255,6 +266,8 @@ function useGenerateController(): UseGenerateClone {
           ].includes(model.sub_stage ?? '')
             ? (model.sub_stage as UseGenerateClone['modelStage'])
             : null;
+          if (nextModelStage || model.loading || model.status === 'loading')
+            sawModelLoadRef.current = true;
           setModelStage(nextModelStage);
           setModelProgress(
             typeof model.progress === 'number' ? Math.max(0, Math.min(100, model.progress)) : null,
@@ -297,6 +310,7 @@ function useGenerateController(): UseGenerateClone {
           design?.language ?? settings.language,
         ])
       ) {
+        setErrorCause(null);
         setError(tr('languagePicker.chooseSupported'));
         return;
       }
@@ -332,8 +346,10 @@ function useGenerateController(): UseGenerateClone {
 
       activeRef.current = true;
       cancelledRef.current = false;
+      sawModelLoadRef.current = false;
       setError(null);
       setErrorTopic(null);
+      setErrorCause(null);
       setIsGenerating(true);
       setElapsedSeconds(0);
       setProgress(null);
@@ -427,6 +443,21 @@ function useGenerateController(): UseGenerateClone {
           onProgress,
         });
         announceResultNotices(result);
+        const spokenText = (design?.text ?? settings.text).trim();
+        if (
+          activeTts &&
+          !sawModelLoadRef.current &&
+          result.genTimeSeconds !== null &&
+          result.durationSeconds !== null
+        )
+          // Local only: per engine and device, so the next estimate is this machine's.
+          recordTakeSpeed(activeTts.id, activeTts.effective_device, {
+            chars: spokenText.length,
+            audioSeconds: result.durationSeconds,
+            renderSeconds: result.genTimeSeconds,
+            steps: input.steps,
+            at: Date.now(),
+          });
         setLatestOutput(result, design?.text ?? settings.text);
         recordActionBreadcrumb(`generate:${reportMode}:complete`);
         toast.success(tr('tts.generationComplete'), { position: 'top-right' });
@@ -437,6 +468,8 @@ function useGenerateController(): UseGenerateClone {
           // direction the recording did not use.
           rememberTake(result.id, {
             ...settings,
+            // The steps actually rendered, not "best quality" for whichever engine is active later.
+            steps: input.steps,
             direction,
             ...('emoProfileId' in input || 'emoText' in input || 'emoVector' in input
               ? {}
@@ -456,6 +489,7 @@ function useGenerateController(): UseGenerateClone {
       } catch (err) {
         if (!cancelledRef.current) {
           recordActionBreadcrumb(`generate:${reportMode}:error`);
+          setErrorCause(err);
           setErrorTopic(failureTopicOf(err) ?? null);
           setError(
             isAbortError(err)
@@ -517,10 +551,7 @@ function useGenerateController(): UseGenerateClone {
     modelProgress,
     error,
     errorTopic,
-    clearError: () => {
-      setError(null);
-      setErrorTopic(null);
-    },
+    clearError,
     canGenerate: blocker === null && !isGenerating && !missingEmotionProfile,
     canGenerateDesign: designBlocker === null && !isGenerating,
     designBlocker,

@@ -37,7 +37,7 @@
     <a href="https://github.com/debpalash/Opal?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/opal-dark.svg" /><img src="../../docs/sponsors/opal.svg" alt="Opal" height="32" align="middle" /></picture></a>
     <a href="https://github.com/velixio/supermetry?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/supermetry-dark.svg" /><img src="../../docs/sponsors/supermetry.svg" alt="Supermetry" height="32" align="middle" /></picture></a>
       ·   <sub>विशेष प्रायोजक</sub> 
-    <a href="https://app.spicrawl.com/signup?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
+    <a href="https://spicrawl.com?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
   </p>
 </div>
 
@@ -55,6 +55,8 @@
 <p align="center">
   <a href="https://github.com/debpalash/VoiceStudio/releases/latest"><img src="https://img.shields.io/badge/%E0%A4%A1%E0%A4%BE%E0%A4%89%E0%A4%A8%E0%A4%B2%E0%A5%8B%E0%A4%A1-993f61?style=for-the-badge&amp;logo=github&amp;logoColor=ffffff" alt="डाउनलोड" height="24" /></a>
   <a href="#get-started"><img src="https://img.shields.io/badge/%E0%A4%B6%E0%A5%81%E0%A4%B0%E0%A5%82%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82-27272a?style=for-the-badge" alt="शुरू करें" height="24" /></a>
+  <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Pro-27272a?style=for-the-badge" alt="VoiceStudio Pro" height="24" /></a>
+  <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Cloud-27272a?style=for-the-badge" alt="VoiceStudio Cloud" height="24" /></a>
 </p>
 
 <a id="what-you-can-do"></a>
@@ -108,11 +110,46 @@
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="../../docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
 
+## Pro और Cloud
+
+ऊपर दिया सब कुछ मुफ़्त है, आपके अपने हार्डवेयर पर चलता है और इसके लिए खाते की ज़रूरत नहीं है। Pro और Cloud वैकल्पिक हैं।
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-pro.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Pro</a></strong><br /><br />
+      एक से ज़्यादा मशीनों पर सशुल्क क्लाइंट काम के लिए।
+      <ul>
+        <li>आपके क्लाइंट काम के लिए व्यावसायिक लाइसेंस, ईमेल से भेजा जाता है</li>
+        <li>एक उपयोगकर्ता, एक साथ अधिकतम 3 डिवाइस</li>
+        <li>अपने दूसरे GPU पर काम भेजें, जबकि आपके प्रोजेक्ट लोकल रहते हैं</li>
+        <li>नई सुविधाएँ और सुधार सबसे पहले</li>
+      </ul>
+      <sub>बंद-स्रोत बिल्ड, खाता ज़रूरी, 7 दिनों में पूरा रिफ़ंड। AGPL-3.0 ऐप मुफ़्त रहता है, उसकी शर्तों के तहत व्यावसायिक उपयोग सहित।</sub><br /><br />
+      <strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Pro प्लान देखें →</a></strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-cloud.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Cloud</a></strong><br /><br />
+      आवाज़ और डबिंग के लिए होस्टेड API, जल्द आ रहा है। GPU की ज़रूरत नहीं।
+      <ul>
+        <li>स्पीच, वॉइस डिज़ाइन और सहमति से वॉइस क्लोनिंग</li>
+        <li>डबिंग, ट्रांसक्रिप्शन और ऑडियोबुक</li>
+        <li>दिन या प्रोजेक्ट के अनुसार उपयोग और क्रेडिट</li>
+        <li>लंबे काम जो अपने आप चलते हैं</li>
+      </ul>
+      <sub>अभी उपलब्ध नहीं: अर्ली एक्सेस से जुड़ें और मुफ़्त उपयोग क्रेडिट पाएँ। डेस्कटॉप ऐप मुफ़्त और लोकल रहता है।</sub><br /><br />
+      <strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Cloud अर्ली एक्सेस से जुड़ें →</a></strong>
+    </td>
+  </tr>
+</table>
+
 <a id="platforms"></a>
 
 ## प्लेटफार्म
 
 अपना सिस्टम चुनें, फिर इंस्टॉलेशन विधि का विस्तार करें।
+
+नेटिव GGUF इंजन AMD, Intel और NVIDIA GPU पर इंजन-विशिष्ट Vulkan त्वरण का भी समर्थन करते हैं ([OmniVoice](../../docs/engines/omnivoice-gguf.md#vulkan-acceleration), [CosyVoice](../../docs/engines/cosyvoice-gguf.md))। OmniVoice GGUF, Windows और Linux पर GPU और मॉडल का आकार अपने आप चुनता है। छिपी हुई जाँच अटकने पर Vulkan पहचान नेटिव सारांश के साथ दोबारा प्रयास करती है; Windows और Linux डेस्कटॉप बिल्ड Vulkan मॉड्यूल के बिना चुपचाप जारी होने के बजाय विफल हो जाते हैं।
 
 <a id="install-macos"></a>
 
@@ -169,6 +206,8 @@ curl -fsSL https://voicestudio.sh/install | sh
 
 <details>
 <summary><img src="../../docs/assets/platforms/windows.svg" alt="" width="20" height="20" /> <strong>Windows</strong> · PowerShell · EXE</summary>
+
+प्रयोगात्मक [Windows ROCm सेटअप](../../docs/install/windows-rocm.md) केवल `gfx1030`, `gfx1031` या `gfx1032` लक्ष्य वाले चुनिंदा RDNA 2 RX 6000 GPU का समर्थन करता है; RX 6500 XT (`gfx1034`) इसमें शामिल नहीं है। अलग से निश्चित संस्करण वाले CTranslate2 बिल्ड में RX 6700 XT पर ट्रांसक्रिप्शन के लिए मूल `gfx1031` कर्नेल शामिल हैं; सेटअप GPU पर उनका वास्तविक निष्पादन जाँचता है। RX 6700 XT के परीक्षणों में मूल Torch वाक् निर्माण और PyTorch Whisper भी शामिल हैं। ROCm 10 पर faster-whisper सुरक्षित CPU चयन और CPU पर वापसी के लिए अलग इन्फरेंस प्रक्रिया इस्तेमाल करता है। अन्य कार्ड और कार्यभार गाइड में दी गई सत्यापन सीमाओं के अधीन हैं। प्रदर्शन प्रीसेट बदले हुए इंजन चयन को सहेजने से पहले ऑफलाइन चाइल्ड प्रक्रिया में रनटाइम की तत्परता जाँचते हैं और स्थापित रनटाइम विफल होने पर वैकल्पिक विकल्प बनाए रखते हैं।
 
 <blockquote>
 
@@ -462,9 +501,9 @@ https://github.com/debpalash/VoiceStudio/blob/main/docs/install/agent.md
 | सेटअप सहायता | [समस्या निवारण](../../docs/install/troubleshooting.md) · [मॉडल डाउनलोड](../../docs/downloading-models.md) |
 | गाइड | [कई वक्ताओं की डबिंग](../../docs/dubbing/multi-speaker-guide.md) · [भावपूर्ण आवाज़](../../docs/expressive-speech.md) · [डब किए गए ऑडियो का निर्यात](../../docs/dubbing/export.md) |
 | मॉडल और गुणवत्ता | [इंजन गाइड](../../docs/engines/README.md) · [whisper.cpp ASR](../../docs/engines/whisper-cpp.md) · [बेंचमार्क](../../docs/benchmarks.md) |
-| एकीकरण | [स्थानीय एपीआई](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [उदाहरण](../../examples/README.md) |
+| एकीकरण | [CLI](../../docs/install/script.md#terminal-command) · [स्थानीय एपीआई](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [उदाहरण](../../examples/README.md) |
 | फ़ोन ऐप्स | [आईओएस और एंड्रॉइड](../../docs/mobile.md) |
-| विकास | [योगदान](../../.github/CONTRIBUTING.md) ([अपने पहले पीआर से पहले CLA पर हस्ताक्षर करें](../../.github/CONTRIBUTING.md#contribution-licensing)) · [Changelog](../../CHANGELOG.md) |
+| विकास | [योगदान](../../.github/CONTRIBUTING.md) ([अपने पहले पीआर से पहले CLA पर हस्ताक्षर करें](../../.github/CONTRIBUTING.md#contribution-licensing)) · [Changelog](../../CHANGELOG.md) · [कोड साइनिंग नीति](../code-signing-policy.md) |
 
 एजेंट स्किल: `npx skills add debpalash/VoiceStudio` (ऑडियो कार्य के लिए **voicestudio** और रिपॉजिटरी के लिए **voicestudio-maintainer**)।
 

@@ -14,6 +14,12 @@ app (MSI installers) is no longer maintained; if you still run it, follow the
 Python, FFmpeg, and model weights are bootstrapped by the app itself on first
 launch; no toolchain is needed for the installer.
 
+Windows installers are being moved to free SignPath Foundation code signing; the
+release notes' **Installer signing** table says whether your download is signed.
+See the [code signing policy](../code-signing-policy.md). It signs the installer,
+not the third-party Python files setup downloads, so Smart App Control can still
+block those (see [troubleshooting](troubleshooting.md)).
+
 ## Keep engine environments off `C:`
 
 Engine environments (IndexTTS, CosyVoice, MOSS-TTS and other sidecars, plus the
@@ -43,6 +49,17 @@ Download the installer matching your PC from the
 The setup wizard installs for the current user by default (no administrator
 rights needed) and lets you choose the installation folder. Compare the download with the
 release's `SHA256SUMS.txt` before running it.
+
+Current installers add the bundled CLI's directory to PATH for their installation
+scope and remove that entry on uninstall. Open a new terminal afterwards:
+`voicestudio` opens the desktop app; `voicestudio --help` shows terminal commands.
+The CLI includes its own Python runtime and works before backend setup. Commands
+that need the backend start VoiceStudio in the background when it is not running.
+See [Terminal command](script.md#terminal-command).
+
+The uninstaller asks whether to also delete the downloaded runtime and models
+(default No; your voices and projects are always kept). See
+[Uninstalling](uninstall.md#windows-uninstaller-keep-or-delete-the-downloads).
 
 During an update, the installer closes processes running inside the selected
 installation folder. Processes in similarly named sibling folders and the
@@ -168,7 +185,9 @@ Prerequisites:
 - **Bun** — `powershell -c "irm bun.sh/install.ps1 | iex"`.
 - **uv** — `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"` (it
   provides the managed Python 3.11 the backend uses).
-- **Node.js 22+**.
+- **Node.js 22.12.0 or newer** (a current LTS release is recommended). Source
+  startup checks this before setup or Electron downloads; if your Node is too
+  old, install a supported release from https://nodejs.org and reopen the terminal.
 - **Rust / Cargo** — `winget install Rustlang.Rustup`; close and reopen
   PowerShell afterwards.
 - **Microsoft C++ Build Tools** — the
@@ -179,6 +198,14 @@ Prerequisites:
 ```powershell
 git clone https://github.com/debpalash/VoiceStudio.git
 cd VoiceStudio
+node electron/scripts/node-version.mjs
+```
+
+If the Node check fails, stop here, upgrade Node.js, and reopen your terminal
+before continuing. Then install dependencies and prepare the local backend
+(skip API setup when using an external backend or an Intel Mac):
+
+```powershell
 bun install
 bun run setup:api   # create the Python environment with uv
 bun run dev         # Electron with hot reload; it starts and supervises the backend
@@ -242,5 +269,12 @@ See [docs/setup/huggingface-token.md](../setup/huggingface-token.md).
 ## Troubleshooting
 
 Hit a wall? See [docs/install/troubleshooting.md](troubleshooting.md).
+
+If the engine stops with a Windows exit code, the failure screen names it:
+
+- **`spawn UNKNOWN`, `EPERM` or `EACCES`**: Windows or security software refused to start `python.exe`. The screen names the program and says when Smart App Control is on. See [`EXEC_REFUSED`](troubleshooting.md#exec_refused) and [`WINDOWS_APP_CONTROL_BLOCKED`](troubleshooting.md#windows_app_control_blocked).
+- **`0xC0000005`, `0xC000001D`, `0xC0000374` and other native faults**: a library crashed below Python. The in-app report names the library from the Windows event log. When it is the graphics driver, update the driver or press **Restart on CPU** on the failure screen; switch back later in Settings → Performance & Device. See [`NATIVE_ACCESS_VIOLATION`](troubleshooting.md#native_access_violation).
+- **`0xC0000006`**: Windows could not read part of a file mapped into memory, usually a model file. A disk or paging-file read error is the most common cause: keep models on an internal drive and check it for errors. See [`NATIVE_IN_PAGE_ERROR`](troubleshooting.md#native_in_page_error).
+- **`4294967295` (`-1`)**: the engine exited with `-1`. With no traceback, the likely cause is something outside the app ending it, often security software, but the engine can also exit with `-1` itself.
 
 Migration configuration is kept ASCII so Alembic can read it under Windows locale code pages as well as UTF-8. This applies to source installs and direct Alembic commands.

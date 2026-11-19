@@ -61,6 +61,14 @@ Chip/Processor**) from the
 [Releases page](https://github.com/debpalash/VoiceStudio/releases/latest),
 double-click to mount it, and drag **VoiceStudio.app** into `/Applications`.
 
+Current builds link the bundled `voicestudio` command into `~/.local/bin` on
+the first launch of the installed app (or during shell-script installation), and
+add that folder to your shell profiles (`~/.zshrc`, `~/.profile`) once if your shell does not
+already search it. Open a new terminal afterwards: `voicestudio` opens the app,
+`voicestudio --help` shows the CLI, and commands start the app in the background
+when it is not running. Python and uv are not required. Existing custom launchers
+are preserved; see the [CLI migration instructions](script.md#terminal-command).
+
 | Mac | DMG to download |
 |-----|-----------------|
 | Apple Silicon (any M-series chip) | `VoiceStudio-<version>-mac-arm64.dmg` |
@@ -173,13 +181,21 @@ Prerequisites (use a native arm64 terminal on Apple Silicon):
 - **Bun** — `curl -fsSL https://bun.sh/install | bash`.
 - **uv** — `curl -LsSf https://astral.sh/uv/install.sh | sh` (it provides the
   managed Python 3.11 the backend uses).
-- **Node.js 22+** and **Rust / Cargo** (`brew install rust`, or rustup —
+- **Node.js 22.12.0 or newer** and **Rust / Cargo** (`brew install rust`, or rustup —
   reopen the terminal or source `"$HOME/.cargo/env"` afterwards) for the
   Electron native helper.
 
 ```bash
 git clone https://github.com/debpalash/VoiceStudio.git
 cd VoiceStudio
+node electron/scripts/node-version.mjs
+```
+
+If the Node check fails, stop here, upgrade Node.js, and reopen your terminal
+before continuing. Then install dependencies and prepare the local backend
+(skip API setup when using an external backend or an Intel Mac):
+
+```bash
 bun install
 bun run setup:api   # create the Python environment with uv
 bun run dev         # Electron with hot reload; it starts and supervises the backend

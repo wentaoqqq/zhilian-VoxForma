@@ -38,7 +38,7 @@
     <a href="https://github.com/debpalash/Opal?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/opal-dark.svg" /><img src="../../docs/sponsors/opal.svg" alt="Opal" height="32" align="middle" /></picture></a>
     <a href="https://github.com/velixio/supermetry?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/supermetry-dark.svg" /><img src="../../docs/sponsors/supermetry.svg" alt="Supermetry" height="32" align="middle" /></picture></a>
       ·   <sub>特別スポンサー</sub> 
-    <a href="https://app.spicrawl.com/signup?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
+    <a href="https://spicrawl.com?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
   </p>
 </div>
 
@@ -56,6 +56,8 @@
 <p align="center">
   <a href="https://github.com/debpalash/VoiceStudio/releases/latest"><img src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-993f61?style=for-the-badge&amp;logo=github&amp;logoColor=ffffff" alt="ダウンロード" height="24" /></a>
   <a href="#はじめに"><img src="https://img.shields.io/badge/%E5%B0%8E%E5%85%A5%E3%82%AC%E3%82%A4%E3%83%89-27272a?style=for-the-badge" alt="導入ガイド" height="24" /></a>
+  <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Pro-27272a?style=for-the-badge" alt="VoiceStudio Pro" height="24" /></a>
+  <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Cloud-27272a?style=for-the-badge" alt="VoiceStudio Cloud" height="24" /></a>
 </p>
 
 <a id="what-you-can-do"></a>
@@ -109,11 +111,46 @@
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="../../docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
 
+## Pro と Cloud
+
+ここまでの機能はすべて無料で、ご自身のハードウェアで動作し、アカウントも不要です。Pro と Cloud は任意です。
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-pro.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Pro</a></strong><br /><br />
+      複数のマシンで有償のクライアント業務を行う方に。
+      <ul>
+        <li>クライアント業務向けの商用ライセンスをメールでお届け</li>
+        <li>1 ユーザーにつき同時に最大 3 台のデバイス</li>
+        <li>プロジェクトはローカルのまま、ジョブを他の GPU に送信</li>
+        <li>新機能と修正をいち早く利用</li>
+      </ul>
+      <sub>クローズドソース版、アカウント必須、7 日間の全額返金。AGPL-3.0 版アプリは、その条件に基づく商用利用を含めて引き続き無料です。</sub><br /><br />
+      <strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Pro のプランを見る →</a></strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-cloud.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Cloud</a></strong><br /><br />
+      ホスト型の音声・吹き替え API を近日公開。GPU は不要です。
+      <ul>
+        <li>音声合成、ボイスデザイン、同意に基づくボイスクローン</li>
+        <li>吹き替え、文字起こし、オーディオブック</li>
+        <li>日別・プロジェクト別の使用量とクレジット</li>
+        <li>自動で進む長時間ジョブ</li>
+      </ul>
+      <sub>まだ利用できません。早期アクセスに参加すると無料の利用クレジットを受け取れます。デスクトップアプリは引き続き無料で、ローカルで動作します。</sub><br /><br />
+      <strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Cloud の早期アクセスに参加 →</a></strong>
+    </td>
+  </tr>
+</table>
+
 <a id="platforms"></a>
 
 ## 対応プラットフォーム
 
 OS を選び、使いたいインストール方法を展開してください。
+
+ネイティブ GGUF エンジンは、AMD、Intel、NVIDIA の GPU でエンジン固有の Vulkan アクセラレーションも利用できます（[OmniVoice](../../docs/engines/omnivoice-gguf.md#vulkan-acceleration), [CosyVoice](../../docs/engines/cosyvoice-gguf.md)）。OmniVoice GGUF は Windows と Linux で GPU とモデルサイズを自動選択します。非表示の検査が停止した場合、Vulkan 検出はネイティブの概要を使って再試行します。Windows と Linux のデスクトップビルドは、Vulkan モジュールを欠いたまま公開されることを防ぐため、モジュールがないと失敗します。
 
 <a id="install-macos"></a>
 
@@ -170,6 +207,8 @@ Intel Mac ではアプリの UI を利用できます。別のコンピュータ
 
 <details>
 <summary><img src="../../docs/assets/platforms/windows.svg" alt="" width="20" height="20" /> <strong>Windows</strong> · PowerShell · EXE</summary>
+
+実験的な [Windows ROCm セットアップ](../../docs/install/windows-rocm.md)は、ターゲットが `gfx1030`、`gfx1031`、`gfx1032` の一部の RDNA 2 RX 6000 GPU に対応しています。RX 6500 XT（`gfx1034`）は対象外です。個別にバージョンを固定した CTranslate2 ビルドには、RX 6700 XT での文字起こし用のネイティブ `gfx1031` カーネルが含まれ、セットアップ時に GPU カーネルの実際の実行を確認します。RX 6700 XT のテストには、ネイティブ Torch 音声生成と PyTorch Whisper も含まれます。ROCm 10 の faster-whisper は推論を別プロセスで行い、安全な CPU 選択と CPU へのフォールバックを維持します。他のカードや処理には、ガイドに記載された検証範囲の制限が適用されます。パフォーマンスプリセットは、変更されたエンジン選択を保存する前にオフラインの子プロセスで実行環境の準備状況を検証し、インストール済み環境で障害が起きた場合もフォールバックを維持します。
 
 <blockquote>
 
@@ -465,9 +504,9 @@ https://github.com/debpalash/VoiceStudio/blob/main/docs/install/agent.md
 | セットアップのヘルプ | [トラブルシューティング](../../docs/install/troubleshooting.md) · [モデルのダウンロード](../../docs/downloading-models.md) |
 | ガイド | [複数話者の吹き替え](../../docs/dubbing/multi-speaker-guide.md) · [表現豊かな音声](../../docs/expressive-speech.md) · [吹き替えの書き出し](../../docs/dubbing/export.md) |
 | モデルと音質 | [エンジンガイド](../../docs/engines/README.md) · [whisper.cpp ASR](../../docs/engines/whisper-cpp.md) · [ベンチマーク](../../docs/benchmarks.md) |
-| 連携 | [ローカル API](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [サンプル](../../examples/README.md) |
+| 連携 | [CLI](../../docs/install/script.md#terminal-command) · [ローカル API](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [サンプル](../../examples/README.md) |
 | スマートフォンアプリ | [iOS と Android](../../docs/mobile.md) |
-| 開発 | [コントリビューション](../../.github/CONTRIBUTING.md)（初めての PR の前に [CLA への署名](../../.github/CONTRIBUTING.md#contribution-licensing)が必要です）· [変更履歴](../../CHANGELOG.md) |
+| 開発 | [コントリビューション](../../.github/CONTRIBUTING.md)（初めての PR の前に [CLA への署名](../../.github/CONTRIBUTING.md#contribution-licensing)が必要です）· [変更履歴](../../CHANGELOG.md) · [コード署名ポリシー](../code-signing-policy.md) |
 
 エージェントスキル：`npx skills add debpalash/VoiceStudio`（音声作業には **voicestudio**、リポジトリのメンテナンスには **voicestudio-maintainer**）。
 
@@ -475,7 +514,7 @@ https://github.com/debpalash/VoiceStudio/blob/main/docs/install/agent.md
 
 ## スポンサー
 
-VoiceStudio は無料で、背後に有料クラウドはありません。開発を続けられるのはスポンサーのおかげです。スポンサー資金はメンテナーの作業時間、テスト用ハードウェア、コード署名、リリース基盤に充てられます。
+VoiceStudio アプリは無料で、有料クラウドは必要ありません。開発を続けられるのはスポンサーのおかげです。スポンサー資金はメンテナーの作業時間、テスト用ハードウェア、コード署名、リリース基盤に充てられます。
 
 <p>
     <a href="https://github.com/debpalash/OpenGTM?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/opengtm-dark.svg" /><img src="../../docs/sponsors/opengtm.svg" alt="OpenGTM" height="48" align="middle" /></picture></a>

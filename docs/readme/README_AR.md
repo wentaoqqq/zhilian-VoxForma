@@ -37,7 +37,7 @@
     <a href="https://github.com/debpalash/Opal?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/opal-dark.svg" /><img src="../../docs/sponsors/opal.svg" alt="Opal" height="32" align="middle" /></picture></a>
     <a href="https://github.com/velixio/supermetry?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/supermetry-dark.svg" /><img src="../../docs/sponsors/supermetry.svg" alt="Supermetry" height="32" align="middle" /></picture></a>
       ·   <sub>الراعي الخاص</sub> 
-    <a href="https://app.spicrawl.com/signup?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
+    <a href="https://spicrawl.com?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
   </p>
 </div>
 
@@ -55,6 +55,8 @@
 <p align="center">
   <a href="https://github.com/debpalash/VoiceStudio/releases/latest"><img src="https://img.shields.io/badge/%D8%AA%D9%86%D8%B2%D9%8A%D9%84-993f61?style=for-the-badge&amp;logo=github&amp;logoColor=ffffff" alt="تنزيل" height="24" /></a>
   <a href="#get-started"><img src="https://img.shields.io/badge/%D8%A7%D8%A8%D8%AF%D8%A3%20%D8%A7%D9%84%D8%A2%D9%86-27272a?style=for-the-badge" alt="ابدأ الآن" height="24" /></a>
+  <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Pro-27272a?style=for-the-badge" alt="VoiceStudio Pro" height="24" /></a>
+  <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Cloud-27272a?style=for-the-badge" alt="VoiceStudio Cloud" height="24" /></a>
 </p>
 
 <a id="what-you-can-do"></a>
@@ -108,11 +110,46 @@
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="../../docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
 
+## Pro وCloud
+
+كل ما سبق مجاني، ويعمل على جهازك، ولا يحتاج إلى حساب. Pro وCloud اختياريان.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-pro.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Pro</a></strong><br /><br />
+      لأعمال العملاء المدفوعة على أكثر من جهاز.
+      <ul>
+        <li>ترخيص تجاري لأعمال عملائك يصلك عبر البريد الإلكتروني</li>
+        <li>مستخدم واحد على ما يصل إلى 3 أجهزة في الوقت نفسه</li>
+        <li>أرسل المهام إلى وحدات GPU الأخرى لديك بينما تبقى مشاريعك محلية</li>
+        <li>الميزات والإصلاحات الجديدة أولًا</li>
+      </ul>
+      <sub>إصدار مغلق المصدر، يتطلب حسابًا، واسترداد كامل خلال 7 أيام. يبقى تطبيق AGPL-3.0 مجانيًا، بما في ذلك الاستخدام التجاري وفق شروطه.</sub><br /><br />
+      <strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">← اطّلع على خطط Pro</a></strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-cloud.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Cloud</a></strong><br /><br />
+      واجهة API مستضافة للصوت والدبلجة، قريبًا. لا حاجة إلى GPU.
+      <ul>
+        <li>النطق وتصميم الأصوات واستنساخ الصوت بموافقة صاحبه</li>
+        <li>الدبلجة والتفريغ النصي والكتب الصوتية</li>
+        <li>الاستخدام والأرصدة حسب اليوم أو المشروع</li>
+        <li>مهام طويلة تعمل من تلقاء نفسها</li>
+      </ul>
+      <sub>غير متاحة بعد: انضم إلى الوصول المبكر واحصل على أرصدة استخدام مجانية. يبقى تطبيق سطح المكتب مجانيًا ومحليًا.</sub><br /><br />
+      <strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">← انضم إلى الوصول المبكر إلى Cloud</a></strong>
+    </td>
+  </tr>
+</table>
+
 <a id="platforms"></a>
 
 ## المنصات
 
 اختر نظامك، ثم قم بتوسيع طريقة التثبيت.
+
+تدعم محركات GGUF الأصلية أيضًا تسريع Vulkan الخاص بكل محرك على وحدات معالجة الرسومات AMD وIntel وNVIDIA ([OmniVoice](../../docs/engines/omnivoice-gguf.md#vulkan-acceleration), [CosyVoice](../../docs/engines/cosyvoice-gguf.md)). يختار OmniVoice GGUF وحدة معالجة الرسومات وحجم النموذج تلقائيًا على Windows وLinux. عند تعطل الفحص المخفي، تعيد عملية اكتشاف Vulkan المحاولة باستخدام ملخص أصلي؛ وتفشل عمليات بناء سطح المكتب لـWindows وLinux بدلًا من إصدار نسخة تفتقر إلى وحدة Vulkan بصمت.
 
 <a id="install-macos"></a>
 
@@ -169,6 +206,8 @@ curl -fsSL https://voicestudio.sh/install | sh
 
 <details>
 <summary><img src="../../docs/assets/platforms/windows.svg" alt="" width="20" height="20" /> <strong>Windows</strong> · PowerShell · EXE</summary>
+
+يدعم [إعداد Windows ROCm](../../docs/install/windows-rocm.md) التجريبي بطاقات مختارة من RDNA 2 RX 6000 ذات الأهداف `gfx1030` أو `gfx1031` أو `gfx1032`؛ ولا يشمل RX 6500 XT (`gfx1034`). يتضمن إصدار CTranslate2 المثبّت بشكل مستقل نوى `gfx1031` أصلية لنسخ الصوت على RX 6700 XT، ويتحقق الإعداد من تنفيذ نوى GPU فعليًا. تشمل اختبارات RX 6700 XT أيضًا توليد الكلام باستخدام Torch وPyTorch Whisper. يستخدم faster-whisper على ROCm 10 عملية استدلال منفصلة للحفاظ على اختيار CPU والرجوع إليه بأمان. تظل البطاقات وأحمال العمل الأخرى خاضعة لحدود التحقق المذكورة في الدليل. تتحقق إعدادات الأداء المسبقة من جاهزية المحركات التي تغير اختيارها في عملية فرعية دون اتصال قبل حفظها، مع الإبقاء على البديل إذا تعذر تشغيل بيئة مثبتة.
 
 <blockquote>
 
@@ -462,9 +501,9 @@ https://github.com/debpalash/VoiceStudio/blob/main/docs/install/agent.md
 | مساعدة الإعداد | [استكشاف الأخطاء وإصلاحها](../../docs/install/troubleshooting.md) · [تنزيلات النماذج](../../docs/downloading-models.md) |
 | أدلة | [دبلجة متعددة المتحدثين](../../docs/dubbing/multi-speaker-guide.md) · [كلام معبّر](../../docs/expressive-speech.md) · [تصدير الدبلجة](../../docs/dubbing/export.md) |
 | النماذج والجودة | [أدلة المحرك](../../docs/engines/README.md) · [whisper.cpp ASR](../../docs/engines/whisper-cpp.md) · [المعايير](../../docs/benchmarks.md) |
-| التكامل | [واجهة API المحلية](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [أمثلة](../../examples/README.md) |
+| التكامل | [CLI](../../docs/install/script.md#terminal-command) · [واجهة API المحلية](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [أمثلة](../../examples/README.md) |
 | تطبيقات الهاتف | [iOS وAndroid](../../docs/mobile.md) |
-| تطوير | [المساهمة](../../.github/CONTRIBUTING.md) ([قم بالتوقيع على CLA](../../.github/CONTRIBUTING.md#contribution-licensing) قبل العلاقات العامة الأولى) · [سجل التغيير](../../CHANGELOG.md) |
+| تطوير | [المساهمة](../../.github/CONTRIBUTING.md) ([قم بالتوقيع على CLA](../../.github/CONTRIBUTING.md#contribution-licensing) قبل العلاقات العامة الأولى) · [سجل التغيير](../../CHANGELOG.md) · [سياسة توقيع الشيفرة](../code-signing-policy.md) |
 
 مهارات الوكيل: `npx skills add debpalash/VoiceStudio` (**voicestudio** لأعمال الصوت، و**voicestudio-maintainer** للمستودع).
 

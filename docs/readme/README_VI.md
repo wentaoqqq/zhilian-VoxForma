@@ -37,7 +37,7 @@
     <a href="https://github.com/debpalash/Opal?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/opal-dark.svg" /><img src="../../docs/sponsors/opal.svg" alt="Opal" height="32" align="middle" /></picture></a>
     <a href="https://github.com/velixio/supermetry?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/supermetry-dark.svg" /><img src="../../docs/sponsors/supermetry.svg" alt="Supermetry" height="32" align="middle" /></picture></a>
       ·   <sub>Nhà tài trợ đặc biệt</sub> 
-    <a href="https://app.spicrawl.com/signup?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
+    <a href="https://spicrawl.com?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
   </p>
 </div>
 
@@ -55,6 +55,8 @@
 <p align="center">
   <a href="https://github.com/debpalash/VoiceStudio/releases/latest"><img src="https://img.shields.io/badge/T%E1%BA%A3i%20xu%E1%BB%91ng-993f61?style=for-the-badge&amp;logo=github&amp;logoColor=ffffff" alt="Tải xuống" height="24" /></a>
   <a href="#get-started"><img src="https://img.shields.io/badge/B%E1%BA%AFt%20%C4%91%E1%BA%A7u-27272a?style=for-the-badge" alt="Bắt đầu" height="24" /></a>
+  <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Pro-27272a?style=for-the-badge" alt="VoiceStudio Pro" height="24" /></a>
+  <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Cloud-27272a?style=for-the-badge" alt="VoiceStudio Cloud" height="24" /></a>
 </p>
 
 <a id="what-you-can-do"></a>
@@ -108,11 +110,46 @@ Bắt đầu với **VoiceStudio** (mặc định, được cung cấp bởi k2-
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="../../docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
 
+## Pro và Cloud
+
+Mọi thứ ở trên đều miễn phí, chạy trên phần cứng của bạn và không cần tài khoản. Pro và Cloud là tùy chọn.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-pro.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Pro</a></strong><br /><br />
+      Dành cho công việc khách hàng có trả phí trên nhiều máy.
+      <ul>
+        <li>Giấy phép thương mại cho công việc khách hàng, gửi qua email</li>
+        <li>Một người dùng trên tối đa 3 thiết bị cùng lúc</li>
+        <li>Gửi tác vụ đến các GPU khác của bạn trong khi dự án vẫn ở máy cục bộ</li>
+        <li>Nhận tính năng và bản sửa lỗi mới trước</li>
+      </ul>
+      <sub>Bản mã nguồn đóng, cần tài khoản, hoàn tiền đầy đủ trong 7 ngày. Ứng dụng AGPL-3.0 vẫn miễn phí, kể cả dùng thương mại theo các điều khoản của giấy phép này.</sub><br /><br />
+      <strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Xem các gói Pro →</a></strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-cloud.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Cloud</a></strong><br /><br />
+      API giọng nói và lồng tiếng được lưu trữ sẵn, sắp ra mắt. Không cần GPU.
+      <ul>
+        <li>Giọng nói, thiết kế giọng và nhân bản giọng khi có sự đồng ý</li>
+        <li>Lồng tiếng, phiên âm và sách nói</li>
+        <li>Mức dùng và tín dụng theo ngày hoặc dự án</li>
+        <li>Tác vụ dài tự chạy</li>
+      </ul>
+      <sub>Chưa có sẵn: tham gia truy cập sớm để nhận tín dụng sử dụng miễn phí. Ứng dụng máy tính vẫn miễn phí và chạy cục bộ.</sub><br /><br />
+      <strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Tham gia truy cập sớm Cloud →</a></strong>
+    </td>
+  </tr>
+</table>
+
 <a id="platforms"></a>
 
 ## Nền tảng
 
 Chọn hệ thống của bạn, sau đó mở rộng phương pháp cài đặt.
+
+Các bộ máy GGUF gốc cũng hỗ trợ tăng tốc Vulkan riêng cho từng bộ máy trên GPU AMD, Intel và NVIDIA ([OmniVoice](../../docs/engines/omnivoice-gguf.md#vulkan-acceleration), [CosyVoice](../../docs/engines/cosyvoice-gguf.md)). OmniVoice GGUF tự động chọn GPU và kích thước mô hình trên Windows và Linux. Nếu phép kiểm tra ẩn bị treo, quá trình phát hiện Vulkan thử lại bằng bản tóm tắt gốc; các bản dựng máy tính Windows và Linux sẽ thất bại thay vì âm thầm được phát hành mà thiếu mô-đun Vulkan.
 
 <a id="install-macos"></a>
 
@@ -169,6 +206,8 @@ Giao diện ứng dụng chạy được trên máy Mac Intel; hãy kết nối 
 
 <details>
 <summary><img src="../../docs/assets/platforms/windows.svg" alt="" width="20" height="20" /> <strong>Windows</strong> · PowerShell · EXE</summary>
+
+[Thiết lập Windows ROCm](../../docs/install/windows-rocm.md) thử nghiệm hỗ trợ một số GPU RDNA 2 RX 6000 có đích `gfx1030`, `gfx1031` hoặc `gfx1032`; không bao gồm RX 6500 XT (`gfx1034`). Bản dựng CTranslate2 được ghim phiên bản riêng bao gồm nhân `gfx1031` gốc để chép lời trên RX 6700 XT; quá trình thiết lập kiểm tra việc thực thi nhân GPU thực tế. Các thử nghiệm RX 6700 XT cũng bao gồm tạo giọng nói Torch gốc và PyTorch Whisper. Trên ROCm 10, faster-whisper dùng tiến trình suy luận riêng để chọn CPU và chuyển về CPU an toàn. Các thẻ và khối lượng công việc khác vẫn tuân theo giới hạn kiểm chứng trong hướng dẫn. Cấu hình hiệu năng đặt sẵn xác minh trạng thái sẵn sàng của các bộ máy được thay đổi trong tiến trình con ngoại tuyến trước khi lưu, đồng thời giữ phương án dự phòng nếu môi trường thực thi đã cài đặt bị lỗi.
 
 <blockquote>
 
@@ -462,9 +501,9 @@ Nâng cấp từ phiên bản 0.5.3 trở xuống (ứng dụng Tauri)? [Cài ri
 | Trợ giúp cài đặt | [Khắc phục sự cố](../../docs/install/troubleshooting.md) · [Tải xuống mô hình](../../docs/downloading-models.md) |
 | Hướng dẫn | [Lồng tiếng cho nhiều người nói](../../docs/dubbing/multi-speaker-guide.md) · [Giọng nói biểu cảm](../../docs/expressive-speech.md) · [Xuất âm thanh lồng tiếng](../../docs/dubbing/export.md) |
 | Mô hình và chất lượng | [Hướng dẫn các công cụ](../../docs/engines/README.md) · [whisper.cpp ASR](../../docs/engines/whisper-cpp.md) · [Đo hiệu năng](../../docs/benchmarks.md) |
-| Tích hợp | [API cục bộ](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [Ví dụ](../../examples/README.md) |
+| Tích hợp | [CLI](../../docs/install/script.md#terminal-command) · [API cục bộ](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [Ví dụ](../../examples/README.md) |
 | Ứng dụng điện thoại | [iOS và Android](../../docs/mobile.md) |
-| Phát triển | [Đóng góp](../../.github/CONTRIBUTING.md) ([ký CLA](../../.github/CONTRIBUTING.md#contribution-licensing) trước PR đầu tiên) · [Nhật ký thay đổi](../../CHANGELOG.md) |
+| Phát triển | [Đóng góp](../../.github/CONTRIBUTING.md) ([ký CLA](../../.github/CONTRIBUTING.md#contribution-licensing) trước PR đầu tiên) · [Nhật ký thay đổi](../../CHANGELOG.md) · [Chính sách ký mã](../code-signing-policy.md) |
 
 Kỹ năng cho trợ lý lập trình: `npx skills add debpalash/VoiceStudio` (**voicestudio** cho công việc âm thanh, **voicestudio-maintainer** cho kho mã).
 

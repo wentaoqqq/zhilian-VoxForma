@@ -39,7 +39,8 @@ Before touching any knob, check these — they account for most slowness reports
      warns explicitly: *"cpu (no GPU acceleration detected)"* with a hint
      about drivers.
    - **Model Catalogue** shows a routing badge per engine — "GPU active",
-     "CPU fallback", or "CPU" — with the *reason* shown as small text under
+     "CPU fallback", "CPU", or "unknown" when a sidecar GPU runtime has not
+     been verified — with the *reason* shown as small text under
      the badge (full text on hover).
    Note: **PyTorch GPU acceleration on Windows is NVIDIA/CUDA-only** — AMD and
    Intel GPUs run PyTorch engines on the CPU there (audio.cpp can still use a
@@ -86,6 +87,7 @@ None of them are required — the defaults are chosen for the common case.
 | Variable | Default | What it does |
 |---|---|---|
 | `OMNIVOICE_DEVICE` | `auto` | Pin the compute device (`cuda` / `rocm` / `xpu` / `mps` / `cpu`) instead of auto-detect. Same control lives in **Settings → Performance & Device** (the env var wins over the UI pick). Honored only for devices the host actually has — a family that isn't detected is noted and ignored, never obeyed blindly. Applies at the next backend start. |
+| `OMNIVOICE_XPU_DTYPE` | `bfloat16` | Precision OmniVoice loads in on Intel XPU: `bfloat16`, `float16` or `float32`. Unknown values are ignored. |
 | `CUDA_VISIBLE_DEVICES` | all NVIDIA GPUs | On a multi-GPU NVIDIA host, expose only the selected physical adapter to VoiceStudio and its engine subprocesses. **Settings → Performance & Device → CUDA** lists adapters by index and name, persists their stable GPU UUID, and applies the choice after restart. An externally supplied environment variable wins over the saved UI choice. |
 | `OMNIVOICE_FLASHINFER` | `0` | CUDA-only accelerated decoding for the default engine via [FlashInfer](https://github.com/flashinfer-ai/flashinfer) kernels (packed CFG attention, fused RMSNorm/RoPE/GEMM) — ~2x on upstream's benchmarks. `1` enables it; `graph` also captures CUDA graphs (best when you render one thing at a time). Requires installing the optional `flashinfer-python` package into the backend environment first (`uv pip install flashinfer-python flashinfer-jit-cache --extra-index-url https://flashinfer.ai/whl/cu128/`, matching your CUDA build). Replaces `torch.compile` for that session, pins inference to a single GPU thread (the FlashInfer attention plan is per-generation state), and keeps fused copies of the attention/MLP weights resident (~roughly half the LLM's weight size extra VRAM) — leave it off on tight-VRAM cards. If the package is missing or a FlashInfer/CUDA-graph kernel fails at runtime, the app logs the reason and falls back to the standard path; failures outside those kernels (e.g. a genuine out-of-memory) surface normally. |
 | `OMNIVOICE_PROMPT_DISK_CACHE` | `1` | Persist encoded voice-clone references (`prompt_cache/` in the app data dir, ~10 KB per voice, 32 newest kept) so the first generation with a known voice after a restart skips the reference re-encode and any auto-transcription. Set `0` to keep the cache in memory only. |
@@ -329,6 +331,10 @@ RAM/VRAM) turns a guessing game into a bisect.
 Measured results per engine/device — and how to contribute yours — live in
 [benchmarks.md](benchmarks.md).
 
+App startup, idle memory, idle CPU and renderer bundle size have their own
+offline harness, `scripts/bench/bench.py`; how to run it and the recorded
+baselines are in [performance-baselines.md](performance-baselines.md).
+
 ## Performance budgets
 
 CI guards the hot paths above against regressions — not with wall-clock
@@ -349,6 +355,11 @@ but with **operation-count budgets** in
 - **NLLB dubbing translation**: rows sharing a target language render in
   bounded batches instead of one model forward per subtitle. Mixed targets
   retain their request order, and a failed batch retries per row.
+
+The renderer bundle has a size budget too: CI's Linux desktop UI job runs
+`node scripts/bench/bundle.mjs --check` on the app it already builds and flags
+(without failing the job) startup or total gzip size more than 10 % over
+`scripts/bench/bundle-baseline.json`.
 
 Updating a budget is a deliberate act: if a change legitimately adds an
 operation to a guarded path, change the expected count in the same PR with a

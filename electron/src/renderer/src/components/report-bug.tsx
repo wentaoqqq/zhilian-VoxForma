@@ -8,7 +8,12 @@ import { scrubText } from '@shared/utils/scrub';
 import { formatHostSnapshot, withDeadline } from '@shared/utils/hostSnapshot';
 import { collapseRepeatedLines, formatFailureFacts } from '@shared/utils/installFailure';
 import { describeExitCode, isNativeFaultExit } from '@shared/utils/nativeExit';
-import { _adaptLastRunCrash, type LastRunCrashRecord } from '@shared/utils/runCrashRecord';
+import { formatCrashContext } from '@shared/utils/crashContext';
+import {
+  _adaptLastRunCrash,
+  lastRunCrashFacts,
+  type LastRunCrashRecord,
+} from '@shared/utils/runCrashRecord';
 import { getBackendStatusSnapshot } from '@/hooks/use-backend-status';
 import { apiJson } from '@/lib/api/client';
 import { router } from '@/router';
@@ -74,7 +79,16 @@ function reachabilitySection(
   return lines;
 }
 
-export function ReportBug({ error, setup = false }: { error?: Error | string; setup?: boolean }) {
+export function ReportBug({
+  error,
+  setup = false,
+  variant = 'outline',
+}: {
+  error?: Error | string;
+  setup?: boolean;
+  /** `ghost` when it sits in a row of plain help links. */
+  variant?: 'outline' | 'ghost';
+}) {
   const { t } = useTranslation();
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -222,7 +236,7 @@ export function ReportBug({ error, setup = false }: { error?: Error | string; se
             'Stage: ' + backend.stage,
             'Managed: ' + backend.managed,
             ...(backend.exitCode != null
-              ? ['Exit code: ' + describeExitCode(backend.exitCode)]
+              ? ['Exit code: ' + describeExitCode(backend.exitCode, undefined, backend.logTail)]
               : []),
             ...(backend.exitSignal ? ['Signal: ' + backend.exitSignal] : []),
             ...(isNativeFaultExit({
@@ -246,12 +260,13 @@ export function ReportBug({ error, setup = false }: { error?: Error | string; se
           '',
           'Detected: ' + new Date(crash.timestamp).toISOString(),
           'Version: ' + crash.version,
-          'Exit code: ' + describeExitCode(crash.exitCode, t('common.unknown')),
+          'Exit code: ' + describeExitCode(crash.exitCode, t('common.unknown'), crash.logTail),
           'Signal: ' + (crash.signal ?? '—'),
           ...(isNativeFaultExit({ exitCode: crash.exitCode, signal: crash.signal })
             ? [t('reportBug.native_fault_cause')]
             : []),
           'Uptime (seconds): ' + Math.round(crash.uptimeMs / 1000),
+          ...formatCrashContext(crash.context),
           '```',
           clampCrashTail(scrubText(crash.logTail.join('\n'))),
           '```',
@@ -266,6 +281,7 @@ export function ReportBug({ error, setup = false }: { error?: Error | string; se
           'Detected: ' + new Date(marker.ts * 1000).toISOString(),
           'Version: ' + marker.backend_version,
           'Uptime (seconds): ' + marker.uptime_s,
+          ...lastRunCrashFacts(previous.value.record),
           '```',
           clampCrashTail(scrubText(marker.last_stderr)),
           '```',
@@ -312,7 +328,7 @@ export function ReportBug({ error, setup = false }: { error?: Error | string; se
     <>
       <div className="space-y-2">
         <Button
-          variant="outline"
+          variant={variant}
           size="sm"
           disabled={busy}
           title={t('reportBug.title')}

@@ -37,7 +37,7 @@
     <a href="https://github.com/debpalash/Opal?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/opal-dark.svg" /><img src="../../docs/sponsors/opal.svg" alt="Opal" height="32" align="middle" /></picture></a>
     <a href="https://github.com/velixio/supermetry?utm_source=voicestudio&utm_medium=sponsor&utm_campaign=strategic-sponsor&utm_content=readme-logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/supermetry-dark.svg" /><img src="../../docs/sponsors/supermetry.svg" alt="Supermetry" height="32" align="middle" /></picture></a>
       ·   <sub>Спеціальний спонсор</sub> 
-    <a href="https://app.spicrawl.com/signup?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
+    <a href="https://spicrawl.com?utm_source=voicestudio&amp;utm_medium=github_readme&amp;utm_campaign=special_sponsor&amp;utm_content=logo"><picture><source media="(prefers-color-scheme: dark)" srcset="../../docs/sponsors/spicrawl-dark.svg" /><img src="../../docs/sponsors/spicrawl.svg" alt="Spicrawl" height="32" align="middle" /></picture></a>
   </p>
 </div>
 
@@ -55,6 +55,8 @@
 <p align="center">
   <a href="https://github.com/debpalash/VoiceStudio/releases/latest"><img src="https://img.shields.io/badge/%D0%97%D0%B0%D0%B2%D0%B0%D0%BD%D1%82%D0%B0%D0%B6%D0%B8%D1%82%D0%B8-993f61?style=for-the-badge&amp;logo=github&amp;logoColor=ffffff" alt="Завантажити" height="24" /></a>
   <a href="#get-started"><img src="https://img.shields.io/badge/%D0%9F%D0%BE%D1%87%D0%B0%D1%82%D0%BE%D0%BA%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B8-27272a?style=for-the-badge" alt="Початок роботи" height="24" /></a>
+  <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Pro-27272a?style=for-the-badge" alt="VoiceStudio Pro" height="24" /></a>
+  <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=hero-badge"><img src="https://img.shields.io/badge/VoiceStudio%20Cloud-27272a?style=for-the-badge" alt="VoiceStudio Cloud" height="24" /></a>
 </p>
 
 <a id="what-you-can-do"></a>
@@ -108,11 +110,46 @@
 
 <p align="center"><a href="https://discord.gg/bzQavDfVV9"><img src="../../docs/assets/discord-community.svg" alt="Come say hello! Join us on Discord" height="64" /></a></p>
 
+## Pro і Cloud
+
+Усе, що описано вище, безкоштовне, працює на вашому обладнанні й не потребує облікового запису. Pro і Cloud необов’язкові.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-pro.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Pro</a></strong><br /><br />
+      Для оплачуваної роботи з клієнтами на кількох комп’ютерах.
+      <ul>
+        <li>Комерційна ліцензія на роботу з клієнтами, надходить електронною поштою</li>
+        <li>Один користувач і до 3 пристроїв одночасно</li>
+        <li>Надсилайте завдання на інші свої GPU, а проєкти залишаються локально</li>
+        <li>Нові функції та виправлення раніше за всіх</li>
+      </ul>
+      <sub>Збірка із закритим кодом, потрібен обліковий запис, повне повернення коштів протягом 7 днів. Застосунок під AGPL-3.0 залишається безкоштовним, зокрема для комерційного використання на її умовах.</sub><br /><br />
+      <strong><a href="https://voicestudio.sh/pro?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Переглянути плани Pro →</a></strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section"><img src="../assets/voicestudio-cloud.svg" alt="" width="56" height="56" align="middle" /></a>&nbsp;&nbsp;<strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">VoiceStudio Cloud</a></strong><br /><br />
+      Хмарний API для мовлення й дубляжу, незабаром. GPU не потрібен.
+      <ul>
+        <li>Мовлення, створення голосів і клонування голосу за згодою</li>
+        <li>Дубляж, транскрипція та аудіокниги</li>
+        <li>Використання й кредити за днями або проєктами</li>
+        <li>Довгі завдання, які виконуються самі</li>
+      </ul>
+      <sub>Поки недоступно: приєднуйтеся до раннього доступу й отримайте безкоштовні кредити. Настільний застосунок залишається безкоштовним і локальним.</sub><br /><br />
+      <strong><a href="https://app.voicestudio.sh/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=project&amp;utm_content=readme-section">Приєднатися до раннього доступу Cloud →</a></strong>
+    </td>
+  </tr>
+</table>
+
 <a id="platforms"></a>
 
 ## Платформи
 
 Виберіть свою систему, а потім розгорніть спосіб встановлення.
+
+Нативні рушії GGUF також підтримують власне прискорення Vulkan на GPU AMD, Intel і NVIDIA ([OmniVoice](../../docs/engines/omnivoice-gguf.md#vulkan-acceleration), [CosyVoice](../../docs/engines/cosyvoice-gguf.md)). OmniVoice GGUF автоматично вибирає GPU та розмір моделі у Windows і Linux. Якщо прихована перевірка зависає, виявлення Vulkan повторює спробу з нативним зведенням; настільні збірки для Windows і Linux завершуються помилкою замість непомітного випуску без модуля Vulkan.
 
 <a id="install-macos"></a>
 
@@ -169,6 +206,8 @@ curl -fsSL https://voicestudio.sh/install | sh
 
 <details>
 <summary><img src="../../docs/assets/platforms/windows.svg" alt="" width="20" height="20" /> <strong>Windows</strong> · PowerShell · EXE</summary>
+
+Експериментальне [налаштування Windows ROCm](../../docs/install/windows-rocm.md) підтримує окремі GPU RDNA 2 RX 6000 з цільовими архітектурами `gfx1030`, `gfx1031` або `gfx1032`; RX 6500 XT (`gfx1034`) не підтримується. Окремо закріплена збірка CTranslate2 містить нативні ядра `gfx1031` для транскрипції на RX 6700 XT; налаштування перевіряє їхнє фактичне виконання на GPU. Тести RX 6700 XT також охоплюють нативне генерування мовлення Torch і PyTorch Whisper. У ROCm 10 faster-whisper використовує окремий процес інференсу для безпечного вибору CPU та повернення до нього в разі збою. Для інших карт і навантажень діють обмеження перевірки з посібника. Профілі продуктивності перевіряють змінений вибір рушіїв в автономному дочірньому процесі перед збереженням, залишаючи запасний варіант, якщо встановлене середовище виконання не працює.
 
 <blockquote>
 
@@ -462,9 +501,9 @@ https://github.com/debpalash/VoiceStudio/blob/main/docs/install/agent.md
 | Довідка з налаштування | [Усунення несправностей](../../docs/install/troubleshooting.md) · [Завантаження моделі](../../docs/downloading-models.md) |
 | Посібники | [Дубляж із кількома мовцями](../../docs/dubbing/multi-speaker-guide.md) · [Виразне мовлення](../../docs/expressive-speech.md) · [Експорт дубляжу](../../docs/dubbing/export.md) |
 | Моделі та якість | [Посібники рушіїв](../../docs/engines/README.md) · [whisper.cpp ASR](../../docs/engines/whisper-cpp.md) · [Порівняльні тести](../../docs/benchmarks.md) |
-| Інтеграції | [Локальний API](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [Приклади](../../examples/README.md) |
+| Інтеграції | [CLI](../../docs/install/script.md#terminal-command) · [Локальний API](../../docs/speech-platform.md) · [MCP](../../docs/mcp.md) · [Приклади](../../examples/README.md) |
 | Програми для телефону | [iOS та Android](../../docs/mobile.md) |
-| Розробка | [Участь у розробці](../../.github/CONTRIBUTING.md) ([підпишіть CLA](../../.github/CONTRIBUTING.md#contribution-licensing) перед першим PR) · [Журнал змін](../../CHANGELOG.md) |
+| Розробка | [Участь у розробці](../../.github/CONTRIBUTING.md) ([підпишіть CLA](../../.github/CONTRIBUTING.md#contribution-licensing) перед першим PR) · [Журнал змін](../../CHANGELOG.md) · [Політика підпису коду](../code-signing-policy.md) |
 
 Навички агентів: `npx skills add debpalash/VoiceStudio` (**voicestudio** для роботи зі звуком, **voicestudio-maintainer** для репозиторію).
 

@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, FastAPI
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from backend.main import app
 from api.dependencies import require_consumer, require_admin
-from core.path_security import contained_path, UnsafePath
+from core.path_security import UnsafePath, resolve_within
 from services import model_manager as mm
 import gpu_client
 from services import avatar_gpu
@@ -126,7 +126,7 @@ def speech_reference(value):
         return None
     for root in (ASSETS, ROOT/'results/webui', data_dir()/'voices'):
         try:
-            return contained_path(root, value)
+            return resolve_within(root, value)
         except (UnsafePath, TypeError, OSError):
             continue
     raise HTTPException(400, 'Invalid speech reference')
@@ -134,7 +134,7 @@ def speech_reference(value):
 @router.post('/internal/speech')
 async def internal_speech(request:Request):
     lease=internal_lease(request);body=await request.json()
-    try: reqpath=contained_path(ROOT/'results/webui', body.get('request',''))
+    try: reqpath=resolve_within(ROOT/'results/webui', body.get('request',''))
     except (UnsafePath, TypeError, OSError): raise HTTPException(400,'Invalid speech request file')
     if not inside(reqpath,ROOT/'results/webui') or reqpath.name!='tts-request.json' or not reqpath.is_file():raise HTTPException(400,'Invalid speech request file')
     params=json.loads(reqpath.read_text());output=reqpath.parent/'speech.wav'
