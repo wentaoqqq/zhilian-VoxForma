@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "排队中",
       "waiting": "等待 GPU",
-      "starting": "正在启动 ComfyUI",
+      "starting": "正在启动 Diffusers",
       "generating": "正在生图",
       "done": "已完成",
       "failed": "失败",
       "interrupted": "已中断"
     },
-    "installDescription": "独立安装 ComfyUI 和模型。已校验的现有权重可直接复用。",
+    "installDescription": "独立安装 Diffusers 和模型。已校验的现有权重可直接复用。",
     "weightSize": "模型权重 {{size}} GiB",
     "install": "安装生图模块",
     "installSteps": {
-      "source": "正在安装 ComfyUI",
       "runtime": "正在准备 Python 环境",
       "weights": "正在准备模型权重"
     }

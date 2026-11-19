@@ -4820,17 +4820,16 @@
     "states": {
       "queued": "Na fila",
       "waiting": "Aguardando GPU",
-      "starting": "Iniciando ComfyUI",
+      "starting": "Iniciando Diffusers",
       "generating": "Gerando",
       "done": "Concluído",
       "failed": "Falhou",
       "interrupted": "Interrompido"
     },
-    "installDescription": "Instala o ComfyUI e os modelos em um ambiente separado. Os pesos verificados são reutilizados.",
+    "installDescription": "Instala o Diffusers e os modelos em um ambiente separado. Os pesos verificados são reutilizados.",
     "weightSize": "Pesos do modelo: {{size}} GiB",
     "install": "Instalar módulo de imagens",
     "installSteps": {
-      "source": "Instalando ComfyUI",
       "runtime": "Preparando o ambiente Python",
       "weights": "Preparando os pesos"
     }

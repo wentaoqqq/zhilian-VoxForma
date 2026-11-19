@@ -1,4 +1,4 @@
-"""Click-to-install managed ComfyUI and the Qwen Image 2.1 model pack."""
+"""Click-to-install the isolated Diffusers runtime and official Qwen weights."""
 from __future__ import annotations
 
 import asyncio
@@ -9,7 +9,6 @@ import os
 import platform
 import shutil
 import sys
-import tarfile
 import threading
 import time
 from pathlib import Path
@@ -19,23 +18,14 @@ import httpx
 from core.config import DATA_DIR, get_engines_dir
 from core.contained_subprocess import spawn_owned
 
-COMFY_REV = "73c9bad4d21e7addbe1d13bc92eee0f1431b017d"
-SOURCE_HASH = "a0804bec55fe4e82e88c048a671084e01eb2f71971bed6d884319e17b12bcf97"
+MANIFEST = json.loads(Path(__file__).with_name("qwen_image_manifest.json").read_text(encoding="utf-8"))
 MODEL_ID = "qwen-image-2.1-bf16"
 MODEL_NAME = "Qwen Image 2.1 BF16"
-MODEL_REPO = "Comfy-Org/Qwen-Image-2.1"
-MODEL_REV = "aacf31a6d48e707f352ecba714cee0680da3479b"
-WEIGHTS = {
-    "diffusion_models/qwen_image_2.1_bf16.safetensors": (
-        14230280616, "89f4158d066cc33906a199fca85634f766892dd78f49b6698dabf187ac86c4bc",
-    ),
-    "text_encoders/qwen3vl_8b_bf16.safetensors": (
-        17534334616, "68bdc82bc1b66851162ae656225e7e2068166b603db19bd5d5a3b90eb12669a9",
-    ),
-    "vae/qwen_image_2.1_vae_bf16.safetensors": (
-        675509688, "bb21f7473051e1ac368515dd3f2e15cd44d7a11748ee8823e1ddca3e4876b7c9",
-    ),
-}
+MODEL_REPO = MANIFEST["repo"]
+MODEL_REV = MANIFEST["revision"]
+WEIGHTS = MANIFEST["files"]
+DIFFUSERS_VERSION = "0.43.0"
+RUNTIME_REV = f"diffusers-{DIFFUSERS_VERSION}-cu130-v1"
 
 _log = logging.getLogger(__name__)
 _lock = threading.Lock()
@@ -44,7 +34,7 @@ _job: dict | None = None
 
 
 def engine_dir() -> Path:
-    return Path(get_engines_dir()).resolve() / "comfy-image" / "qwen-image-2.1-v1"
+    return Path(get_engines_dir()).resolve() / "qwen-image" / "qwen-image-2.1-v1"
 
 
 def state_dir() -> Path:
@@ -70,8 +60,7 @@ def installed() -> bool:
     root = engine_dir()
     try:
         return (
-            (root / ".installed").read_text().strip() == f"{COMFY_REV}:{MODEL_REV}"
-            and (root / "ComfyUI/main.py").is_file()
+            (root / ".installed").read_text().strip() == f"{RUNTIME_REV}:{MODEL_REV}"
             and (root / ".venv/bin/python").is_file()
             and all((root / "models" / name).stat().st_size == size for name, (size, _) in WEIGHTS.items())
         )
@@ -98,12 +87,18 @@ def _update(**fields) -> None:
         _job.update(fields)
 
 
-def _sha256(path: Path) -> str:
-    with path.open("rb") as stream:
+def file_matches(path: Path, size: int, checksum: str) -> bool:
+    if not path.is_file() or path.stat().st_size != size:
+        return False
+    if len(checksum) == 40:
+        # Regular files use a Git blob hash. The weight shards use LFS SHA-256.
+        digest = hashlib.sha1(f"blob {size}\0".encode(), usedforsecurity=False)
+    else:
         digest = hashlib.sha256()
+    with path.open("rb") as stream:
         for chunk in iter(lambda: stream.read(8 * 1024**2), b""):
             digest.update(chunk)
-    return digest.hexdigest()
+    return digest.hexdigest() == checksum
 
 
 def _command(root: Path, args: list[str], env: dict, timeout: int) -> None:
@@ -119,36 +114,12 @@ def _command(root: Path, args: list[str], env: dict, timeout: int) -> None:
                 process.wait(timeout=15)
 
 
-def _install_source(root: Path) -> None:
-    destination = root / "ComfyUI"
-    if (destination / "main.py").is_file() and (destination / ".source-revision").is_file():
-        if (destination / ".source-revision").read_text().strip() == COMFY_REV:
-            return
-        raise RuntimeError("Unexpected ComfyUI source revision in the managed install.")
-    archive = root / "source.tar.gz"
-    if not archive.is_file() or _sha256(archive) != SOURCE_HASH:
-        url = f"https://codeload.github.com/Comfy-Org/ComfyUI/tar.gz/{COMFY_REV}"
-        with httpx.stream("GET", url, follow_redirects=True, timeout=60) as response:
-            response.raise_for_status()
-            with archive.open("wb") as output:
-                for chunk in response.iter_bytes(1024**2):
-                    output.write(chunk)
-        if _sha256(archive) != SOURCE_HASH:
-            raise RuntimeError("ComfyUI source checksum did not match.")
-    with tarfile.open(archive) as download:
-        download.extractall(root, filter="data")
-    extracted = root / f"ComfyUI-{COMFY_REV}"
-    (extracted / ".source-revision").write_text(COMFY_REV)
-    extracted.rename(destination)
-    archive.unlink()
-
-
 def _runtime(root: Path) -> None:
     from services import sidecar_install
 
     marker = root / ".runtime-revision"
     python = root / ".venv/bin/python"
-    if python.is_file() and marker.is_file() and marker.read_text().strip() == COMFY_REV:
+    if python.is_file() and marker.is_file() and marker.read_text().strip() == RUNTIME_REV:
         return
     uv = sidecar_install._locate_uv()
     if not uv:
@@ -161,20 +132,47 @@ def _runtime(root: Path) -> None:
         _command(root, [uv, "venv", "--python", "3.12", str(root / ".venv")], env, 600)
     install = [uv, "pip", "install", "--python", str(python)]
     _command(root, install + [
-        "torch==2.10.0", "torchvision==0.25.0", "torchaudio==2.10.0",
+        "torch==2.10.0+cu130", "torchvision==0.25.0+cu130",
         "--index-url", "https://download.pytorch.org/whl/cu130",
     ], env, 3600)
-    _command(root, install + ["-r", str(root / "ComfyUI/requirements.txt"), "transformers==5.19.0"], env, 3600)
-    _command(root, [str(python), "-c", "import torch; assert torch.version.cuda == '13.0'"], env, 90)
-    _command(root, [str(python), str(root / "ComfyUI/main.py"), "--help"], env, 90)
-    marker.write_text(COMFY_REV)
+    _command(root, install + [
+        f"diffusers=={DIFFUSERS_VERSION}", "transformers==5.19.0", "accelerate==1.14.0",
+        "pillow>=13,<14", "jinja2",
+    ], env, 3600)
+    _command(root, [
+        str(python), "-c",
+        "import torch; from diffusers import QwenImage21Pipeline; "
+        "from diffusers.hooks import apply_group_offloading; "
+        "from transformers import Qwen3VLProcessor; assert torch.version.cuda == '13.0'",
+    ], env, 90)
+    marker.write_text(RUNTIME_REV)
 
 
 def _existing_models() -> Path:
-    configured = os.environ.get("VOXFORMA_COMFY_MODELS_DIR")
+    configured = os.environ.get("VOXFORMA_QWEN_MODELS_DIR")
     if configured:
         return Path(configured).expanduser()
-    return Path.home() / "minimax-h3/ComfyUI/models"
+    cache = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")).expanduser()
+    hf_home = Path(os.environ.get("HF_HOME", cache / "huggingface")).expanduser()
+    hub_cache = Path(os.environ.get("HF_HUB_CACHE") or os.environ.get("HUGGINGFACE_HUB_CACHE")
+                     or hf_home / "hub").expanduser()
+    return hub_cache / "models--Qwen--Qwen-Image-2.1" / "snapshots" / MODEL_REV
+
+
+def _download_metadata(url: str, target: Path, size: int, checksum: str) -> None:
+    staging = target.with_suffix(".download")
+    with httpx.stream("GET", url, timeout=60, follow_redirects=True) as response:
+        response.raise_for_status()
+        with staging.open("wb") as output:
+            received = 0
+            for chunk in response.iter_bytes(1024**2):
+                received += len(chunk)
+                if received > size:
+                    raise ValueError("Model metadata exceeded its pinned size.")
+                output.write(chunk)
+    if not file_matches(staging, size, checksum):
+        raise ValueError("Model metadata did not match its pinned hash.")
+    staging.replace(target)
 
 
 def _install_model(root: Path, name: str, size: int, checksum: str) -> None:
@@ -182,43 +180,50 @@ def _install_model(root: Path, name: str, size: int, checksum: str) -> None:
 
     target = root / "models" / name
     target.parent.mkdir(parents=True, exist_ok=True)
-    if target.is_file() and target.stat().st_size == size and _sha256(target) == checksum:
+    if file_matches(target, size, checksum):
         return
     existing = _existing_models() / name
-    if existing.is_file() and target.resolve() != existing.resolve():
-        if existing.stat().st_size == size and _sha256(existing) == checksum:
-            staging = target.with_suffix(".reuse")
-            staging.unlink(missing_ok=True)
-            try:
-                os.link(existing.resolve(), staging)
-            except OSError:
-                shutil.copyfile(existing, staging)
-            staging.replace(target)
-            return
+    if target.resolve() != existing.resolve() and file_matches(existing, size, checksum):
+        staging = target.with_suffix(".reuse")
+        staging.unlink(missing_ok=True)
+        try:
+            os.link(existing.resolve(), staging)
+        except OSError:
+            shutil.copyfile(existing, staging)
+        staging.replace(target)
+        return
 
     endpoints = dict.fromkeys(
         (endpoint_race.effective_endpoint() or "https://huggingface.co", "https://huggingface.co")
     )
     for endpoint in endpoints:
-        # Only public weights are needed. Do not send account credentials to mirrors.
+        # This pack is public. No account credentials are needed for downloads.
         url = f"{endpoint.rstrip('/')}/{MODEL_REPO}/resolve/{MODEL_REV}/{name}"
-        progress = {"downloaded": 0, "updated": 0.0}
+        received = 0
+        updated = 0.0
 
-        def on_bytes(received: int) -> None:
-            progress["downloaded"] += received
-            if time.monotonic() - progress["updated"] >= 0.5:
-                _update(received_bytes=min(size, progress["downloaded"]))
-                progress["updated"] = time.monotonic()
+        def on_bytes(count: int) -> None:
+            nonlocal received, updated
+            received += count
+            now = time.monotonic()
+            if now - updated >= 0.5:
+                _update(received_bytes=min(size, received))
+                updated = now
 
         try:
-            asyncio.run(segmented_download.segmented_download(
-                url, str(target), expected_size=size, expected_etag=checksum,
-                num_connections=8, on_bytes=on_bytes, timeout=90,
-            ))
+            if len(checksum) == 40:
+                _download_metadata(url, target, size, checksum)
+            else:
+                asyncio.run(segmented_download.segmented_download(
+                    url, str(target), expected_size=size, expected_etag=checksum,
+                    num_connections=8, on_bytes=on_bytes, timeout=90,
+                ))
             return
         except Exception as exc:
             if isinstance(exc, ValueError) and "sha256 mismatch" in str(exc):
-                target.with_name(target.name + ".part").unlink(missing_ok=True)
+                part = str(target) + ".part"
+                Path(part).unlink(missing_ok=True)
+                Path(segmented_download._manifest_path(part)).unlink(missing_ok=True)
             _log.warning("Image model download failed for %s (%s)", name, type(exc).__name__)
     raise RuntimeError(f"Download failed for {name}. Retry to resume.")
 
@@ -231,14 +236,11 @@ def _run_install() -> None:
 
         with (root / "install.lock").open("a") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            _update(step="source")
-            _install_source(root)
-            _update(step="runtime")
             _runtime(root)
             for name, (size, checksum) in WEIGHTS.items():
-                _update(step="weights", filename=Path(name).name, received_bytes=0, file_bytes=size)
+                _update(step="weights", filename=name, received_bytes=0, file_bytes=size)
                 _install_model(root, name, size, checksum)
-            (root / ".installed").write_text(f"{COMFY_REV}:{MODEL_REV}")
+            (root / ".installed").write_text(f"{RUNTIME_REV}:{MODEL_REV}")
         _update(state="done", step=None, filename=None)
     except Exception as exc:
         _update(state="failed", error=str(exc))
@@ -247,13 +249,13 @@ def _run_install() -> None:
 def start_install() -> dict:
     global _job, _thread
     if not supported():
-        raise ValueError("ComfyUI requires x86-64 Linux/WSL with an NVIDIA driver.")
+        raise ValueError("Image generation requires x86-64 Linux/WSL with an NVIDIA driver.")
     with _lock:
         if installed():
             return {"state": "done"}
         if _thread and _thread.is_alive():
             return {"state": "running"}
-        _job = {"state": "running", "step": "source", "filename": None, "error": None}
-        _thread = threading.Thread(target=_run_install, daemon=True, name="comfy-image-install")
+        _job = {"state": "running", "step": "runtime", "filename": None, "error": None}
+        _thread = threading.Thread(target=_run_install, daemon=True, name="qwen-image-install")
         _thread.start()
         return {"state": "running"}

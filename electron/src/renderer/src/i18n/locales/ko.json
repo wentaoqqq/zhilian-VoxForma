@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "대기 중",
       "waiting": "GPU 대기 중",
-      "starting": "ComfyUI 시작 중",
+      "starting": "Diffusers 시작 중",
       "generating": "생성 중",
       "done": "완료",
       "failed": "실패",
       "interrupted": "중단됨"
     },
-    "installDescription": "별도 환경에 ComfyUI와 모델을 설치합니다. 기존 가중치는 검증 후 재사용합니다.",
+    "installDescription": "별도 환경에 Diffusers와 모델을 설치합니다. 기존 가중치는 검증 후 재사용합니다.",
     "weightSize": "모델 가중치 {{size}} GiB",
     "install": "이미지 모듈 설치",
     "installSteps": {
-      "source": "ComfyUI 설치 중",
       "runtime": "Python 환경 준비 중",
       "weights": "모델 가중치 준비 중"
     }

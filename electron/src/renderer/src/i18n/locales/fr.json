@@ -4820,17 +4820,16 @@
     "states": {
       "queued": "En file d’attente",
       "waiting": "En attente du GPU",
-      "starting": "Démarrage de ComfyUI",
+      "starting": "Démarrage de Diffusers",
       "generating": "Génération en cours",
       "done": "Terminé",
       "failed": "Échec",
       "interrupted": "Interrompu"
     },
-    "installDescription": "Installe ComfyUI et les modèles dans un environnement séparé. Les poids vérifiés sont réutilisés.",
+    "installDescription": "Installe Diffusers et les modèles dans un environnement séparé. Les poids vérifiés sont réutilisés.",
     "weightSize": "Poids des modèles : {{size}} Gio",
     "install": "Installer le module d’images",
     "installSteps": {
-      "source": "Installation de ComfyUI",
       "runtime": "Préparation de Python",
       "weights": "Préparation des poids"
     }

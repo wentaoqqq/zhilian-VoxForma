@@ -14,7 +14,7 @@ from PIL import Image, UnidentifiedImageError
 
 from api.dependencies import require_admin, require_consumer
 from core.job_queue import Job, JobQueue
-from services import comfy_image, comfy_image_install as install
+from services import qwen_image, qwen_image_install as install
 
 router = APIRouter(prefix="/image-generation", tags=["image-generation"])
 queue = JobQueue(name="image-generation")
@@ -65,7 +65,7 @@ async def create_job(
     reference: UploadFile | None = File(default=None),
 ) -> dict:
     prompt = prompt.strip()
-    if not prompt or model != install.MODEL_ID or size not in comfy_image.SIZES:
+    if not prompt or model != install.MODEL_ID or size not in qwen_image.SIZES:
         raise HTTPException(422, "Choose a valid model and size and enter a prompt.")
     if (size == "reference") != (reference is not None):
         raise HTTPException(422, "Choose the reference size when uploading an image.")
@@ -97,7 +97,6 @@ async def create_job(
     if reference_name is not None:
         (directory / reference_name).write_bytes(content)
     install.write_json(record_path, record)
-    graph = comfy_image.workflow(prompt, size, reference_name)
 
     async def run(_: Job) -> None:
         def stage(state: str, error: str | None = None) -> None:
@@ -105,7 +104,9 @@ async def create_job(
 
         try:
             stage("waiting")
-            await comfy_image.generate(identifier, directory, graph, stage)
+            await qwen_image.generate(
+                identifier, directory, prompt=prompt, size=size, reference=reference_name, set_stage=stage,
+            )
         except asyncio.CancelledError:
             stage("interrupted")
             raise

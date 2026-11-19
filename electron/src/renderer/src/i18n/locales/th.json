@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "อยู่ในคิว",
       "waiting": "กำลังรอ GPU",
-      "starting": "กำลังเริ่ม ComfyUI",
+      "starting": "กำลังเริ่ม Diffusers",
       "generating": "กำลังสร้างภาพ",
       "done": "เสร็จแล้ว",
       "failed": "ล้มเหลว",
       "interrupted": "ถูกขัดจังหวะ"
     },
-    "installDescription": "ติดตั้ง ComfyUI และโมเดลในสภาพแวดล้อมแยกกัน โดยนำค่าน้ำหนักที่ตรวจสอบแล้วมาใช้ซ้ำ",
+    "installDescription": "ติดตั้ง Diffusers และโมเดลในสภาพแวดล้อมแยกกัน โดยนำค่าน้ำหนักที่ตรวจสอบแล้วมาใช้ซ้ำ",
     "weightSize": "ค่าน้ำหนักโมเดล: {{size}} GiB",
     "install": "ติดตั้งโมดูลภาพ",
     "installSteps": {
-      "source": "กำลังติดตั้ง ComfyUI",
       "runtime": "กำลังเตรียมสภาพแวดล้อม Python",
       "weights": "กำลังเตรียมค่าน้ำหนักโมเดล"
     }

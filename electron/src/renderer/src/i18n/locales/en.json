@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "Queued",
       "waiting": "Waiting for GPU",
-      "starting": "Starting ComfyUI",
+      "starting": "Starting Diffusers",
       "generating": "Generating",
       "done": "Complete",
       "failed": "Failed",
       "interrupted": "Interrupted"
     },
-    "installDescription": "Install ComfyUI and the model pack in a separate environment. Existing verified weights are reused.",
+    "installDescription": "Install Diffusers and the model pack in a separate environment. Existing verified weights are reused.",
     "weightSize": "Model weights: {{size}} GiB",
     "install": "Install image module",
     "installSteps": {
-      "source": "Installing ComfyUI",
       "runtime": "Preparing the Python environment",
       "weights": "Preparing model weights"
     }

@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "Đang xếp hàng",
       "waiting": "Đang chờ GPU",
-      "starting": "Đang khởi động ComfyUI",
+      "starting": "Đang khởi động Diffusers",
       "generating": "Đang tạo ảnh",
       "done": "Hoàn tất",
       "failed": "Thất bại",
       "interrupted": "Bị gián đoạn"
     },
-    "installDescription": "Cài ComfyUI và mô hình trong môi trường riêng. Tái sử dụng các trọng số đã xác minh.",
+    "installDescription": "Cài Diffusers và mô hình trong môi trường riêng. Tái sử dụng các trọng số đã xác minh.",
     "weightSize": "Trọng số mô hình: {{size}} GiB",
     "install": "Cài mô-đun tạo ảnh",
     "installSteps": {
-      "source": "Đang cài ComfyUI",
       "runtime": "Đang chuẩn bị môi trường Python",
       "weights": "Đang chuẩn bị trọng số"
     }

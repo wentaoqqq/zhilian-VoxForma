@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "In de wachtrij",
       "waiting": "Wachten op GPU",
-      "starting": "ComfyUI wordt gestart",
+      "starting": "Diffusers wordt gestart",
       "generating": "Bezig met genereren",
       "done": "Voltooid",
       "failed": "Mislukt",
       "interrupted": "Onderbroken"
     },
-    "installDescription": "Installeert ComfyUI en de modellen in een aparte omgeving. Gecontroleerde gewichten worden hergebruikt.",
+    "installDescription": "Installeert Diffusers en de modellen in een aparte omgeving. Gecontroleerde gewichten worden hergebruikt.",
     "weightSize": "Modelgewichten: {{size}} GiB",
     "install": "Afbeeldingsmodule installeren",
     "installSteps": {
-      "source": "ComfyUI installeren",
       "runtime": "Python-omgeving voorbereiden",
       "weights": "Modelgewichten voorbereiden"
     }

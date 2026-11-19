@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "Dalam antrean",
       "waiting": "Menunggu GPU",
-      "starting": "Memulai ComfyUI",
+      "starting": "Memulai Diffusers",
       "generating": "Sedang membuat",
       "done": "Selesai",
       "failed": "Gagal",
       "interrupted": "Terhenti"
     },
-    "installDescription": "Memasang ComfyUI dan model di lingkungan terpisah. Bobot terverifikasi akan digunakan kembali.",
+    "installDescription": "Memasang Diffusers dan model di lingkungan terpisah. Bobot terverifikasi akan digunakan kembali.",
     "weightSize": "Bobot model: {{size}} GiB",
     "install": "Pasang modul gambar",
     "installSteps": {
-      "source": "Memasang ComfyUI",
       "runtime": "Menyiapkan lingkungan Python",
       "weights": "Menyiapkan bobot model"
     }

@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "Sırada",
       "waiting": "GPU bekleniyor",
-      "starting": "ComfyUI başlatılıyor",
+      "starting": "Diffusers başlatılıyor",
       "generating": "Oluşturuluyor",
       "done": "Tamamlandı",
       "failed": "Başarısız",
       "interrupted": "Kesintiye uğradı"
     },
-    "installDescription": "ComfyUI ve modeller ayrı ortama yüklenir. Doğrulanmış ağırlıklar yeniden kullanılır.",
+    "installDescription": "Diffusers ve modeller ayrı ortama yüklenir. Doğrulanmış ağırlıklar yeniden kullanılır.",
     "weightSize": "Model ağırlıkları: {{size}} GiB",
     "install": "Görsel modülünü yükle",
     "installSteps": {
-      "source": "ComfyUI yükleniyor",
       "runtime": "Python ortamı hazırlanıyor",
       "weights": "Model ağırlıkları hazırlanıyor"
     }

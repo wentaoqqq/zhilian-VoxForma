@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "I kö",
       "waiting": "Väntar på GPU",
-      "starting": "Startar ComfyUI",
+      "starting": "Startar Diffusers",
       "generating": "Skapar bild",
       "done": "Klar",
       "failed": "Misslyckades",
       "interrupted": "Avbruten"
     },
-    "installDescription": "Installerar ComfyUI och modellerna i en separat miljö. Verifierade vikter återanvänds.",
+    "installDescription": "Installerar Diffusers och modellerna i en separat miljö. Verifierade vikter återanvänds.",
     "weightSize": "Modellvikter: {{size}} GiB",
     "install": "Installera bildmodul",
     "installSteps": {
-      "source": "Installerar ComfyUI",
       "runtime": "Förbereder Python-miljön",
       "weights": "Förbereder modellvikter"
     }

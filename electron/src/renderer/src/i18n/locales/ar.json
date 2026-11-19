@@ -4870,17 +4870,16 @@
     "states": {
       "queued": "في قائمة الانتظار",
       "waiting": "بانتظار GPU",
-      "starting": "جارٍ تشغيل ComfyUI",
+      "starting": "جارٍ تشغيل Diffusers",
       "generating": "جارٍ الإنشاء",
       "done": "مكتمل",
       "failed": "فشل",
       "interrupted": "متوقف"
     },
-    "installDescription": "يثبّت ComfyUI والنموذج في بيئة مستقلة ويعيد استخدام الأوزان المتحقق منها.",
+    "installDescription": "يثبّت Diffusers والنموذج في بيئة مستقلة ويعيد استخدام الأوزان المتحقق منها.",
     "weightSize": "أوزان النموذج: {{size}} GiB",
     "install": "تثبيت وحدة الصور",
     "installSteps": {
-      "source": "جارٍ تثبيت ComfyUI",
       "runtime": "جارٍ تجهيز بيئة Python",
       "weights": "جارٍ تجهيز أوزان النموذج"
     }

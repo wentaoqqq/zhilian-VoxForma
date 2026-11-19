@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "待機中",
       "waiting": "GPU を待機中",
-      "starting": "ComfyUI を起動中",
+      "starting": "Diffusers を起動中",
       "generating": "生成中",
       "done": "完了",
       "failed": "失敗",
       "interrupted": "中断"
     },
-    "installDescription": "ComfyUI とモデルを専用環境にインストールします。検証済みの既存の重みは再利用します。",
+    "installDescription": "Diffusers とモデルを専用環境にインストールします。検証済みの既存の重みは再利用します。",
     "weightSize": "モデルの重み {{size}} GiB",
     "install": "画像生成モジュールをインストール",
     "installSteps": {
-      "source": "ComfyUI をインストール中",
       "runtime": "Python 環境を準備中",
       "weights": "モデルの重みを準備中"
     }

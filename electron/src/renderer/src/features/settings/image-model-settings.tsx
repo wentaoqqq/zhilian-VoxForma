@@ -27,7 +27,7 @@ export function ImageModelSettings() {
   return (
     <SettingsSection icon={ImageIcon} title={t('engineSidebar.image')}>
       <div className="space-y-3 p-4">
-        <strong>ComfyUI · {state?.models.map((model) => model.label).join(', ') || 'Qwen Image 2.1 BF16'}</strong>
+        <strong>Diffusers · {state?.models.map((model) => model.label).join(', ') || 'Qwen Image 2.1 BF16'}</strong>
         <p className="text-sm text-muted-foreground">{t('imageGeneration.installDescription')}</p>
         {state && !state.installed && <p className="text-sm text-muted-foreground">
           {t('imageGeneration.weightSize', { size: (state.weight_bytes / 1024 ** 3).toFixed(1) })}
@@ -37,7 +37,7 @@ export function ImageModelSettings() {
           <DownloadIcon />{t(state?.installed ? 'videoEngine.installed' : job?.state === 'failed' ? 'videoEngine.retryInstall' : 'imageGeneration.install')}
         </Button>
         {running && <div role="status" className="space-y-1 text-sm">
-          <p>{t('imageGeneration.installSteps.' + (job?.step || 'source'))}</p>
+          <p>{t('imageGeneration.installSteps.' + (job?.step || 'runtime'))}</p>
           {job?.filename && <p className="break-all text-xs text-muted-foreground">{job.filename}</p>}
           {!!job?.file_bytes && !!job.received_bytes && <progress className="w-full" max={job.file_bytes} value={job.received_bytes} aria-label={job.filename ?? undefined} />}
         </div>}

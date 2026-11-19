@@ -14,7 +14,7 @@ export type ImageModels = {
 export type ImageInstall = ImageModels & {
   job: null | {
     state: 'running' | 'done' | 'failed';
-    step: 'source' | 'runtime' | 'weights' | null;
+    step: 'runtime' | 'weights' | null;
     filename: string | null;
     received_bytes?: number;
     file_bytes?: number;

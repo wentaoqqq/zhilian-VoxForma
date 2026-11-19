@@ -4846,17 +4846,16 @@
     "states": {
       "queued": "W kolejce",
       "waiting": "Oczekiwanie na GPU",
-      "starting": "Uruchamianie ComfyUI",
+      "starting": "Uruchamianie Diffusers",
       "generating": "Generowanie",
       "done": "Gotowe",
       "failed": "Niepowodzenie",
       "interrupted": "Przerwano"
     },
-    "installDescription": "Instaluje ComfyUI i modele w osobnym środowisku. Zweryfikowane wagi są używane ponownie.",
+    "installDescription": "Instaluje Diffusers i modele w osobnym środowisku. Zweryfikowane wagi są używane ponownie.",
     "weightSize": "Wagi modelu: {{size}} GiB",
     "install": "Zainstaluj moduł obrazów",
     "installSteps": {
-      "source": "Instalowanie ComfyUI",
       "runtime": "Przygotowywanie środowiska Python",
       "weights": "Przygotowywanie wag"
     }

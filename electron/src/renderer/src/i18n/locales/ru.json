@@ -4846,17 +4846,16 @@
     "states": {
       "queued": "В очереди",
       "waiting": "Ожидание GPU",
-      "starting": "Запуск ComfyUI",
+      "starting": "Запуск Diffusers",
       "generating": "Генерация",
       "done": "Готово",
       "failed": "Ошибка",
       "interrupted": "Прервано"
     },
-    "installDescription": "Устанавливает ComfyUI и модели в отдельное окружение. Проверенные веса используются повторно.",
+    "installDescription": "Устанавливает Diffusers и модели в отдельное окружение. Проверенные веса используются повторно.",
     "weightSize": "Веса модели: {{size}} ГиБ",
     "install": "Установить модуль изображений",
     "installSteps": {
-      "source": "Установка ComfyUI",
       "runtime": "Подготовка окружения Python",
       "weights": "Подготовка весов модели"
     }

@@ -4818,17 +4818,16 @@
     "states": {
       "queued": "कतार में",
       "waiting": "GPU की प्रतीक्षा",
-      "starting": "ComfyUI शुरू हो रहा है",
+      "starting": "Diffusers शुरू हो रहा है",
       "generating": "चित्र बन रहा है",
       "done": "पूरा हुआ",
       "failed": "विफल",
       "interrupted": "बाधित"
     },
-    "installDescription": "ComfyUI और मॉडल अलग वातावरण में इंस्टॉल होते हैं। सत्यापित वेट दोबारा इस्तेमाल होते हैं।",
+    "installDescription": "Diffusers और मॉडल अलग वातावरण में इंस्टॉल होते हैं। सत्यापित वेट दोबारा इस्तेमाल होते हैं।",
     "weightSize": "मॉडल वेट: {{size}} GiB",
     "install": "चित्र मॉड्यूल इंस्टॉल करें",
     "installSteps": {
-      "source": "ComfyUI इंस्टॉल हो रहा है",
       "runtime": "Python वातावरण तैयार हो रहा है",
       "weights": "मॉडल वेट तैयार हो रहे हैं"
     }
